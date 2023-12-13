@@ -15,6 +15,6 @@ jobs:
             fetch-depth: 0
         - uses: yesolutions/mirror-action@master
           with:
-            REMOTE: 'https://go72rop@bitbucket.ase.in.tum.de/scm/FOPHN2324INFUN2324PROJECTWORKX/fophn2324infun2324projectworkx-pyxellabs.git'
-            GIT_USERNAME: ${{ secrets.GIT_USER }}
-            GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
+            REMOTE: git@bitbucket.ase.in.tum.de:7999/fophn2324infun2324projectworkx/fophn2324infun2324projectworkx-pyxellabs.git
+            GIT_SSH_PRIVATE_KEY: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
+            GIT_SSH_NO_VERIFY_HOST: "true"
