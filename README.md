@@ -1,0 +1,3 @@
+## INTRO
+[![Repo on GitHub](https://img.shields.io/badge/repo-GitHub-3D76C2.svg)](https://github.com/GunniBusch/FOPGame.git)
+[![Repo on BitBucket](https://img.shields.io/badge/repo-BitBucket-1F5081.svg)]([https://bitbucket.org/MoOx/your-repo](https://bitbucket.ase.in.tum.de/scm/fophn2324infun2324projectworkx/fophn2324infun2324projectworkx-pyxellabs.git)https://bitbucket.ase.in.tum.de/scm/fophn2324infun2324projectworkx/fophn2324infun2324projectworkx-pyxellabs.git)
