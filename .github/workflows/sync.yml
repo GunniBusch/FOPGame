@@ -15,6 +15,6 @@ jobs:
             fetch-depth: 0
         - uses: yesolutions/mirror-action@master
           with:
-            REMOTE: 'https://gitlab.com/spyoungtech/mirror-action.git'
+            REMOTE: 'https://go72rop@bitbucket.ase.in.tum.de/scm/FOPHN2324INFUN2324PROJECTWORKX/fophn2324infun2324projectworkx-pyxellabs.git'
             GIT_USERNAME: ${{ secrets.GIT_USER }}
             GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
