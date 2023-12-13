@@ -12,8 +12,7 @@ jobs:
       - uses: pixta-dev/repository-mirroring-action@v1
         with:
           target_repo_url:
-            git@bitbucket.ase.in.tum.de:7999/fophn2324infun2324projectworkx/fophn2324infun2324projectworkx-pyxellabs.git
-
+            ssh://git@bitbucket.ase.in.tum.de:7999/fophn2324infun2324projectworkx/fophn2324infun2324projectworkx-pyxellabs.git
           ssh_private_key:                              # <-- use 'secrets' to pass credential information.
             ${{ secrets.GIT_SSH_PRIVATE_KEY }}
           
