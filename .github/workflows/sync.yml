@@ -16,5 +16,5 @@ jobs:
         - uses: yesolutions/mirror-action@master
           with:
             REMOTE: 'https://gitlab.com/spyoungtech/mirror-action.git'
-            GIT_USERNAME: spyoungtech
+            GIT_USERNAME: ${{ secrets.GIT_USER }}
             GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
