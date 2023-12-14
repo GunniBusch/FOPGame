@@ -4,3 +4,7 @@ sourceCompatibility = 17
 sourceSets.main.java.srcDirs = [ "src/" ]
 
 eclipse.project.name = appName + "-core"
+javadoc {
+    options.stylesheetFile = new File(projectDir, '../dracula-javadoc8.css')
+    // And some options...
+}
