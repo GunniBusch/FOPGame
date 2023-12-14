@@ -1,11 +1,6 @@
 name: Mirroring
 
-on:
-  push:
-    branches: [ "main" ]
-  delete:
-    branches: [ "main" ]
-
+on: [push, delete]
 jobs:
   to_bitbucket:
     runs-on: ubuntu-latest
