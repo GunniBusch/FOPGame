@@ -47,3 +47,7 @@ tasks.register('dist', Jar) {
 dist.dependsOn classes
 
 eclipse.project.name = appName + "-desktop"
+javadoc {
+    options.stylesheetFile = new File(projectDir, '../dracula-javadoc8.css')
+    // And some options...
+}
