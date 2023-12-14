@@ -58,7 +58,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v2
       with:
-        path: desktop/build/docs/javadoc
+        path: core/build/docs/javadoc
 
   # Deployment job
   deploy:
