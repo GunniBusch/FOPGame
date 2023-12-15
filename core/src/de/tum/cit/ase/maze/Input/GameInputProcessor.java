@@ -21,7 +21,6 @@ public class GameInputProcessor extends InputAdapter {
      */
     @Override
     public boolean keyDown(int keycode) {
-        Gdx.app.log("f", "" + keycode);
         if (isVisible()) {
             switch (keycode) {
                 case Input.Keys.W:

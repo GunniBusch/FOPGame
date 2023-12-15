@@ -48,7 +48,6 @@ public class GameScreen implements Screen {
         ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
 
         camera.update(); // Update the camera
-
         // Set up and begin drawing with the sprite batch
         game.getSpriteBatch().setProjectionMatrix(camera.combined);
 
@@ -99,6 +98,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
+        this.player.dispose();
     }
 
     // Additional methods and logic can be added as needed for the game screen

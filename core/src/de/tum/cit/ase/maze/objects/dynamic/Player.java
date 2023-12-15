@@ -1,8 +1,10 @@
 package de.tum.cit.ase.maze.objects.dynamic;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 
 import java.util.HashMap;
@@ -12,6 +14,7 @@ import java.util.Map;
  * Class for the player.
  */
 public class Player extends Character {
+
     private Map<WalkDirection, Animation<TextureRegion>> walkTypesAnimationMap;
     private float stateTime = 0f;
 
@@ -24,14 +27,15 @@ public class Player extends Character {
     public Player(float x, float y) {
         super(x, y);
         this.speed = 50f;
-        this.texture = new Texture("character.png");
-        walkTypesAnimationMap = new HashMap<>();
-        int frameWidth = 16;
-        int frameHeight = 32;
+        frameWidth = 16;
+        frameHeight = 32;
         int animationFrames = 4;
+        this.border = new Rectangle(x, y, frameWidth, frameHeight);
 
+
+        this.texture = new Texture("character.png");
+        this.walkTypesAnimationMap = new HashMap<>();
         Array<TextureRegion> walkFrames = new Array<>(TextureRegion.class);
-
         // Add all frames to the animation
         for (int row = 0; row < 4; row++) {
             for (int col = 0; col < animationFrames; col++) {
@@ -51,7 +55,6 @@ public class Player extends Character {
      */
     @Override
     public TextureRegion getTexture() {
-
         return this.walkTypesAnimationMap.get(this.state.getDirection()).getKeyFrame(this.state == State.WALKING ? this.stateTime : 0f, true);
     }
 
@@ -70,9 +73,8 @@ public class Player extends Character {
                 case DOWN -> position.sub(0, speed * deltaTime);
                 case LEFT -> position.sub(speed * deltaTime, 0);
                 case RIGHT -> position.add(speed * deltaTime, 0);
-                default -> {
-                }
             }
+            this.border.setPosition(this.position);
 
         }
     }
@@ -97,7 +99,7 @@ public class Player extends Character {
     @Override
     public void stopMoving(WalkDirection direction) {
         if (this.state.getDirection() == direction) {
-            this.state = State.STILL;
+            this.state = State.STILL(direction);
         }
     }
 
