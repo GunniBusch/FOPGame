@@ -1,6 +1,5 @@
 package de.tum.cit.ase.maze.objects.dynamic;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -9,59 +8,73 @@ import com.badlogic.gdx.utils.Array;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class for the player.
+ */
 public class Player extends Character {
     private Map<WalkDirection, Animation<TextureRegion>> walkTypesAnimationMap;
+    private float stateTime = 0f;
 
+    /**
+     * Creates a Player with respective coordinates.
+     *
+     * @param x X-Coordinate
+     * @param y Y-Coordinate
+     */
     public Player(float x, float y) {
         super(x, y);
+        this.speed = 50f;
         this.texture = new Texture("character.png");
         walkTypesAnimationMap = new HashMap<>();
         int frameWidth = 16;
         int frameHeight = 32;
         int animationFrames = 4;
 
-        // libGDX internal Array instead of ArrayList because of performance
         Array<TextureRegion> walkFrames = new Array<>(TextureRegion.class);
 
         // Add all frames to the animation
-        for (int col = 0; col < animationFrames; col++) {
-            walkFrames.add(new TextureRegion(this.texture, col * frameWidth, 0, frameWidth, frameHeight));
+        for (int row = 0; row < 4; row++) {
+            for (int col = 0; col < animationFrames; col++) {
+                walkFrames.add(new TextureRegion(this.texture, col * frameWidth, row * frameHeight, frameWidth, frameHeight));
+            }
+            this.walkTypesAnimationMap.put(WalkDirection.values()[row], new Animation<>(0.1f, walkFrames));
+            walkFrames.clear();
         }
-
-        this.walkTypesAnimationMap.put(WalkDirection.DOWN, new Animation<>(0.1f, walkFrames));
 
 
     }
 
     /**
+     * Gets Texture.
+     *
      * @return TextureRegion at the moment
      */
     @Override
     public TextureRegion getTexture() {
-        return null;
+
+        return this.walkTypesAnimationMap.get(this.state.getDirection()).getKeyFrame(this.state == State.WALKING ? this.stateTime : 0f, true);
     }
 
     /**
-     * Moves the Object
+     * Updates the Player.
+     *
+     * @param deltaTime Time since last frame.
      */
     @Override
-    public void updateMotion() {
+    public void update(float deltaTime) {
 
-        switch (this.state.getDirection()) {
-            case UP:
-                position.add(0,5*5 * Gdx.graphics.getDeltaTime());
-                break;
-            case DOWN:
-                break;
-            case Left:
-                break;
-            case Right:
-                break;
-            default:
-                break;
+        if (this.state == State.WALKING) {
+            this.stateTime += deltaTime;
+            switch (this.state.getDirection()) {
+                case UP -> position.add(0, speed * deltaTime);
+                case DOWN -> position.sub(0, speed * deltaTime);
+                case LEFT -> position.sub(speed * deltaTime, 0);
+                case RIGHT -> position.add(speed * deltaTime, 0);
+                default -> {
+                }
+            }
+
         }
-
-
     }
 
     /**
@@ -73,7 +86,6 @@ public class Player extends Character {
     @Override
     public void startMoving(WalkDirection direction) {
         this.state = State.WALKING(direction);
-
     }
 
     /**
@@ -87,6 +99,13 @@ public class Player extends Character {
         if (this.state.getDirection() == direction) {
             this.state = State.STILL;
         }
+    }
 
+    /**
+     * Releases all resources of this object.
+     */
+    @Override
+    public void dispose() {
+        this.texture.dispose();
     }
 }

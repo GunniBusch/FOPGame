@@ -1,14 +1,15 @@
 package de.tum.cit.ase.maze.objects.dynamic;
 
-
 /**
  * Defines if an Object is Dynamic e.g. can move.
  */
 public interface Movable {
     /**
      * Moves the Object
+     *
+     * @param deltaTime Time since last frame.
      */
-    void updateMotion();
+    void update(float deltaTime);
 
     /**
      * Starts moving in defined direction.
