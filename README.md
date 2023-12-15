@@ -7,3 +7,5 @@
 ## Game
 
 TODO
+## Documentation
+The javadoc of the game can be found at our [Github Pages](https://gunnibusch.github.io/) site.
