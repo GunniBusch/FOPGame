@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.checkerframework/checker/3.28.0/8e17e55f43c6561af9f0d07f412770e390a68965/checker-3.28.0.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.checkerframework/checker-util/3.28.0/d15573be6f12e49bf4c3f0743c1c11ae3fd83132/checker-util-3.28.0.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.checkerframework/checker-qual/3.28.0/8d5b904e460c47bf22fa20f35da0f38de6bcacf6/checker-qual-3.28.0.jar" />
+        </processorPath>
+        <module name="FOPGame.desktop.main" />
+        <module name="FOPGame.core.test" />
+        <module name="FOPGame.desktop.test" />
+        <module name="FOPGame.core.main" />
+      </profile>
+    </annotationProcessing>
     <bytecodeTargetLevel target="17" />
   </component>
 </project>
