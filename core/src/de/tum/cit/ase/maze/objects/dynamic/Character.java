@@ -16,24 +16,7 @@ public abstract class Character implements Movable {
      * Vector for the position.
      */
     protected Vector2 position;
-
-    /**
-     * Flag if object should move left.
-     */
-    protected boolean leftMove;
-    /**
-     * Flag if object should move right.
-     */
-    protected boolean rightMove;
-    /**
-     * Flag if object should move up.
-     */
-    protected boolean upMove;
-    /**
-     * Flag if object should move down.
-     */
-    protected boolean downMove;
-
+    protected State state = State.STILL;
     /**
      * Texture that holds animations etc.
      */
