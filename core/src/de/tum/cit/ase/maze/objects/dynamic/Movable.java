@@ -10,6 +10,7 @@ public interface Movable {
      */
     void updateMotion();
 
+
     void setLeftMove(boolean move);
 
     void setRightMove(boolean move);

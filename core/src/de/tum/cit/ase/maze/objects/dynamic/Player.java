@@ -18,10 +18,19 @@ public class Player extends Character {
     }
 
     /**
+     * @return
+     */
+    @Override
+    public TextureRegion getTexture() {
+        return null;
+    }
+
+    /**
      * Moves the Object
      */
     @Override
     public void updateMotion() {
+
 
     }
 

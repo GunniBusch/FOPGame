@@ -3,6 +3,7 @@ package de.tum.cit.ase.maze.objects.dynamic;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 
 /**
  * Defines an abstract class, that describes a movable Character.
@@ -11,6 +12,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public abstract class Character implements Movable {
 
 
+    /**
+     * Vector for the position.
+     */
+    protected Vector2 position;
 
     /**
      * Flag if object should move left.
@@ -28,24 +33,19 @@ public abstract class Character implements Movable {
      * Flag if object should move down.
      */
     protected boolean downMove;
-    protected float x;
-    protected float y;
+
+    /**
+     * Texture that holds animations etc.
+     */
     protected Texture texture;
 
     public Character(float x, float y) {
-        this.x = x;
-        this.y = y;
+        this.position = new Vector2(x, y);
     }
 
-    public float getX() {
-        return x;
+    public Vector2 getPosition() {
+        return position;
     }
 
-    public float getY() {
-        return y;
-    }
-
-    public Texture getTexture() {
-        return texture;
-    }
+    public abstract TextureRegion getTexture();
 }
