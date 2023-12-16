@@ -20,7 +20,13 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
  */
 public class Player extends Character {
 
+    /**
+     * List of Moving animations
+     */
     private Map<WalkDirection, Animation<TextureRegion>> walkTypesAnimationMap;
+    /**
+     * Time for a state
+     */
     private float stateTime = 0f;
 
     public Player(World world) {
@@ -110,7 +116,7 @@ public class Player extends Character {
     public void stopMoving(WalkDirection direction) {
         if (this.state.getDirection() == direction) {
             this.state = State.STILL(direction);
-            this.body.setLinearVelocity(0,0);
+            this.body.setLinearVelocity(0, 0);
         }
     }
 

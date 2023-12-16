@@ -28,7 +28,6 @@ public class GameScreen implements Screen {
     private final Player player;
     private final InputAdapter inputAdapter;
     private World world;
-
     private Box2DDebugRenderer b2DDr;
 
     /**
@@ -80,7 +79,6 @@ public class GameScreen implements Screen {
         );
 
 
-
         game.getSpriteBatch().end(); // Important to call this after drawing everything
     }
 
@@ -96,6 +94,12 @@ public class GameScreen implements Screen {
         game.getSpriteBatch().setProjectionMatrix(camera.combined);
 
     }
+
+    /**
+     * Updates the camera.
+     *
+     * @param dt Time since last frame.
+     */
     private void cameraUpdate(float dt) {
         Vector3 position = camera.position;
         //Have player centered on camera.

@@ -16,10 +16,6 @@ public abstract class Character implements Movable, Disposable {
     protected int frameWidth;
     protected int frameHeight;
     /**
-     * Vector for the position.
-     */
-    //protected Vector2 position;
-    /**
      * State of the object and its direction.
      */
     protected State state = State.STILL(WalkDirection.DOWN);

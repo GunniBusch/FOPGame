@@ -73,7 +73,7 @@ public class MenuScreen implements Screen {
     public void show() {
         // Set the input processor so the stage can receive input events
 
-       Gdx.input.setInputProcessor(stage);
+        Gdx.input.setInputProcessor(stage);
 
     }
 
