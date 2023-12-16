@@ -2,8 +2,9 @@ package de.tum.cit.ase.maze.objects.dynamic;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Disposable;
 
 /**
@@ -17,7 +18,7 @@ public abstract class Character implements Movable, Disposable {
     /**
      * Vector for the position.
      */
-    protected Vector2 position;
+    //protected Vector2 position;
     /**
      * State of the object and its direction.
      */
@@ -29,17 +30,25 @@ public abstract class Character implements Movable, Disposable {
      */
     protected Texture texture;
     /**
-     * Rectangle that defines the border. E.g. for collision etc.
+     * Body that defines the Physical body. E.g. for collision etc.
      */
-    protected Rectangle border;
+    protected Body body;
+    /**
+     * Box2d world.
+     */
+    protected World world;
 
-    public Character(float x, float y) {
-        this.position = new Vector2(x, y);
+    public Character(World world) {
+        this.world = world;
     }
 
     public Vector2 getPosition() {
-        return position;
+        return body.getPosition();
     }
 
     public abstract TextureRegion getTexture();
+
+    public Body getBody() {
+        return body;
+    }
 }

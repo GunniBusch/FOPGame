@@ -5,10 +5,15 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 
+import javax.print.attribute.standard.PagesPerMinute;
 import java.util.HashMap;
 import java.util.Map;
+
+import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 
 /**
  * Class for the player.
@@ -18,22 +23,27 @@ public class Player extends Character {
     private Map<WalkDirection, Animation<TextureRegion>> walkTypesAnimationMap;
     private float stateTime = 0f;
 
+    public Player(World world) {
+        this(world, 0, 0);
+    }
+
     /**
      * Creates a Player with respective coordinates.
      *
      * @param x X-Coordinate
      * @param y Y-Coordinate
      */
-    public Player(float x, float y) {
-        super(x, y);
+    public Player(World world, float x, float y) {
+        super(world);
         this.speed = 50f;
         frameWidth = 16;
         frameHeight = 32;
+
         int animationFrames = 4;
-        this.border = new Rectangle(x, y, frameWidth, frameHeight);
 
 
         this.texture = new Texture("character.png");
+        this.createBody(x, y);
         this.walkTypesAnimationMap = new HashMap<>();
         Array<TextureRegion> walkFrames = new Array<>(TextureRegion.class);
         // Add all frames to the animation
@@ -68,13 +78,13 @@ public class Player extends Character {
 
         if (this.state == State.WALKING) {
             this.stateTime += deltaTime;
+
             switch (this.state.getDirection()) {
-                case UP -> position.add(0, speed * deltaTime);
-                case DOWN -> position.sub(0, speed * deltaTime);
-                case LEFT -> position.sub(speed * deltaTime, 0);
-                case RIGHT -> position.add(speed * deltaTime, 0);
+                case UP -> this.body.setLinearVelocity(0f, speed / PPM);
+                case DOWN -> this.body.setLinearVelocity(0f, -speed / PPM);
+                case LEFT -> this.body.setLinearVelocity(-speed / PPM, 0f);
+                case RIGHT -> this.body.setLinearVelocity(speed / PPM, 0f);
             }
-            this.border.setPosition(this.position);
 
         }
     }
@@ -100,7 +110,45 @@ public class Player extends Character {
     public void stopMoving(WalkDirection direction) {
         if (this.state.getDirection() == direction) {
             this.state = State.STILL(direction);
+            this.body.setLinearVelocity(0,0);
         }
+    }
+
+    private void createBody(float x, float y) {
+        Body pBody;
+        BodyDef def = new BodyDef();
+
+        def.type = BodyDef.BodyType.DynamicBody;
+
+        def.position.set(x / PPM, y / PPM);
+        def.fixedRotation = true;
+        pBody = world.createBody(def);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(this.frameWidth / 2f / PPM, this.frameHeight / 2f / PPM);
+
+        FixtureDef fd = new FixtureDef();
+        fd.shape = shape;
+        fd.density = 1.0f;
+        pBody.createFixture(fd).setUserData(this);
+        shape.dispose();
+        this.body = pBody;
+        /*
+        Body pBody;
+        BodyDef pDef = new BodyDef();
+        pDef.type = BodyDef.BodyType.DynamicBody;
+        pDef.position.set(x / PPM, y / PPM);
+        pDef.fixedRotation = true;
+        pBody = world.createBody(pDef);
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(this.frameWidth / 2f / PPM, this.frameHeight / 2f / PPM);
+        pBody.createFixture(shape, 1.0f);
+        shape.dispose();
+        this.body = pBody;
+        this.body.setUserData(this);
+
+         */
+
     }
 
     /**
