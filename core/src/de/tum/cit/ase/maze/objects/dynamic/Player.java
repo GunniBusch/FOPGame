@@ -41,7 +41,7 @@ public class Player extends Character {
      */
     public Player(World world, float x, float y) {
         super(world);
-        this.speed = 50f;
+        this.speed = 150f;
         frameWidth = 16;
         frameHeight = 32;
 
@@ -82,7 +82,9 @@ public class Player extends Character {
     @Override
     public void update(float deltaTime) {
 
+
         if (this.state == State.WALKING) {
+            Gdx.app.log("Pos Ply", this.body.getPosition().toString());
             this.stateTime += deltaTime;
 
             switch (this.state.getDirection()) {

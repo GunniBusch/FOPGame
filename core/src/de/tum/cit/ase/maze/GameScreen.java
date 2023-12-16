@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ScreenUtils;
 import de.tum.cit.ase.maze.Input.GameInputProcessor;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
+import de.tum.cit.ase.maze.utils.MapLoader;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 
@@ -29,6 +30,7 @@ public class GameScreen implements Screen {
     private final InputAdapter inputAdapter;
     private World world;
     private Box2DDebugRenderer b2DDr;
+    private MapLoader ml;
 
     /**
      * Constructor for GameScreen. Sets up the camera and font.
@@ -37,10 +39,12 @@ public class GameScreen implements Screen {
      */
     public GameScreen(MazeRunnerGame game) {
         this.game = game;
+
         this.world = new World(new Vector2(0, 0), false);
         this.player = new Player(world, 0, 0);
         this.b2DDr = new Box2DDebugRenderer(true, true, false, true, true, true);
         this.inputAdapter = new GameInputProcessor(game, player);
+        ml = new MapLoader(world,game.getSpriteBatch());
 
 
         // Create and configure the camera for the game view
@@ -66,9 +70,12 @@ public class GameScreen implements Screen {
         b2DDr.render(world, camera.combined.scl(PPM));
 
 
+
         ; // Update the camera
         // Set up and begin drawing with the sprite batch
 
+
+        ml.render(delta);
         game.getSpriteBatch().begin(); // Important to call this before drawing anything
 
         game.getSpriteBatch().draw(
@@ -103,8 +110,8 @@ public class GameScreen implements Screen {
     private void cameraUpdate(float dt) {
         Vector3 position = camera.position;
         //Have player centered on camera.
-        //position.x = player.getPosition().x * PPM;
-        //position.y = player.getPosition().y * PPM;
+        position.x = player.getPosition().x * PPM;
+        position.y = player.getPosition().y * PPM;
         camera.position.set(position);
         camera.update();
     }
@@ -125,7 +132,6 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(this.inputAdapter);
-
     }
 
     @Override
