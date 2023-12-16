@@ -13,9 +13,13 @@ buildscript {
 
     }
 }
+plugins {
+    id 'org.checkerframework' version '0.6.20'
+}
 
 allprojects {
     apply plugin: "eclipse"
+    apply plugin: 'org.checkerframework'
 
     version = '1.0'
     ext {

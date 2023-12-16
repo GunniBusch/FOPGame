@@ -72,7 +72,9 @@ public class MenuScreen implements Screen {
     @Override
     public void show() {
         // Set the input processor so the stage can receive input events
+
         Gdx.input.setInputProcessor(stage);
+
     }
 
     // The following methods are part of the Screen interface but are not used in this screen.
