@@ -35,7 +35,7 @@ public class MapLoader {
         String[] lines = text.split("\\R");
         List<String> stringList = new ArrayList<>(List.of(lines));
         this.WallList = new ArrayList<>();
-        // unnötig
+        // TODO: Refactor -> this method splits map?
         List<List<String>> tList = stringList.stream()
                 .map(s ->
                         List.of(s.split("[,=]")))
@@ -142,8 +142,8 @@ public class MapLoader {
         def.type = BodyDef.BodyType.StaticBody;
 
         //If  scaling uncomment and remove next line
-        //def.position.set(x / SCALE, y / SCALE);
-        def.position.set(x, y);
+        def.position.set(x / SCALE, y / SCALE);
+        //def.position.set(x, y);
 
         // Gdx.app.log("BP", def.position.toString());
         def.fixedRotation = true;
@@ -153,8 +153,8 @@ public class MapLoader {
 
 
         //If scaling uncomment and remove next line
-        //shape.setAsBox(32 / 2f / SCALE / PPM, 32 / 2f / SCALE / PPM);
-        shape.setAsBox(1f / PPM, 1 / PPM);
+        shape.setAsBox(32 / 2f / SCALE / PPM, 32 / 2f / SCALE / PPM);
+        //shape.setAsBox(1f / PPM, 1 / PPM);
         pBody.createFixture(shape, 0);
         shape.dispose();
 
