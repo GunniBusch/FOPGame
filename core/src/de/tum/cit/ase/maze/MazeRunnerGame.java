@@ -22,6 +22,8 @@ public class MazeRunnerGame extends Game {
 
     // Sprite Batch for rendering
     private SpriteBatch spriteBatch;
+    Music backgroundMusic;
+
 
     // UI Skin
     private Skin skin;
@@ -50,9 +52,8 @@ public class MazeRunnerGame extends Game {
         // Play some background music
         // Background sound
 
-        Music backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3"));
-        backgroundMusic.setLooping(true);
-        backgroundMusic.play();
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("epic_menu.mp3"));
+
 
         goToMenu(); // Navigate to the menu screen
     }
@@ -61,6 +62,10 @@ public class MazeRunnerGame extends Game {
      * Switches to the menu screen.
      */
     public void goToMenu() {
+        this.backgroundMusic.stop();
+        this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("epic_menu.mp3"));
+        backgroundMusic.setLooping(true);
+        //backgroundMusic.play();
         this.setScreen(new MenuScreen(this)); // Set the current screen to MenuScreen
         if (gameScreen != null) {
             gameScreen.dispose(); // Dispose the game screen if it exists
@@ -72,6 +77,10 @@ public class MazeRunnerGame extends Game {
      * Switches to the game screen.
      */
     public void goToGame() {
+        this.backgroundMusic.stop();
+        this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("lost_in_a_labyrinth.mp3"));
+        backgroundMusic.setLooping(true);
+       // backgroundMusic.play();
         this.setScreen(new GameScreen(this)); // Set the current screen to GameScreen
         if (menuScreen != null) {
             menuScreen.dispose(); // Dispose the menu screen if it exists

@@ -41,7 +41,7 @@ public class Player extends Character {
      */
     public Player(World world, float x, float y) {
         super(world);
-        this.speed = 50f;
+        this.speed = 150f;
         frameWidth = 16;
         frameHeight = 32;
 
@@ -71,7 +71,7 @@ public class Player extends Character {
      */
     @Override
     public TextureRegion getTexture() {
-        return this.walkTypesAnimationMap.get(this.state.getDirection()).getKeyFrame(this.state == State.WALKING ? this.stateTime : 0f, true);
+        return this.walkTypesAnimationMap.get(this.state.getDirection().get(this.state.getDirection().size() - 1)).getKeyFrame(this.state == State.WALKING ? this.stateTime : 0f, true);
     }
 
     /**
@@ -82,10 +82,12 @@ public class Player extends Character {
     @Override
     public void update(float deltaTime) {
 
+
         if (this.state == State.WALKING) {
+            Gdx.app.log("Pos Ply", this.state.getDirection().toString());
             this.stateTime += deltaTime;
 
-            switch (this.state.getDirection()) {
+            switch (this.state.getDirection().get(this.state.getDirection().size() - 1)) {
                 case UP -> this.body.setLinearVelocity(0f, speed / PPM);
                 case DOWN -> this.body.setLinearVelocity(0f, -speed / PPM);
                 case LEFT -> this.body.setLinearVelocity(-speed / PPM, 0f);
@@ -97,26 +99,40 @@ public class Player extends Character {
 
     /**
      * Starts moving in defined direction.
-     * Should NOT move in two directions. e.g. left and up.
+     * Should NOT move in two directions. e.g. left and up. But after release other pressed buttons take over.
      *
      * @param direction Direction to move.
      */
     @Override
     public void startMoving(WalkDirection direction) {
-        this.state = State.WALKING(direction);
+        switch (this.state) {
+            case STILL -> this.state = State.WALKING(direction);
+            case WALKING -> this.state.addDirection(direction);
+        }
+
     }
 
     /**
      * Stops moving for one direction.
      * For example if Object moves left, but was overridden, it does not stop if it should stop moving right.
+     * And also allows after stopping to move into other requested directions.
      *
      * @param direction Direction to stop moving.
      */
     @Override
     public void stopMoving(WalkDirection direction) {
-        if (this.state.getDirection() == direction) {
+        this.state.removeDirection(direction);
+        if (this.state.getDirection().isEmpty()) {
             this.state = State.STILL(direction);
             this.body.setLinearVelocity(0, 0);
+        }
+    }
+
+    public void setSprint(boolean sprint) {
+        if (sprint) {
+            speed *= 1.5f;
+        } else {
+            speed /= 1.5f;
         }
     }
 
