@@ -65,7 +65,7 @@ public class MazeRunnerGame extends Game {
         this.backgroundMusic.stop();
         this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("epic_menu.mp3"));
         backgroundMusic.setLooping(true);
-        backgroundMusic.play();
+        //backgroundMusic.play();
         this.setScreen(new MenuScreen(this)); // Set the current screen to MenuScreen
         if (gameScreen != null) {
             gameScreen.dispose(); // Dispose the game screen if it exists
@@ -80,7 +80,7 @@ public class MazeRunnerGame extends Game {
         this.backgroundMusic.stop();
         this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("lost_in_a_labyrinth.mp3"));
         backgroundMusic.setLooping(true);
-        backgroundMusic.play();
+       // backgroundMusic.play();
         this.setScreen(new GameScreen(this)); // Set the current screen to GameScreen
         if (menuScreen != null) {
             menuScreen.dispose(); // Dispose the menu screen if it exists
