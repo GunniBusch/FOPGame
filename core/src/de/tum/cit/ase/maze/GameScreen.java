@@ -44,7 +44,7 @@ public class GameScreen implements Screen {
         this.player = new Player(world, 0, 0);
         this.b2DDr = new Box2DDebugRenderer(true, true, false, true, true, true);
         this.inputAdapter = new GameInputProcessor(game, player);
-        ml = new MapLoader(world,game.getSpriteBatch());
+        ml = new MapLoader(world, game.getSpriteBatch());
 
 
         // Create and configure the camera for the game view
@@ -68,7 +68,6 @@ public class GameScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         //ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
         b2DDr.render(world, camera.combined.scl(PPM));
-
 
 
         ; // Update the camera

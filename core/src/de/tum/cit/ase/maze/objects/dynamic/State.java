@@ -2,16 +2,22 @@ package de.tum.cit.ase.maze.objects.dynamic;
 
 import org.checkerframework.checker.nullness.qual.*;
 
+import java.util.ArrayList;
+
 /**
  * States whether an object walks or stands Still.
  */
 public enum State {
     STILL, WALKING;
 
-    private @NonNull WalkDirection direction;
+    /**
+     * List of Directions the player is and wants to be. Last Entry actual state, and others are overridden states.
+     */
+    private @NonNull ArrayList<WalkDirection> direction;
 
     State() {
-        direction = WalkDirection.DOWN;
+        direction = new ArrayList<>();
+        direction.add(WalkDirection.DOWN);
     }
 
     public static @NonNull State WALKING(@NonNull WalkDirection direction) {
@@ -27,11 +33,20 @@ public enum State {
     }
 
 
-    public WalkDirection getDirection() {
-        return direction;
+    public ArrayList<WalkDirection> getDirection() {
+        return this.direction;
     }
 
     public void setDirection(WalkDirection direction) {
-        this.direction = direction;
+        this.direction = new ArrayList<>();
+        this.direction.add(direction);
+    }
+
+    public void addDirection(WalkDirection direction) {
+        this.direction.add(direction);
+    }
+
+    public void removeDirection(@NonNull WalkDirection direction) {
+        this.direction.removeIf(direction1 -> direction1.equals(direction));
     }
 }
