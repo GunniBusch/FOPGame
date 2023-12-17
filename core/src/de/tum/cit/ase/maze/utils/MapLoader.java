@@ -25,7 +25,7 @@ public class MapLoader {
         this.spriteBatch = spriteBatch;
         this.world = world;
         Texture texture = new Texture("basictiles.png");
-        this.textureRegion = new TextureRegion(texture, 0, 0, 16, 16);
+        this.textureRegion = new TextureRegion(texture, 16, 0, 16, 16);
         this.bodies = new ArrayList<>();
         FileHandle handle = Gdx.files.internal("/Users/leonadomaitis/IdeaProjects/FOPGame/maps/level-3.properties");
         String text = handle.readString();

@@ -1,6 +1,7 @@
 package de.tum.cit.ase.maze;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -24,6 +25,7 @@ public class GameScreen implements Screen {
 
     private final MazeRunnerGame game;
     private final OrthographicCamera camera;
+
     private final float SCALE = 2f;
     private final BitmapFont font;
     private final Player player;
@@ -131,6 +133,7 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(this.inputAdapter);
+
     }
 
     @Override
