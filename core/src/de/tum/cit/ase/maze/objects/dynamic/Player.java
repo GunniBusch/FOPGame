@@ -21,10 +21,6 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 public class Player extends Character {
 
     /**
-     * List of Moving animations
-     */
-    private Map<WalkDirection, Animation<TextureRegion>> walkTypesAnimationMap;
-    /**
      * Time for a state
      */
     private float stateTime = 0f;
@@ -47,10 +43,8 @@ public class Player extends Character {
 
         int animationFrames = 4;
 
-
         this.texture = new Texture("character.png");
         this.createBody(x, y);
-        this.walkTypesAnimationMap = new HashMap<>();
         Array<TextureRegion> walkFrames = new Array<>(TextureRegion.class);
         // Add all frames to the animation
         for (int row = 0; row < 4; row++) {

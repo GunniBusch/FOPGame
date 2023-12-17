@@ -1,11 +1,15 @@
 package de.tum.cit.ase.maze.objects.dynamic;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Disposable;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Defines an abstract class, that describes a movable Character.
@@ -26,6 +30,10 @@ public abstract class Character implements Movable, Disposable {
      */
     protected Texture texture;
     /**
+     * List of Moving animations
+     */
+    protected Map<WalkDirection, Animation<TextureRegion>> walkTypesAnimationMap;
+    /**
      * Body that defines the Physical body. E.g. for collision etc.
      */
     protected Body body;
@@ -36,6 +44,7 @@ public abstract class Character implements Movable, Disposable {
 
     public Character(World world) {
         this.world = world;
+        this.walkTypesAnimationMap = new HashMap<>();
     }
 
     public Vector2 getPosition() {
