@@ -27,7 +27,7 @@ public class MapLoader {
         Texture texture = new Texture("basictiles.png");
         this.textureRegion = new TextureRegion(texture, 16, 0, 16, 16);
         this.bodies = new ArrayList<>();
-        FileHandle handle = Gdx.files.internal("/Users/leonadomaitis/IdeaProjects/FOPGame/maps/level-3.properties");
+        FileHandle handle = Gdx.files.internal("level-3.properties");
         String text = handle.readString();
         String[] lines = text.split("\\R");
         List<String> stringList = new ArrayList<>(List.of(lines));

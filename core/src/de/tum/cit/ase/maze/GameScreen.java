@@ -1,16 +1,13 @@
 package de.tum.cit.ase.maze;
 
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.ScreenUtils;
 import de.tum.cit.ase.maze.Input.GameInputProcessor;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
 import de.tum.cit.ase.maze.utils.MapLoader;
@@ -32,7 +29,7 @@ public class GameScreen implements Screen {
     private final InputAdapter inputAdapter;
     private World world;
     private Box2DDebugRenderer b2DDr;
-    private MapLoader ml;
+    private MapLoader mapLoader;
 
     /**
      * Constructor for GameScreen. Sets up the camera and font.
@@ -41,12 +38,11 @@ public class GameScreen implements Screen {
      */
     public GameScreen(MazeRunnerGame game) {
         this.game = game;
-
         this.world = new World(new Vector2(0, 0), false);
-        this.player = new Player(world, 0, 0);
+        this.player = new Player(world);
         this.b2DDr = new Box2DDebugRenderer(true, true, false, true, true, true);
         this.inputAdapter = new GameInputProcessor(game, player);
-        ml = new MapLoader(world, game.getSpriteBatch());
+        mapLoader = new MapLoader(world, game.getSpriteBatch());
 
 
         // Create and configure the camera for the game view
@@ -76,7 +72,7 @@ public class GameScreen implements Screen {
         // Set up and begin drawing with the sprite batch
 
 
-        ml.render(delta);
+        mapLoader.render(delta);
         game.getSpriteBatch().begin(); // Important to call this before drawing anything
 
         game.getSpriteBatch().draw(

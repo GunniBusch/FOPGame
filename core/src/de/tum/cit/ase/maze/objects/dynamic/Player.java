@@ -24,7 +24,6 @@ public class Player extends Character {
      * List of Moving animations
      */
     private Map<WalkDirection, Animation<TextureRegion>> walkTypesAnimationMap;
-    private boolean sprint = false;
     /**
      * Time for a state
      */
