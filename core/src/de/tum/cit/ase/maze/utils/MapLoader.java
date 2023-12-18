@@ -160,4 +160,8 @@ public class MapLoader {
 
         this.bodies.add(pBody);
     }
+
+    public List<Vector2> getWallList() {
+        return WallList;
+    }
 }

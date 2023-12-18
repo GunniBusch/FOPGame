@@ -8,24 +8,41 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
+import de.tum.cit.ase.maze.map.path.Grid;
+import de.tum.cit.ase.maze.map.AStar;
+import de.tum.cit.ase.maze.map.path.Node;
 
-import java.util.ArrayList;
+import java.util.*;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 
 public class Enemy extends Character {
+    int count;
+    private final float nodeProximityThreshold = 0.15f;
+    private final float nodeDistanceThreshold = 10f;
+    public List<Node> al;
     private Player player = null;
     public boolean isFollowing;
 
+    Grid mp;
+    private List<Node> path;
+    private int currentPathIndex;
+
+
     public Enemy(World world) {
-        this(world, 0f, 0f);
+        this(world, new ArrayList<>(), 0f, 0f);
     }
 
-    public Enemy(World world, float x, float y) {
+    // TODO: Other designs
+    public Enemy(World world, List<Vector2> wallList, float x, float y) {
         super(world);
         this.speed = 150f;
         frameWidth = 16;
         frameHeight = 16;
+        count = 0;
+        this.currentPathIndex = 0;
+        this.path = new ArrayList<>();
+
 
         int animationFrames = 3;
 
@@ -36,7 +53,7 @@ public class Enemy extends Character {
         fd.isSensor = true;
 
         CircleShape shape = new CircleShape();
-        shape.setRadius(frameHeight * 5 / PPM);
+        shape.setRadius(frameHeight * 4.5f / PPM);
         fd.shape = shape;
 
         this.body.createFixture(fd).setUserData(this);
@@ -50,11 +67,26 @@ public class Enemy extends Character {
             this.walkTypesAnimationMap.put(WalkDirection.values()[row], new Animation<>(0.1f, walkFrames));
             walkFrames.clear();
         }
+        int width = (int) wallList.stream().filter(vector2 -> vector2.y == 0f).max(Comparator.comparing(vector2 -> vector2.x)).orElseThrow().x;
+        int height = (int) wallList.stream().filter(vector2 -> vector2.x == 0f).max(Comparator.comparing(vector2 -> vector2.y)).orElseThrow().y;
+
+
+        mp = new Grid(width + 1, height + 1);
+
+        for (Vector2 vector2 : wallList) {
+            mp.setObstacle((int) vector2.x, (int) vector2.y, true);
+
+
+        }
+
+
+        al = AStar.findPath(mp, new Vector2(0f, 20f), new Vector2(10f, 1f));
+
+
+        System.out.println(al);
 
 
     }
-
-
 
 
     /**
@@ -65,10 +97,7 @@ public class Enemy extends Character {
      */
     @Override
     public void startMoving(WalkDirection direction) {
-        this.state = State.WALKING;
-        this.walkDirectionList = new ArrayList<>();
-        this.walkDirectionList.add(direction);
-
+        this.updateStateAndDirection(State.WALKING, direction);
     }
 
     /**
@@ -79,11 +108,8 @@ public class Enemy extends Character {
      */
     @Override
     public void stopMoving(WalkDirection direction) {
-        this.state = State.STILL;
-        this.walkDirectionList = new ArrayList<>();
-        this.walkDirectionList.add(direction);
+        this.updateStateAndDirection(State.STILL, direction);
         this.body.setLinearVelocity(0f, 0f);
-
     }
 
     /**
@@ -94,17 +120,12 @@ public class Enemy extends Character {
     @Override
     public void render(SpriteBatch spriteBatch) {
         spriteBatch.begin(); // Important to call this before drawing anything
-
         spriteBatch.draw(
                 this.getTexture(),
                 this.getPosition().x * PPM - (this.frameWidth / 2f),
                 this.getPosition().y * PPM - (this.frameHeight / 2f)
-
         );
-
-
         spriteBatch.end();
-
     }
 
 
@@ -115,7 +136,6 @@ public class Enemy extends Character {
     public void dispose() {
         this.texture.dispose();
         this.world.destroyBody(body);
-
     }
 
     /**
@@ -125,16 +145,20 @@ public class Enemy extends Character {
      */
     @Override
     public void update(float deltaTime) {
-        super.update(deltaTime);
+        if (this.state == State.WALKING) {
+            //Gdx.app.log("Pos Ply", this.state.getDirection().toString());
+            this.stateTime += deltaTime;
+        }
+        al = AStar.findPath(mp, player.getPosition().scl(0.5f), this.getPosition().scl(0.5f));
+        setPath(al);
+        if (path.size() >= 2 && !path.isEmpty()) {
+            Node nextNode = path.get(currentPathIndex);
+            Vector2 targetPosition = nextNode.getPosition().cpy();
+            moveTowards(targetPosition);
+        }
+
         if (isFollowing) {
-            Vector2 direction = new Vector2(
-                    player.getPosition().x - this.getPosition().x ,
-                    player.getPosition().y - this.getPosition().y
-            );
-            direction.nor(); // Normalize to get direction
-            this.body.setLinearVelocity(direction.scl(player.speed * 0.8f / PPM)); // npcSpeed is the speed of the NPC
-            if(this.getPosition().dst2(player.getPosition())>50) isFollowing = false;
-            if (this.getPosition().dst2(player.getPosition())<20f/PPM) this.body.setLinearVelocity(new Vector2(0,0));
+            this.moveTowards(player.getPosition().cpy().scl(0.5f));
         }
     }
 
@@ -143,7 +167,91 @@ public class Enemy extends Character {
         return this.player;
     }
 
+
     public void setPlayer(Player player) {
         this.player = player;
+    }
+
+    /**
+     * Moves the enemy towards a Point
+     *
+     * @param targetPosition Vector that represents a point e.g. Vector points from (0,0)
+     */
+    private void moveTowards(Vector2 targetPosition) {
+        Vector2 currentPosition = this.body.getPosition().cpy().scl(0.5f);
+        Vector2 directionToTarget = new Vector2(targetPosition.x - currentPosition.x, targetPosition.y - currentPosition.y);
+        float distanceToTarget = directionToTarget.len();
+        if (path.size() < 2 || path.isEmpty()) {
+
+//            this.body.setLinearVelocity(0f, 0f); // Stop the enemy
+//            updateStateAndDirection(State.STILL, WalkDirection.DOWN); // Update state and walk direction accordingly
+
+            if (distanceToTarget <= nodeProximityThreshold || distanceToTarget >= nodeDistanceThreshold) {
+                this.isFollowing = false;
+            } else {
+                this.isFollowing = true;
+
+            }
+        } else {
+            this.isFollowing = false;
+        }
+
+
+        Gdx.app.log("Targ Pos:", "" + targetPosition);
+
+
+        // Check if the enemy is close to the next node
+
+
+        // Normalize and scale the direction vector by the speed
+        //Gdx.app.log("Targ Pos 2:", "" + targetPosition);
+
+        Vector2 velocity = directionToTarget.nor().scl(this.speed / PPM);
+        //Gdx.app.log("Targ Vel:", "" + velocity);
+
+
+        // Set the linear velocity of the body
+        this.body.setLinearVelocity(velocity);
+
+        // Update state and walk direction for animation
+        updateStateAndDirection(State.WALKING, determineWalkDirection(velocity));
+    }
+
+    /**
+     * Determines the Direction the Enemy walks.
+     *
+     * @param velocity {@link Vector2} that represents the direction of the movement.
+     * @return WalkDirection
+     */
+    private WalkDirection determineWalkDirection(Vector2 velocity) {
+        // Determine the primary direction based on the velocity vector
+        if (Math.abs(velocity.x) > Math.abs(velocity.y)) {
+            return velocity.x > 0 ? WalkDirection.RIGHT : WalkDirection.LEFT;
+        } else {
+            return velocity.y > 0 ? WalkDirection.UP : WalkDirection.DOWN;
+        }
+    }
+
+    /**
+     * Updates the state and direction. Convenience wrapper for start Moving and Stop moving.
+     *
+     * @param state     {@link State} to which it should be changed.
+     * @param direction {@link WalkDirection} it should change to.
+     */
+    private void updateStateAndDirection(State state, WalkDirection direction) {
+        this.state = state;
+        this.walkDirectionList = new ArrayList<>();
+        this.walkDirectionList.add(direction);
+    }
+
+    /**
+     * Sets the path it should follow the start node
+     *
+     * @param path {@link List<Node>} it should follow.
+     */
+
+    public void setPath(List<Node> path) {
+        this.path = path;
+        this.currentPathIndex = path.size() - 2;
     }
 }

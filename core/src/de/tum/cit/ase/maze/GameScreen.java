@@ -4,12 +4,14 @@ import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import de.tum.cit.ase.maze.Input.GameInputProcessor;
 import de.tum.cit.ase.maze.Input.ListenerClass;
+import de.tum.cit.ase.maze.map.path.Node;
 import de.tum.cit.ase.maze.objects.dynamic.Enemy;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
 import de.tum.cit.ase.maze.utils.MapLoader;
@@ -25,7 +27,6 @@ public class GameScreen implements Screen {
     private final MazeRunnerGame game;
     private final OrthographicCamera camera;
     private final OrthographicCamera hudCamera;
-
     private final float SCALE = 2f;
     private final BitmapFont font;
     private final Player player;
@@ -34,6 +35,7 @@ public class GameScreen implements Screen {
     private World world;
     private Box2DDebugRenderer b2DDr;
     private MapLoader mapLoader;
+    private ShapeRenderer shapeRenderer;
 
     /**
      * Constructor for GameScreen. Sets up the camera and font.
@@ -44,17 +46,20 @@ public class GameScreen implements Screen {
         this.game = game;
         this.world = new World(new Vector2(0, 0), false);
         world.setContactListener(new ListenerClass());
-        this.player = new Player(world);
-        this.mob = new Enemy(world, -30f,50f);
+        this.player = new Player(world, 0f, 20f * PPM * 2f);
+
         this.b2DDr = new Box2DDebugRenderer(true, true, false, true, true, true);
         this.inputAdapter = new GameInputProcessor(game, player);
         mapLoader = new MapLoader(world, game.getSpriteBatch());
-
+        this.mob = new Enemy(world, this.mapLoader.getWallList(), 10f * PPM * 2f, 1f * PPM * 2f);
+        this.mob.setPlayer(player);
 
         // Create and configure the camera for the game view
+        this.shapeRenderer = new ShapeRenderer();
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth() / SCALE, Gdx.graphics.getHeight() / SCALE);
-        camera.zoom = 0.75f;
+        // ToDo: Make Global
+        camera.zoom = 5.75f;
         hudCamera = new OrthographicCamera();
         hudCamera.setToOrtho(false, Gdx.graphics.getWidth() / SCALE, Gdx.graphics.getHeight() / SCALE);
         hudCamera.zoom = 0.75f;
@@ -76,9 +81,21 @@ public class GameScreen implements Screen {
         //ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
         b2DDr.render(world, camera.combined.scl(PPM));
 
-
-        ; // Update the camera
         // Set up and begin drawing with the sprite batch
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        var points = mob.al.stream()
+                .map(Node::getPosition)
+                .toList();
+
+        // ToDo: Refactor debug path show
+        // Draws the enemy path
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        for (int i = 0; i < points.size() - 1; ++i) {
+            var o = points.get(i);
+            var p = points.get(i + 1);
+            shapeRenderer.line(o.x * 2f, o.y * 2f, p.x * 2f, p.y * 2f);
+        }
+        shapeRenderer.end();
 
 
         mapLoader.render(delta);
@@ -87,14 +104,12 @@ public class GameScreen implements Screen {
         game.getSpriteBatch().begin(); // Important to call this before drawing anything
 
 
-
         game.getSpriteBatch().draw(
                 this.player.getTexture(),
                 this.player.getPosition().x * PPM - (this.player.getTexture().getRegionWidth() / 2f),
                 this.player.getPosition().y * PPM - (this.player.getTexture().getRegionHeight() / 2f)
 
         );
-
 
         game.getSpriteBatch().end(); // Important to call this after drawing everything
 
@@ -145,7 +160,6 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(this.inputAdapter);
-
     }
 
     @Override
@@ -160,6 +174,4 @@ public class GameScreen implements Screen {
         this.world.dispose();
 
     }
-
-    // Additional methods and logic can be added as needed for the game screen
 }
