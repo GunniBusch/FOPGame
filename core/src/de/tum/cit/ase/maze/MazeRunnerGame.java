@@ -7,9 +7,15 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import games.spooky.gdx.nativefilechooser.NativeFileChooser;
+
+import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 
 /**
  * The MazeRunnerGame class represents the core of the Maze Runner game.
@@ -89,9 +95,10 @@ public class MazeRunnerGame extends Game {
     }
 
 
-    /**
-     * Cleans up resources when the game is disposed.
-     */
+
+        /**
+         * Cleans up resources when the game is disposed.
+         */
     @Override
     public void dispose() {
         getScreen().hide(); // Hide the current screen
@@ -108,6 +115,7 @@ public class MazeRunnerGame extends Game {
     public Animation<TextureRegion> getCharacterDownAnimation() {
         return characterDownAnimation;
     }
+
 
     public SpriteBatch getSpriteBatch() {
         return spriteBatch;

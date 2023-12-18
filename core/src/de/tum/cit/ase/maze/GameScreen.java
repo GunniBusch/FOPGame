@@ -9,6 +9,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import de.tum.cit.ase.maze.Input.GameInputProcessor;
+import de.tum.cit.ase.maze.Input.ListenerClass;
+import de.tum.cit.ase.maze.objects.dynamic.Enemy;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
 import de.tum.cit.ase.maze.utils.MapLoader;
 
@@ -22,11 +24,13 @@ public class GameScreen implements Screen {
 
     private final MazeRunnerGame game;
     private final OrthographicCamera camera;
+    private final OrthographicCamera hudCamera;
 
     private final float SCALE = 2f;
     private final BitmapFont font;
     private final Player player;
     private final InputAdapter inputAdapter;
+    private final Enemy mob;
     private World world;
     private Box2DDebugRenderer b2DDr;
     private MapLoader mapLoader;
@@ -39,7 +43,9 @@ public class GameScreen implements Screen {
     public GameScreen(MazeRunnerGame game) {
         this.game = game;
         this.world = new World(new Vector2(0, 0), false);
+        world.setContactListener(new ListenerClass());
         this.player = new Player(world);
+        this.mob = new Enemy(world, -30f,50f);
         this.b2DDr = new Box2DDebugRenderer(true, true, false, true, true, true);
         this.inputAdapter = new GameInputProcessor(game, player);
         mapLoader = new MapLoader(world, game.getSpriteBatch());
@@ -49,6 +55,9 @@ public class GameScreen implements Screen {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth() / SCALE, Gdx.graphics.getHeight() / SCALE);
         camera.zoom = 0.75f;
+        hudCamera = new OrthographicCamera();
+        hudCamera.setToOrtho(false, Gdx.graphics.getWidth() / SCALE, Gdx.graphics.getHeight() / SCALE);
+        hudCamera.zoom = 0.75f;
         this.game.getSpriteBatch().setProjectionMatrix(camera.combined);
 
         // Get the font from the game's skin
@@ -73,7 +82,11 @@ public class GameScreen implements Screen {
 
 
         mapLoader.render(delta);
+        mob.render(this.game.getSpriteBatch());
+
         game.getSpriteBatch().begin(); // Important to call this before drawing anything
+
+
 
         game.getSpriteBatch().draw(
                 this.player.getTexture(),
@@ -84,6 +97,7 @@ public class GameScreen implements Screen {
 
 
         game.getSpriteBatch().end(); // Important to call this after drawing everything
+
     }
 
     /**
@@ -94,7 +108,9 @@ public class GameScreen implements Screen {
     private void update(float dt) {
         this.world.step(1 / 60f, 6, 2);
         this.player.update(dt);
+        this.mob.update(dt);
         this.cameraUpdate(dt);
+
         game.getSpriteBatch().setProjectionMatrix(camera.combined);
 
     }
@@ -139,8 +155,10 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
         this.player.dispose();
+        this.mob.dispose();
         this.b2DDr.dispose();
         this.world.dispose();
+
     }
 
     // Additional methods and logic can be added as needed for the game screen
