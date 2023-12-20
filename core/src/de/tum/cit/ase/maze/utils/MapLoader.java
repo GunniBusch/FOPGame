@@ -127,7 +127,7 @@ public class MapLoader {
         this.spriteBatch.begin();
         for (int i = 0; i < WallList.size(); i++) {
             // Drqw wall
-            //spriteBatch.draw(textureRegion, bodies.get(i).getPosition().x * PPM - (32 / SCALE / 2), bodies.get(i).getPosition().y * PPM - (32 / SCALE / 2), 32 / SCALE, 32 / SCALE);
+            spriteBatch.draw(textureRegion, bodies.get(i).getPosition().x * PPM - (32 / SCALE / 2), bodies.get(i).getPosition().y * PPM - (32 / SCALE / 2), 32 / SCALE, 32 / SCALE);
 
 
         }
@@ -148,6 +148,7 @@ public class MapLoader {
         // Gdx.app.log("BP", def.position.toString());
         def.fixedRotation = true;
         pBody = world.createBody(def);
+        pBody.setAwake(false);
 
         PolygonShape shape = new PolygonShape();
 

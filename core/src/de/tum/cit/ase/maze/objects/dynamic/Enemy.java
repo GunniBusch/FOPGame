@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
@@ -19,10 +20,11 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 public class Enemy extends Character {
     int count;
     private final float nodeProximityThreshold = 0.15f;
-    private final float nodeDistanceThreshold = 10f;
+    private final float nodeDistanceThreshold = 15f * PPM;
     public List<Node> al;
     private Player player = null;
     public boolean isFollowing;
+    private final float DETECTION_RADIUS = 10;
 
     Grid mp;
     private List<Node> path;
@@ -53,20 +55,35 @@ public class Enemy extends Character {
         fd.isSensor = true;
 
         CircleShape shape = new CircleShape();
-        shape.setRadius(frameHeight * 4.5f / PPM);
+        shape.setRadius(DETECTION_RADIUS);
         fd.shape = shape;
 
         this.body.createFixture(fd).setUserData(this);
 
         Array<TextureRegion> walkFrames = new Array<>(TextureRegion.class);
         // Add all frames to the animation
-        for (int row = 0; row < 4; row++) {
-            for (int col = 0; col < animationFrames; col++) {
-                walkFrames.add(new TextureRegion(this.texture, col * frameWidth, row * frameHeight, frameWidth, frameHeight));
-            }
-            this.walkTypesAnimationMap.put(WalkDirection.values()[row], new Animation<>(0.1f, walkFrames));
-            walkFrames.clear();
+
+        for (int col = 0; col < animationFrames; col++) {
+            walkFrames.add(new TextureRegion(this.texture, col * frameWidth, 0 * frameHeight, frameWidth, frameHeight));
         }
+        this.walkTypesAnimationMap.put(WalkDirection.DOWN, new Animation<>(0.1f, walkFrames));
+        walkFrames.clear();
+        for (int col = 0; col < animationFrames; col++) {
+            walkFrames.add(new TextureRegion(this.texture, col * frameWidth, 1 * frameHeight, frameWidth, frameHeight));
+        }
+        this.walkTypesAnimationMap.put(WalkDirection.LEFT, new Animation<>(0.1f, walkFrames));
+        walkFrames.clear();
+        for (int col = 0; col < animationFrames; col++) {
+            walkFrames.add(new TextureRegion(this.texture, col * frameWidth, 2 * frameHeight, frameWidth, frameHeight));
+        }
+        this.walkTypesAnimationMap.put(WalkDirection.RIGHT, new Animation<>(0.1f, walkFrames));
+        walkFrames.clear();
+        for (int col = 0; col < animationFrames; col++) {
+            walkFrames.add(new TextureRegion(this.texture, col * frameWidth, 3 * frameHeight, frameWidth, frameHeight));
+        }
+        this.walkTypesAnimationMap.put(WalkDirection.UP, new Animation<>(0.1f, walkFrames));
+        walkFrames.clear();
+
         int width = (int) wallList.stream().filter(vector2 -> vector2.y == 0f).max(Comparator.comparing(vector2 -> vector2.x)).orElseThrow().x;
         int height = (int) wallList.stream().filter(vector2 -> vector2.x == 0f).max(Comparator.comparing(vector2 -> vector2.y)).orElseThrow().y;
 
@@ -80,10 +97,7 @@ public class Enemy extends Character {
         }
 
 
-        al = AStar.findPath(mp, new Vector2(0f, 20f), new Vector2(10f, 1f));
-
-
-        System.out.println(al);
+        al = new ArrayList<>();
 
 
     }
@@ -149,16 +163,23 @@ public class Enemy extends Character {
             //Gdx.app.log("Pos Ply", this.state.getDirection().toString());
             this.stateTime += deltaTime;
         }
-        al = AStar.findPath(mp, player.getPosition().scl(0.5f), this.getPosition().scl(0.5f));
-        setPath(al);
-        if (path.size() >= 2 && !path.isEmpty()) {
-            Node nextNode = path.get(currentPathIndex);
-            Vector2 targetPosition = nextNode.getPosition().cpy();
-            moveTowards(targetPosition);
-        }
 
         if (isFollowing) {
-            this.moveTowards(player.getPosition().cpy().scl(0.5f));
+            al = AStar.findPath(mp, player.getPosition().scl(0.5f), this.getPosition().scl(0.5f));
+            setPath(al);
+
+            if (path.size() >= 2 && !path.isEmpty()) {
+                Node nextNode = path.get(currentPathIndex);
+                Vector2 targetPosition = nextNode.getPosition().cpy();
+                moveTowards(targetPosition);
+            } else if (isFollowing) {
+                this.moveTowards(player.getPosition().cpy().scl(0.5f));
+            } else {
+                stopMoving(this.walkDirectionList.get(0));
+            }
+        } else {
+            this.isFollowing = false;
+            this.path.clear();
         }
     }
 
@@ -193,11 +214,11 @@ public class Enemy extends Character {
 
             }
         } else {
-            this.isFollowing = false;
+//            this.isFollowing = false;
         }
 
 
-        Gdx.app.log("Targ Pos:", "" + targetPosition);
+        //Gdx.app.log("Targ Pos:", "" + targetPosition);
 
 
         // Check if the enemy is close to the next node
@@ -215,6 +236,7 @@ public class Enemy extends Character {
 
         // Update state and walk direction for animation
         updateStateAndDirection(State.WALKING, determineWalkDirection(velocity));
+
     }
 
     /**
@@ -225,11 +247,12 @@ public class Enemy extends Character {
      */
     private WalkDirection determineWalkDirection(Vector2 velocity) {
         // Determine the primary direction based on the velocity vector
-        if (Math.abs(velocity.x) > Math.abs(velocity.y)) {
+        if (MathUtils.round(Math.abs(velocity.x)) > MathUtils.round(Math.abs(velocity.y))) {
             return velocity.x > 0 ? WalkDirection.RIGHT : WalkDirection.LEFT;
         } else {
             return velocity.y > 0 ? WalkDirection.UP : WalkDirection.DOWN;
         }
+
     }
 
     /**
