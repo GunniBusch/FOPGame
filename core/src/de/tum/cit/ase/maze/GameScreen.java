@@ -96,7 +96,7 @@ public class GameScreen implements Screen {
         this.update(delta);
         Gdx.gl.glClearColor(0, 0, 0, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        //b2DDr.render(world, camera.combined.cpy().scl(PPM));
+        b2DDr.render(world, camera.combined.cpy().scl(PPM));
 
         //ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
 
