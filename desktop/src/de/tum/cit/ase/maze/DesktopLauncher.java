@@ -28,7 +28,7 @@ public class DesktopLauncher {
 				Math.round(0.8f * displayMode.height)
 		);
 		config.useVsync(true); // Enable vertical sync
-		config.setForegroundFPS(80); // Set the foreground frames per second
+		config.setForegroundFPS(60); // Set the foreground frames per second
 
 		// Launch the game
 		new Lwjgl3Application(new MazeRunnerGame(new DesktopFileChooser()), config);

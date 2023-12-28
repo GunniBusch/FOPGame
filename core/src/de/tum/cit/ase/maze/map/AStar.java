@@ -22,20 +22,14 @@ public class AStar {
         Node startNode = getNodeFromVector(grid, start);
         Node endNode = getNodeFromVector(grid, end);
 
-        List<Node> openList = new ArrayList<>();
+        PriorityQueue<Node> openList = new PriorityQueue<>();
         Set<Node> closedList = new HashSet<>();
 
         openList.add(startNode);
 
         while (!openList.isEmpty()) {
-            Node currentNode = openList.get(0);
-            for (Node node : openList) {
-                if (node.getfCost() < currentNode.getfCost() || (node.getfCost() == currentNode.getfCost() && node.gethCost() < currentNode.gethCost())) {
-                    currentNode = node;
-                }
-            }
+            Node currentNode = openList.poll();
 
-            openList.remove(currentNode);
             closedList.add(currentNode);
 
             if (currentNode.equals(endNode)) {

@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Node representing a "point" in a {@link Grid}.
  */
-public class Node {
+public class Node implements Comparable<Node>{
     /**
      * Position of the node in the World
      */
@@ -91,4 +91,18 @@ public class Node {
     public void setNeighbors(List<Node> neighbors) {
         this.neighbors = neighbors;
     }
+
+
+    /**
+     * @param o the object to be compared.
+     * @return
+     */
+    @Override
+    public int compareTo(Node o) {
+        int fCostComparison = Float.compare(this.fCost, o.fCost);
+        if (fCostComparison != 0) {
+            return fCostComparison;
+        }
+        // Tiebreaker based on hCost or gCost
+        return Float.compare(this.hCost, o.hCost);    }
 }

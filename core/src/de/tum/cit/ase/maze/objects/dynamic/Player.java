@@ -1,26 +1,20 @@
 package de.tum.cit.ase.maze.objects.dynamic;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
-import javax.print.attribute.standard.PagesPerMinute;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 
 /**
  * Class for the player.
  */
-public class Player extends Character {
+public class Player extends Character implements Movable {
 
     public Player(World world) {
         this(world, 0, 0);
@@ -62,7 +56,7 @@ public class Player extends Character {
      * @param direction Direction to move.
      */
     @Override
-    public void startMoving(WalkDirection direction) {
+    public synchronized void startMoving(WalkDirection direction) {
         switch (this.state) {
             case STILL -> {
                 this.state = State.WALKING;
@@ -82,7 +76,7 @@ public class Player extends Character {
      * @param direction Direction to stop moving.
      */
     @Override
-    public void stopMoving(WalkDirection direction) {
+    public synchronized void stopMoving(WalkDirection direction) {
         this.walkDirectionList.remove(direction);
         if (this.walkDirectionList.isEmpty()) {
             this.state = State.STILL;
@@ -98,16 +92,13 @@ public class Player extends Character {
      *
      * @param sprint
      */
-    public void setSprint(boolean sprint) {
+    public synchronized void setSprint(boolean sprint) {
         if (sprint) {
             speed *= 1.5f;
         } else {
             speed /= 1.5f;
         }
     }
-
-
-
 
 
     /**
@@ -119,12 +110,17 @@ public class Player extends Character {
     }
 
     /**
-     * Renders the appearence of the game object
+     * Renders the appearance of the Player
      *
      * @param spriteBatch
      */
     @Override
     public void render(SpriteBatch spriteBatch) {
+        spriteBatch.draw(
+                this.getTexture(),
+                this.getPosition().x * PPM - (this.getTexture().getRegionWidth() / 2f),
+                this.getPosition().y * PPM - (this.getTexture().getRegionHeight() / 2f)
+        );
 
     }
 }

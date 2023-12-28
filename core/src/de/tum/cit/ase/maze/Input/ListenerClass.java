@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import de.tum.cit.ase.maze.objects.dynamic.Enemy;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
+import de.tum.cit.ase.maze.objects.dynamic.State;
 import de.tum.cit.ase.maze.objects.dynamic.WalkDirection;
 
 public class ListenerClass implements ContactListener {
@@ -68,7 +69,7 @@ public class ListenerClass implements ContactListener {
 
 
                     ((Enemy) contact.getFixtureB().getUserData()).setPlayer((Player) contact.getFixtureA().getUserData());
-                    ((Enemy) contact.getFixtureB().getUserData()).stopMoving(WalkDirection.UP);
+                    ((Enemy) contact.getFixtureB().getUserData()).updateStateAndDirection(State.STILL, WalkDirection.UP);
 
 
                 } // Enemy bumped into a Player
@@ -76,7 +77,7 @@ public class ListenerClass implements ContactListener {
 
 
                     ((Enemy) contact.getFixtureA().getUserData()).setPlayer((Player) contact.getFixtureB().getUserData());
-                    ((Enemy) contact.getFixtureA().getUserData()).stopMoving(WalkDirection.UP);
+                    ((Enemy) contact.getFixtureA().getUserData()).updateStateAndDirection(State.STILL, WalkDirection.UP);
 
                 }
             }

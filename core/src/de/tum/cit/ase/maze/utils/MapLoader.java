@@ -3,28 +3,29 @@ package de.tum.cit.ase.maze.utils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.SpriteCache;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 
 public class MapLoader {
-    private SpriteBatch spriteBatch;
+    private SpriteCache spriteBatch;
     private List<Vector2> WallList;
     private TextureRegion textureRegion;
     private World world;
     private final float SCALE = 0.5f;
     private List<Body> bodies;
 
-    public MapLoader(World world, SpriteBatch spriteBatch) {
+    public MapLoader(World world, SpriteCache spriteBatch) {
         this.spriteBatch = spriteBatch;
         this.world = world;
         Texture texture = new Texture("basictiles.png");
@@ -124,14 +125,13 @@ public class MapLoader {
 
     public void render(float dt) {
 
-        this.spriteBatch.begin();
+
         for (int i = 0; i < WallList.size(); i++) {
             // Drqw wall
-            spriteBatch.draw(textureRegion, bodies.get(i).getPosition().x * PPM - (32 / SCALE / 2), bodies.get(i).getPosition().y * PPM - (32 / SCALE / 2), 32 / SCALE, 32 / SCALE);
+            spriteBatch.add(textureRegion, bodies.get(i).getPosition().x * PPM - (32 / SCALE / 2), bodies.get(i).getPosition().y * PPM - (32 / SCALE / 2), 32 / SCALE, 32 / SCALE);
 
 
         }
-        this.spriteBatch.end();
     }
 
     private void createBody(float x, float y) {

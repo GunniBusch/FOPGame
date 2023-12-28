@@ -3,19 +3,10 @@ package de.tum.cit.ase.maze;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.graphics.g2d.SpriteCache;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.Array;
 import games.spooky.gdx.nativefilechooser.NativeFileChooser;
-
-import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 
 /**
  * The MazeRunnerGame class represents the core of the Maze Runner game.
@@ -28,14 +19,12 @@ public class MazeRunnerGame extends Game {
 
     // Sprite Batch for rendering
     private SpriteBatch spriteBatch;
+    private SpriteCache spriteCache;
     Music backgroundMusic;
 
 
     // UI Skin
     private Skin skin;
-
-    // Character animation downwards
-    private Animation<TextureRegion> characterDownAnimation;
 
     /**
      * Constructor for MazeRunnerGame.
@@ -52,6 +41,7 @@ public class MazeRunnerGame extends Game {
     @Override
     public void create() {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
+        spriteCache = new SpriteCache();
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
         //this.loadCharacterAnimation(); // Load character animation
 
@@ -68,10 +58,11 @@ public class MazeRunnerGame extends Game {
      * Switches to the menu screen.
      */
     public void goToMenu() {
+        spriteCache.clear();
         this.backgroundMusic.stop();
         this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("epic_menu.mp3"));
         backgroundMusic.setLooping(true);
-        //backgroundMusic.play();
+        backgroundMusic.play();
         this.setScreen(new MenuScreen(this)); // Set the current screen to MenuScreen
         if (gameScreen != null) {
             gameScreen.dispose(); // Dispose the game screen if it exists
@@ -83,10 +74,11 @@ public class MazeRunnerGame extends Game {
      * Switches to the game screen.
      */
     public void goToGame() {
+        spriteCache.clear();
         this.backgroundMusic.stop();
         this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("lost_in_a_labyrinth.mp3"));
         backgroundMusic.setLooping(true);
-       // backgroundMusic.play();
+        backgroundMusic.play();
         this.setScreen(new GameScreen(this)); // Set the current screen to GameScreen
         if (menuScreen != null) {
             menuScreen.dispose(); // Dispose the menu screen if it exists
@@ -95,15 +87,15 @@ public class MazeRunnerGame extends Game {
     }
 
 
-
-        /**
-         * Cleans up resources when the game is disposed.
-         */
+    /**
+     * Cleans up resources when the game is disposed.
+     */
     @Override
     public void dispose() {
         getScreen().hide(); // Hide the current screen
         getScreen().dispose(); // Dispose the current screen
         spriteBatch.dispose(); // Dispose the spriteBatch
+        spriteCache.dispose();
         skin.dispose(); // Dispose the skin
     }
 
@@ -112,13 +104,11 @@ public class MazeRunnerGame extends Game {
         return skin;
     }
 
-    public Animation<TextureRegion> getCharacterDownAnimation() {
-        return characterDownAnimation;
-    }
-
-
     public SpriteBatch getSpriteBatch() {
         return spriteBatch;
     }
 
+    public SpriteCache getSpriteCache() {
+        return spriteCache;
+    }
 }

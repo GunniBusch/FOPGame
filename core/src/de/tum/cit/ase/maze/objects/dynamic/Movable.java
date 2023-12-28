@@ -5,13 +5,6 @@ package de.tum.cit.ase.maze.objects.dynamic;
  */
 public interface Movable {
     /**
-     * Moves the Object
-     *
-     * @param deltaTime Time since last frame.
-     */
-    void update(float deltaTime);
-
-    /**
      * Starts moving in defined direction.
      * Should NOT move in two directions. e.g. left and up.
      *

@@ -1,14 +1,11 @@
 package de.tum.cit.ase.maze.objects.dynamic;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.Disposable;
 import de.tum.cit.ase.maze.objects.GameElement;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +16,7 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
  * Defines an abstract class, that describes a movable Character.
  * Can be a Player or a NPC.
  */
-public abstract class Character extends GameElement implements Movable, Disposable {
+public abstract class Character extends GameElement {
 
     protected int frameWidth;
     protected int frameHeight;

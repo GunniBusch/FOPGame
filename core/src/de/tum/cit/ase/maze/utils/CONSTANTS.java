@@ -12,4 +12,8 @@ public final class CONSTANTS {
      * e.g. getting position multiply. setting position divide.
      */
     public static final float PPM = 32;
+    /**
+     * Tells if the game is in development.
+     */
+    public static final boolean DEBUG = true;
 }
