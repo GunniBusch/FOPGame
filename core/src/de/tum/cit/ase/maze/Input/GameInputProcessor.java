@@ -3,15 +3,15 @@ package de.tum.cit.ase.maze.Input;
 import com.badlogic.gdx.*;
 import de.tum.cit.ase.maze.GameScreen;
 import de.tum.cit.ase.maze.MazeRunnerGame;
-import de.tum.cit.ase.maze.objects.dynamic.Character;
+import de.tum.cit.ase.maze.objects.dynamic.Movable;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
 import de.tum.cit.ase.maze.objects.dynamic.WalkDirection;
 
 public class GameInputProcessor extends InputAdapter {
     private final Game game;
-    private final Character character;
+    private final Movable character;
 
-    public GameInputProcessor(Game game, Character character) {
+    public GameInputProcessor(Game game, Movable character) {
         this.game = game;
         this.character = character;
     }

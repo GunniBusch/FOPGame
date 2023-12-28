@@ -1,33 +1,20 @@
 package de.tum.cit.ase.maze.objects.dynamic;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
-import javax.print.attribute.standard.PagesPerMinute;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 
 /**
  * Class for the player.
  */
-public class Player extends Character {
-
-    /**
-     * List of Moving animations
-     */
-    private Map<WalkDirection, Animation<TextureRegion>> walkTypesAnimationMap;
-    /**
-     * Time for a state
-     */
-    private float stateTime = 0f;
+public class Player extends Character implements Movable {
 
     public Player(World world) {
         this(world, 0, 0);
@@ -47,10 +34,8 @@ public class Player extends Character {
 
         int animationFrames = 4;
 
-
         this.texture = new Texture("character.png");
         this.createBody(x, y);
-        this.walkTypesAnimationMap = new HashMap<>();
         Array<TextureRegion> walkFrames = new Array<>(TextureRegion.class);
         // Add all frames to the animation
         for (int row = 0; row < 4; row++) {
@@ -61,41 +46,8 @@ public class Player extends Character {
             walkFrames.clear();
         }
 
-
     }
 
-    /**
-     * Gets Texture.
-     *
-     * @return TextureRegion at the moment
-     */
-    @Override
-    public TextureRegion getTexture() {
-        return this.walkTypesAnimationMap.get(this.state.getDirection().get(this.state.getDirection().size() - 1)).getKeyFrame(this.state == State.WALKING ? this.stateTime : 0f, true);
-    }
-
-    /**
-     * Updates the Player.
-     *
-     * @param deltaTime Time since last frame.
-     */
-    @Override
-    public void update(float deltaTime) {
-
-
-        if (this.state == State.WALKING) {
-            Gdx.app.log("Pos Ply", this.state.getDirection().toString());
-            this.stateTime += deltaTime;
-
-            switch (this.state.getDirection().get(this.state.getDirection().size() - 1)) {
-                case UP -> this.body.setLinearVelocity(0f, speed / PPM);
-                case DOWN -> this.body.setLinearVelocity(0f, -speed / PPM);
-                case LEFT -> this.body.setLinearVelocity(-speed / PPM, 0f);
-                case RIGHT -> this.body.setLinearVelocity(speed / PPM, 0f);
-            }
-
-        }
-    }
 
     /**
      * Starts moving in defined direction.
@@ -104,10 +56,14 @@ public class Player extends Character {
      * @param direction Direction to move.
      */
     @Override
-    public void startMoving(WalkDirection direction) {
+    public synchronized void startMoving(WalkDirection direction) {
         switch (this.state) {
-            case STILL -> this.state = State.WALKING(direction);
-            case WALKING -> this.state.addDirection(direction);
+            case STILL -> {
+                this.state = State.WALKING;
+                this.walkDirectionList = new ArrayList<>();
+                this.walkDirectionList.add(direction);
+            }
+            case WALKING -> this.walkDirectionList.add(direction);
         }
 
     }
@@ -120,15 +76,23 @@ public class Player extends Character {
      * @param direction Direction to stop moving.
      */
     @Override
-    public void stopMoving(WalkDirection direction) {
-        this.state.removeDirection(direction);
-        if (this.state.getDirection().isEmpty()) {
-            this.state = State.STILL(direction);
+    public synchronized void stopMoving(WalkDirection direction) {
+        this.walkDirectionList.remove(direction);
+        if (this.walkDirectionList.isEmpty()) {
+            this.state = State.STILL;
+            this.walkDirectionList = new ArrayList<>();
+            this.walkDirectionList.add(direction);
+
             this.body.setLinearVelocity(0, 0);
         }
     }
 
-    public void setSprint(boolean sprint) {
+    /**
+     * Requests elevated Speed
+     *
+     * @param sprint
+     */
+    public synchronized void setSprint(boolean sprint) {
         if (sprint) {
             speed *= 1.5f;
         } else {
@@ -136,42 +100,6 @@ public class Player extends Character {
         }
     }
 
-    private void createBody(float x, float y) {
-        Body pBody;
-        BodyDef def = new BodyDef();
-
-        def.type = BodyDef.BodyType.DynamicBody;
-
-        def.position.set(x / PPM, y / PPM);
-        def.fixedRotation = true;
-        pBody = world.createBody(def);
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(this.frameWidth / 2f / PPM, this.frameHeight / 2f / PPM);
-
-        FixtureDef fd = new FixtureDef();
-        fd.shape = shape;
-        fd.density = 1.0f;
-        pBody.createFixture(fd).setUserData(this);
-        shape.dispose();
-        this.body = pBody;
-        /*
-        Body pBody;
-        BodyDef pDef = new BodyDef();
-        pDef.type = BodyDef.BodyType.DynamicBody;
-        pDef.position.set(x / PPM, y / PPM);
-        pDef.fixedRotation = true;
-        pBody = world.createBody(pDef);
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(this.frameWidth / 2f / PPM, this.frameHeight / 2f / PPM);
-        pBody.createFixture(shape, 1.0f);
-        shape.dispose();
-        this.body = pBody;
-        this.body.setUserData(this);
-
-         */
-
-    }
 
     /**
      * Releases all resources of this object.
@@ -179,5 +107,20 @@ public class Player extends Character {
     @Override
     public void dispose() {
         this.texture.dispose();
+    }
+
+    /**
+     * Renders the appearance of the Player
+     *
+     * @param spriteBatch
+     */
+    @Override
+    public void render(SpriteBatch spriteBatch) {
+        spriteBatch.draw(
+                this.getTexture(),
+                this.getPosition().x * PPM - (this.getTexture().getRegionWidth() / 2f),
+                this.getPosition().y * PPM - (this.getTexture().getRegionHeight() / 2f)
+        );
+
     }
 }
