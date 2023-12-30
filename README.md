@@ -8,4 +8,4 @@
 
 TODO
 ## Documentation
-The javadoc of the game can be found at our [Github Pages](https://gunnibusch.github.io/) site.
+The javadoc of the game can be found at our [GitHub Pages](https://gunnibusch.github.io/) site.
