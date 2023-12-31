@@ -85,6 +85,7 @@ public class MazeRunnerGame extends Game {
             menuScreen = null;
         }
     }
+    //TODO: implement continue game method for MenuScreen
 
 
     /**

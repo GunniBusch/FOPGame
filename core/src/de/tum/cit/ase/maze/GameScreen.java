@@ -42,6 +42,9 @@ public class GameScreen implements Screen {
     private final ShapeRenderer shapeRenderer;
     private final int mapCacheID;
 
+    //added boolean pause, for pause functionality
+    private boolean paused;
+
     //ToDo Check what viewport does and if we need it.
 
     /**

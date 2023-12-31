@@ -42,14 +42,34 @@ public class MenuScreen implements Screen {
         table.add(new Label("Hello World from the Menu!", game.getSkin(), "title")).padBottom(80).row();
 
         // Create and add a button to go to the game screen
-        TextButton goToGameButton = new TextButton("Go To Game", game.getSkin());
-        table.add(goToGameButton).width(300).row();
+        TextButton goToGameButton = new TextButton("Start new journey", game.getSkin());
+        table.add(goToGameButton).width(400).row();
         goToGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 game.goToGame(); // Change to the game screen when button is pressed
             }
         });
+        // additional buttons and functionality for menu
+        //TODO: pausing game when pressing esc
+        TextButton continueGameButton = new TextButton("Continue journey", game.getSkin());
+        table.add(continueGameButton).width(400).row();
+        continueGameButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.resume(); // Change to the game screen when button is pressed
+            }
+        });
+        TextButton exitGameButton = new TextButton("Leave journey", game.getSkin());
+        table.add(exitGameButton).width(400).row();
+        continueGameButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.goToMenu(); // Change to the game screen when button is pressed
+            }
+        });
+
+
     }
 
     @Override
