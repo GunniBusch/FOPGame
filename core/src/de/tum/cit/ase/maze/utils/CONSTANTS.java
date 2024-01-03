@@ -13,7 +13,12 @@ public final class CONSTANTS {
      */
     public static final float PPM = 32;
     /**
-     * Tells if the game is in development.
+     * The maximal health a player has.
+     */
+    public static final int PLAYER_MAX_HEALTH = 4;
+    /**
+     * Tells if the game is in development mode.
      */
     public static final boolean DEBUG = true;
+
 }

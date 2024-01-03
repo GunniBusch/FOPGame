@@ -7,9 +7,10 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import de.tum.cit.ase.maze.objects.dynamic.Enemy;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
-import de.tum.cit.ase.maze.objects.dynamic.State;
-import de.tum.cit.ase.maze.objects.dynamic.WalkDirection;
 
+/**
+ * Class that receives collisions from {@link com.badlogic.gdx.physics.box2d.Box2D}
+ */
 public class ListenerClass implements ContactListener {
 
 
@@ -20,6 +21,7 @@ public class ListenerClass implements ContactListener {
      */
     @Override
     public void beginContact(Contact contact) {
+
         if (contact.getFixtureA().getUserData() != null && contact.getFixtureB().getUserData() != null) {
 
 
@@ -36,6 +38,31 @@ public class ListenerClass implements ContactListener {
 
             } else {
                 Gdx.app.log("Contact with class", contact.getFixtureA().getUserData().getClass().getName() + " : " + contact.getFixtureB().getUserData().getClass().getName());
+                if (contact.getFixtureB().getUserData() instanceof Enemy && contact.getFixtureA().getUserData() instanceof Player) {
+
+
+
+                }
+                // Player bumped into an Enemy
+                if (contact.getFixtureB().getUserData() instanceof Enemy && contact.getFixtureA().getUserData() instanceof Player) {
+
+
+                    ((Enemy) contact.getFixtureB().getUserData()).setPlayer((Player) contact.getFixtureA().getUserData());
+                    ((Enemy) contact.getFixtureB().getUserData()).isFollowing = false;
+
+                    ((Player) contact.getFixtureA().getUserData()).makeDamage(1);
+
+
+                } // Enemy bumped into a Player
+                else if (contact.getFixtureA().getUserData() instanceof Enemy && contact.getFixtureB().getUserData() instanceof Player) {
+
+
+                    ((Enemy) contact.getFixtureA().getUserData()).setPlayer((Player) contact.getFixtureB().getUserData());
+                    ((Enemy) contact.getFixtureA().getUserData()).isFollowing = false;
+
+                    ((Player) contact.getFixtureB().getUserData()).makeDamage(1);
+
+                }
 
             }
         }
@@ -69,7 +96,7 @@ public class ListenerClass implements ContactListener {
 
 
                     ((Enemy) contact.getFixtureB().getUserData()).setPlayer((Player) contact.getFixtureA().getUserData());
-                    ((Enemy) contact.getFixtureB().getUserData()).updateStateAndDirection(State.STILL, WalkDirection.UP);
+                    ((Enemy) contact.getFixtureB().getUserData()).isFollowing = true;
 
 
                 } // Enemy bumped into a Player
@@ -77,7 +104,7 @@ public class ListenerClass implements ContactListener {
 
 
                     ((Enemy) contact.getFixtureA().getUserData()).setPlayer((Player) contact.getFixtureB().getUserData());
-                    ((Enemy) contact.getFixtureA().getUserData()).updateStateAndDirection(State.STILL, WalkDirection.UP);
+                    ((Enemy) contact.getFixtureA().getUserData()).isFollowing = true;
 
                 }
             }

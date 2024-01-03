@@ -3,13 +3,17 @@ package de.tum.cit.ase.maze;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+import de.tum.cit.ase.maze.Input.DeathListener;
 import de.tum.cit.ase.maze.Input.GameInputProcessor;
 import de.tum.cit.ase.maze.Input.ListenerClass;
 import de.tum.cit.ase.maze.objects.GameElement;
@@ -32,6 +36,7 @@ public class GameScreen implements Screen {
     private final MazeRunnerGame game;
     private final OrthographicCamera camera;
     private final OrthographicCamera hudCamera;
+    private final Viewport viewport;
     private final float SCALE = 1f;
     private final BitmapFont font;
     private final Player player;
@@ -41,6 +46,12 @@ public class GameScreen implements Screen {
     private final Box2DDebugRenderer b2DDr;
     private final ShapeRenderer shapeRenderer;
     private final int mapCacheID;
+    private final DeathListener deathListener;
+    private final Hud hud;
+    private boolean victory = false;
+    private boolean end = false;
+    private final float zoom = 0.9f;
+    private Vector3 target;
 
     //ToDo Check what viewport does and if we need it.
 
@@ -51,10 +62,11 @@ public class GameScreen implements Screen {
      */
     public GameScreen(MazeRunnerGame game) {
         this.game = game;
+        this.deathListener = new DeathListener(this);
         this.entities = new ArrayList<>();
         this.world = new World(new Vector2(0, 0), true);
         world.setContactListener(new ListenerClass());
-        this.player = new Player(world, 0f, 20f * PPM * 2f);
+        this.player = new Player(world, deathListener, 0f, 20f * PPM * 2f);
         this.entities.add(player);
 
         //Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -62,19 +74,23 @@ public class GameScreen implements Screen {
         this.inputAdapter = new GameInputProcessor(game, player);
         MapLoader mapLoader = new MapLoader(world, game.getSpriteCache());
 
-        this.entities.add(new Enemy(world, mapLoader.getWallList(), player, 10f * PPM * 2f, 1f * PPM * 2f));
-        this.entities.add(new Enemy(world, mapLoader.getWallList(), player, 25f * PPM * 2f, 2f * PPM * 2f));
-        this.entities.add(new Enemy(world, mapLoader.getWallList(), player, 30f * PPM * 2f, 1f * PPM * 2f));
+        this.entities.add(new Enemy(world, deathListener, mapLoader.getWallList(), player, 10f * PPM * 2f, 1f * PPM * 2f));
+        this.entities.add(new Enemy(world, deathListener, mapLoader.getWallList(), player, 25f * PPM * 2f, 2f * PPM * 2f));
+        this.entities.add(new Enemy(world, deathListener, mapLoader.getWallList(), player, 30f * PPM * 2f, 1f * PPM * 2f));
 
         // Create and configure the camera for the game view
         this.shapeRenderer = new ShapeRenderer();
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        // ToDo: Make Global
-        camera.zoom = 6f;
+
+        camera.zoom = zoom;
+        this.viewport = new ScreenViewport(camera);
+        target = new Vector3(camera.position.cpy());
+        camera.position.set(target);
+
         hudCamera = new OrthographicCamera();
-        hudCamera.setToOrtho(false, Gdx.graphics.getWidth() / SCALE, Gdx.graphics.getHeight() / SCALE);
-        hudCamera.zoom = 2f;
+        this.hud = new Hud(hudCamera, this.game.getSpriteBatch(), player);
+
         this.game.getSpriteBatch().setProjectionMatrix(camera.combined);
         game.getSpriteCache().setProjectionMatrix(camera.combined);
         game.getSpriteCache().beginCache();
@@ -94,11 +110,10 @@ public class GameScreen implements Screen {
     public void render(float delta) {
         // Check for escape key press to go back to the menu
         this.update(delta);
-        Gdx.gl.glClearColor(0, 0, 0, 1f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        b2DDr.render(world, camera.combined.cpy().scl(PPM));
+        ScreenUtils.clear(0, 0, 0, 1, true);
+        //viewport.apply(false);
 
-        //ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
+        b2DDr.render(world, camera.combined.cpy().scl(PPM));
 
         // Set up and begin drawing with the sprite batch
         game.getSpriteBatch().begin();
@@ -132,6 +147,9 @@ public class GameScreen implements Screen {
 
 
         this.renderHud(delta);
+        if (end) {
+            this.game.goToMenu();
+        }
 
     }
 
@@ -143,13 +161,15 @@ public class GameScreen implements Screen {
     private void update(float dt) {
         this.world.step(1 / 60f, 6, 2);
         this.entities.parallelStream().forEach(entity -> entity.update(dt));
+        hud.update(dt);
         this.cameraUpdate(dt);
-
         game.getSpriteBatch().setProjectionMatrix(camera.combined);
 
         game.getSpriteCache().setProjectionMatrix(camera.combined);
 
+
         shapeRenderer.setProjectionMatrix(camera.combined);
+
 
     }
 
@@ -159,10 +179,7 @@ public class GameScreen implements Screen {
      * @param dt
      */
     private void renderHud(float dt) {
-        game.getSpriteBatch().setProjectionMatrix(hudCamera.combined);
-        game.getSpriteBatch().begin();
-        font.draw(game.getSpriteBatch(), "FPS: " + Gdx.graphics.getFramesPerSecond(), 20, hudCamera.viewportHeight * hudCamera.zoom - 10);
-        game.getSpriteBatch().end();
+        hud.render();
     }
 
     /**
@@ -175,22 +192,27 @@ public class GameScreen implements Screen {
 
         if (!camera.frustum.pointInFrustum(new Vector3(this.player.getPosition().cpy().scl(PPM), 0))) {
 
-            Vector3 position = camera.position;
-            //Have player centered on camera.
-            position.x = player.getPosition().x * PPM;
-            position.y = player.getPosition().y * PPM;
-            camera.position.set(position);
+            target = new Vector3(player.getPosition().cpy().scl(PPM), 0);
 
         }
+        camera.position.slerp(target, .14f);
 
-        camera.update();
-        hudCamera.update();
+
+        viewport.apply();
+
+    }
+
+    public void handleEndOfGame(boolean victory) {
+        this.end = true;
+        this.victory = victory;
     }
 
     @Override
     public void resize(int width, int height) {
-        camera.setToOrtho(false, width / SCALE, height / SCALE);
-        hudCamera.setToOrtho(false, width / SCALE, height / SCALE);
+        viewport.update(width, height);
+        //camera.setToOrtho(false, width / SCALE, height / SCALE);
+        //hudCamera.setToOrtho(false, width / SCALE, height / SCALE);
+        hud.resize(width, height);
     }
 
     @Override
@@ -216,6 +238,7 @@ public class GameScreen implements Screen {
         this.entities.forEach(GameElement::dispose);
         this.b2DDr.dispose();
         this.world.dispose();
+        this.hud.dispose();
 
 
     }

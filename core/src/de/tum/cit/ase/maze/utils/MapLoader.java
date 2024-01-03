@@ -18,12 +18,12 @@ import java.util.List;
 import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 
 public class MapLoader {
-    private SpriteCache spriteBatch;
-    private List<Vector2> WallList;
-    private TextureRegion textureRegion;
-    private World world;
+    private final SpriteCache spriteBatch;
+    private final List<Vector2> WallList;
+    private final TextureRegion textureRegion;
+    private final World world;
     private final float SCALE = 0.5f;
-    private List<Body> bodies;
+    private final List<Body> bodies;
 
     public MapLoader(World world, SpriteCache spriteBatch) {
         this.spriteBatch = spriteBatch;

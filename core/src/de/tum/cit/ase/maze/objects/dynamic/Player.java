@@ -6,18 +6,20 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import de.tum.cit.ase.maze.Input.DeathListener;
 
 import java.util.ArrayList;
 
-import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
+import static de.tum.cit.ase.maze.utils.CONSTANTS.*;
 
 /**
- * Class for the player.
+ * Class represents the Player. The player is the main character that can be controlled by a person.
  */
 public class Player extends Character implements Movable {
 
-    public Player(World world) {
-        this(world, 0, 0);
+
+    public Player(World world, DeathListener deathListener) {
+        this(world, deathListener, 0, 0);
     }
 
     /**
@@ -26,8 +28,9 @@ public class Player extends Character implements Movable {
      * @param x X-Coordinate
      * @param y Y-Coordinate
      */
-    public Player(World world, float x, float y) {
-        super(world);
+    public Player(World world, DeathListener deathListener, float x, float y) {
+        super(world, deathListener);
+        this.health = PLAYER_MAX_HEALTH;
         this.speed = 150f;
         frameWidth = 16;
         frameHeight = 32;
@@ -94,9 +97,9 @@ public class Player extends Character implements Movable {
      */
     public synchronized void setSprint(boolean sprint) {
         if (sprint) {
-            speed *= 1.5f;
+            speed *= 1.8f;
         } else {
-            speed /= 1.5f;
+            speed /= 1.8f;
         }
     }
 
@@ -123,4 +126,5 @@ public class Player extends Character implements Movable {
         );
 
     }
+
 }
