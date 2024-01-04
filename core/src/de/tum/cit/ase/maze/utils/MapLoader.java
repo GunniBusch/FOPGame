@@ -166,7 +166,7 @@ public class MapLoader {
 
     /**
      *
-     * gets all the coordinates of the elements in the mapfile
+     * gets all the coordinates of the elements in the mapfile as keyValue Pairs
      */
     public Properties loadMapFile(String filename) {
         FileHandle fileHandle = Gdx.files.internal(filename);
