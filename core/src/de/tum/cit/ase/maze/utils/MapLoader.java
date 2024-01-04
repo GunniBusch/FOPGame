@@ -11,9 +11,11 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Properties;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 
@@ -160,6 +162,28 @@ public class MapLoader {
         shape.dispose();
 
         this.bodies.add(pBody);
+    }
+
+    /**
+     *
+     * gets all the coordinates of the elements in the mapfile
+     */
+    public Properties loadMapFile(String filename) {
+        FileHandle fileHandle = Gdx.files.internal(filename);
+        Properties properties = new Properties();
+
+        try {
+            if (fileHandle.exists()) {
+                properties.load(fileHandle.read()); // Load the properties from the file
+            } else {
+                Gdx.app.error("PropertiesLoader", "File not found: " + filename);
+            }
+        } catch (IOException e) {
+            Gdx.app.error("PropertiesLoader", "Error reading file: " + filename);
+            e.printStackTrace();
+        }
+
+        return properties;
     }
 
     public List<Vector2> getWallList() {
