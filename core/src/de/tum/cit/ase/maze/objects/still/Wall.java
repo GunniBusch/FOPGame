@@ -4,6 +4,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteCache;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.ChainShape;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Disposable;
 
 import java.util.List;
 
@@ -23,6 +27,7 @@ public class Wall {
     private final float SCALE = 0.5f;
     private final int textureHeight = 32;
     private final int textureWidth = 32;
+
 
 
 
@@ -60,9 +65,39 @@ public class Wall {
 
     }
 
+    private void createBody() {
 
 
+        var halfSize = 1f;
+        //If  scaling uncomment and remove next line
+
+        float x, y;
+        ChainShape shape;
+        Vector2[] corners;
+        for (Vector2 outsideWall : outsideWalls) {
 
 
+            shape = new ChainShape();
+            x = outsideWall.x / SCALE;
+            y = outsideWall.y / SCALE;
 
+
+            //If scaling uncomment and remove next line
+            corners = new Vector2[] {
+                    new Vector2(x - halfSize, y - halfSize), // bottom-left
+                    new Vector2(x + halfSize, y - halfSize), // bottom-right
+                    new Vector2(x + halfSize, y + halfSize), // top-right
+                    new Vector2(x - halfSize, y + halfSize)  // top-left
+            };
+            shape.createLoop(corners);
+            body.createFixture(shape, 0f);
+            shape.dispose();
+        }
+    }
+
+
+    @Override
+    public void dispose() {
+
+    }
 }

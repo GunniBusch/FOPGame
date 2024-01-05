@@ -1,4 +1,4 @@
-package de.tum.cit.ase.maze;
+package de.tum.cit.ase.maze.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import de.tum.cit.ase.maze.Input.DeathListener;
 import de.tum.cit.ase.maze.Input.GameInputProcessor;
 import de.tum.cit.ase.maze.Input.ListenerClass;
+import de.tum.cit.ase.maze.MazeRunnerGame;
 import de.tum.cit.ase.maze.objects.GameElement;
 import de.tum.cit.ase.maze.objects.ObjectType;
 import de.tum.cit.ase.maze.objects.dynamic.Enemy;
@@ -52,7 +53,7 @@ public class GameScreen implements Screen {
     private final Hud hud;
     private boolean victory = false;
     private boolean end = false;
-    private final float zoom = 0.9f;
+    private final float zoom = 3.5f;
     private Vector3 target;
 
     //added boolean pause, for pause functionality
@@ -77,8 +78,8 @@ public class GameScreen implements Screen {
         //Gdx.gl.glEnable(GL20.GL_BLEND);
         this.b2DDr = new Box2DDebugRenderer(true, true, false, true, true, true);
         this.inputAdapter = new GameInputProcessor(game, player);
-        MapLoader.loadMapFile(Gdx.files.internal("level-2.properties"));
-        Wall wall = new Wall(MapLoader.getMapCoordinates(ObjectType.Wall), game.getSpriteCache());
+        MapLoader.loadMapFile(Gdx.files.internal("level-3.properties"));
+        Wall wall = new Wall(MapLoader.getMapCoordinates(ObjectType.Wall), game.getSpriteCache(), world);
 
 
         this.entities.add(new Enemy(world, deathListener, MapLoader.getMapCoordinates(ObjectType.Wall), player, 10f * PPM * 2f, 1f * PPM * 2f));
@@ -213,7 +214,9 @@ public class GameScreen implements Screen {
         this.end = true;
         this.victory = victory;
     }
+    private void spawnEntities() {
 
+    }
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
