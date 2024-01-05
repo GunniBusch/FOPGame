@@ -38,11 +38,7 @@ public class ListenerClass implements ContactListener {
 
             } else {
                 Gdx.app.log("Contact with class", contact.getFixtureA().getUserData().getClass().getName() + " : " + contact.getFixtureB().getUserData().getClass().getName());
-                if (contact.getFixtureB().getUserData() instanceof Enemy && contact.getFixtureA().getUserData() instanceof Player) {
 
-
-
-                }
                 // Player bumped into an Enemy
                 if (contact.getFixtureB().getUserData() instanceof Enemy && contact.getFixtureA().getUserData() instanceof Player) {
 
