@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import de.tum.cit.ase.maze.Input.DeathListener;
 import de.tum.cit.ase.maze.objects.GameElement;
 
 import java.util.HashMap;
@@ -20,7 +21,10 @@ public abstract class Character extends GameElement {
 
     protected int frameWidth;
     protected int frameHeight;
-
+    /**
+     * Health of a Character
+     */
+    protected int health = 4;
     /**
      * State of the object.
      */
@@ -44,11 +48,16 @@ public abstract class Character extends GameElement {
      * Time for a state
      */
     protected float stateTime = 0f;
+    /**
+     * Handles death of a Charter
+     */
+    protected DeathListener deathListener;
 
 
-    public Character(World world) {
+    public Character(World world, DeathListener deathListener) {
         this.world = world;
         this.walkTypesAnimationMap = new HashMap<>();
+        this.deathListener = deathListener;
     }
 
     /**
@@ -71,7 +80,7 @@ public abstract class Character extends GameElement {
     }
 
     /**
-     * Creates the body
+     * Creates the {@link Body}
      *
      * @param x Position x
      * @param y Position y
@@ -117,9 +126,34 @@ public abstract class Character extends GameElement {
                 case RIGHT -> this.body.setLinearVelocity(speed / PPM, 0f);
             }
         }
+        if (isDead()) {
+            deathListener.onDeath(this);
+        }
+    }
+
+    /**
+     * Tells if {@link Character} has 0 lives;
+     */
+    public boolean isDead() {
+        return health <= 0;
     }
 
     public Body getBody() {
         return body;
     }
+
+    public int getHealth() {
+        return health;
+    }
+
+
+    /**
+     * Applies damage.
+     *
+     * @param damage damage to apply
+     */
+    public void makeDamage(int damage) {
+        this.health -= damage;
+    }
+
 }
