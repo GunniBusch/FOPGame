@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Disposable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
@@ -24,6 +25,7 @@ public class Wall implements Disposable {
     private Texture img;
     private List<Vector2> outsideWalls;
     private List<Vector2> insideWalls;
+    private List<Vector2> fullWalls;
     private final Body body;
     private final float SCALE = 0.5f;
     private final int textureHeight = 32;
@@ -38,6 +40,7 @@ public class Wall implements Disposable {
         body = world.createBody(def);
         body.setAwake(false);
         this.spriteCache = spriteCache;
+        fullWalls = new ArrayList<>(map);
         insideWalls = map.stream()
                 .filter(vector2 -> map.stream()
                         .filter(vector21 -> ((vector21.y + 1f == vector2.y || vector21.y - 1f == vector2.y || vector21.y == vector2.y) && (vector21.x + 1f == vector2.x || vector21.x - 1f == vector2.x || vector21.x == vector2.x)))
@@ -106,5 +109,17 @@ public class Wall implements Disposable {
     @Override
     public void dispose() {
 
+    }
+
+    public List<Vector2> getOutsideWalls() {
+        return outsideWalls;
+    }
+
+    public List<Vector2> getInsideWalls() {
+        return insideWalls;
+    }
+
+    public List<Vector2> getFullWalls() {
+        return fullWalls;
     }
 }

@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -53,8 +54,9 @@ public class GameScreen implements Screen {
     private final Hud hud;
     private boolean victory = false;
     private boolean end = false;
-    private final float zoom = 3.5f;
+    private final float zoom = 0.95f;
     private Vector3 target;
+    private final Wall wall;
 
     //added boolean pause, for pause functionality
     private boolean paused;
@@ -72,25 +74,24 @@ public class GameScreen implements Screen {
         this.entities = new ArrayList<>();
         this.world = new World(new Vector2(0, 0), true);
         world.setContactListener(new ListenerClass());
-        this.player = new Player(world, deathListener, 0f, 20f * PPM * 2f);
-        this.entities.add(player);
 
         //Gdx.gl.glEnable(GL20.GL_BLEND);
         this.b2DDr = new Box2DDebugRenderer(true, true, false, true, true, true);
-        this.inputAdapter = new GameInputProcessor(game, player);
         MapLoader.loadMapFile(Gdx.files.internal("level-3.properties"));
-        Wall wall = new Wall(MapLoader.getMapCoordinates(ObjectType.Wall), game.getSpriteCache(), world);
+        wall = new Wall(MapLoader.getMapCoordinates(ObjectType.Wall), game.getSpriteCache(), world);
 
+        var playerCord = MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0);
+        this.player = new Player(world, deathListener, playerCord.x * PPM * 2f, playerCord.y * PPM * 2f);
+        this.entities.add(player);
+        this.inputAdapter = new GameInputProcessor(game, player);
 
-        this.entities.add(new Enemy(world, deathListener, MapLoader.getMapCoordinates(ObjectType.Wall), player, 10f * PPM * 2f, 1f * PPM * 2f));
-        this.entities.add(new Enemy(world, deathListener, MapLoader.getMapCoordinates(ObjectType.Wall), player, 25f * PPM * 2f, 2f * PPM * 2f));
-        this.entities.add(new Enemy(world, deathListener, MapLoader.getMapCoordinates(ObjectType.Wall), player, 30f * PPM * 2f, 1f * PPM * 2f));
-
+        this.spawnEntities();
         // Create and configure the camera for the game view
         this.shapeRenderer = new ShapeRenderer();
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
+        camera.position.set(playerCord.cpy().scl(PPM).scl(2f),0);
         camera.zoom = zoom;
         this.viewport = new ScreenViewport(camera);
         target = new Vector3(camera.position.cpy());
@@ -121,7 +122,7 @@ public class GameScreen implements Screen {
         ScreenUtils.clear(0, 0, 0, 1, true);
         //viewport.apply(false);
 
-        b2DDr.render(world, camera.combined.cpy().scl(PPM));
+        //b2DDr.render(world, camera.combined.cpy().scl(PPM));
 
         // Set up and begin drawing with the sprite batch
         game.getSpriteBatch().begin();
@@ -203,7 +204,8 @@ public class GameScreen implements Screen {
             target = new Vector3(player.getPosition().cpy().scl(PPM), 0);
 
         }
-        camera.position.slerp(target, .14f);
+        //camera.position.slerp(target, .1f);
+        camera.position.interpolate(target,.2f, Interpolation.smoother);
 
 
         viewport.apply();
@@ -217,7 +219,16 @@ public class GameScreen implements Screen {
 
     private void spawnEntities() {
 
+
+        for (Vector2 enemyCord : MapLoader.getMapCoordinates(ObjectType.Enemy)) {
+            var scaledEnemyCord = enemyCord.cpy().scl(PPM).scl(2f);
+            this.entities.add(new Enemy(world, deathListener, wall.getFullWalls(), player, scaledEnemyCord.x, scaledEnemyCord.y));
+        }
+
+
+
     }
+
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
