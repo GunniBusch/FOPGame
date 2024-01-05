@@ -10,9 +10,11 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import de.tum.cit.ase.maze.Input.DeathListener;
 import de.tum.cit.ase.maze.map.AStar;
 import de.tum.cit.ase.maze.map.path.Grid;
 import de.tum.cit.ase.maze.map.path.Node;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,6 +22,11 @@ import java.util.List;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 
+/**
+ * An enemy is a {@link Character} that can't be controlled by a GOD e.g. a person.
+ * Instead, it will act as a dynamic "obstacle", that, if in contact, will hurt a {@link Player}.
+ * The damage is handled by a {@link com.badlogic.gdx.physics.box2d.ContactListener}, more specific by the {@link de.tum.cit.ase.maze.Input.ListenerClass}.
+ */
 public class Enemy extends Character {
     private final float FRAME_DURATION = 0.1f;
     private final float nodeProximityThreshold;
@@ -32,18 +39,18 @@ public class Enemy extends Character {
     private int currentPathIndex;
 
 
-    public Enemy(World world) {
-        this(world, new ArrayList<>(), 0f, 0f);
+    public Enemy(World world, DeathListener deathListener) {
+        this(world, deathListener, new ArrayList<>(), 0f, 0f);
     }
 
-    public Enemy(World world, List<Vector2> wallList, Player player, float x, float y) {
-        this(world, wallList, x, y);
+    public Enemy(World world, DeathListener deathListener, List<Vector2> wallList, Player player, float x, float y) {
+        this(world, deathListener, wallList, x, y);
         this.player = player;
     }
 
     // TODO: Other designs
-    public Enemy(World world, List<Vector2> wallList, float x, float y) {
-        super(world);
+    public Enemy(World world, DeathListener deathListener, List<Vector2> wallList, float x, float y) {
+        super(world, deathListener);
         this.speed = 150f;
         frameWidth = 16;
         frameHeight = 16;
@@ -135,6 +142,7 @@ public class Enemy extends Character {
     public void update(float deltaTime) {
         if (this.state == State.WALKING) {
             this.stateTime += deltaTime;
+            if (!isFollowing) this.state = State.STILL;
         }
 
         if (isFollowing) {
@@ -229,7 +237,7 @@ public class Enemy extends Character {
      * @param path {@link List<Node>} it should follow.
      */
 
-    public void setPath(List<Node> path) {
+    public void setPath(@NonNull List<Node> path) {
         this.path = path.parallelStream().map(Node::getPosition).toList();
         this.currentPathIndex = path.size() - 2;
     }
