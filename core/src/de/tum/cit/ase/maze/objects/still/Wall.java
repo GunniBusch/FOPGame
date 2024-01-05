@@ -27,7 +27,8 @@ public class Wall {
 
 
 
-    public Wall(List<Vector2> map) {
+    public Wall(List<Vector2> map, SpriteCache spriteCache) {
+        this.spriteCache = spriteCache;
         insideWalls = map.stream()
                 .filter(vector2 -> map.stream()
                         .filter(vector21 -> ((vector21.y + 1f == vector2.y || vector21.y - 1f == vector2.y || vector21.y == vector2.y) && (vector21.x + 1f == vector2.x || vector21.x - 1f == vector2.x || vector21.x == vector2.x)))
@@ -50,13 +51,13 @@ public class Wall {
             // TODO: find nice texture for outerWalls, decide with leon
             img = new Texture("lava.png");
             spriteCache.draw(img, position.x, position.y);
-        }
+        }*/
         for (int i = 0; i < insideWalls.size(); i++) {
             // Draw wall
             spriteBatch.add(textureRegion, insideWalls.get(i).x - (textureHeight / SCALE / 2), insideWalls.get(i).y - (textureHeight / SCALE / 2), textureHeight / SCALE, textureHeight / SCALE);
 
         }
-        */
+
     }
 
 

@@ -1,10 +1,11 @@
 package de.tum.cit.ase.maze.utils;
 
-import com.badlogic.gdx.Gdx;
+
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
 import de.tum.cit.ase.maze.objects.ObjectType;
 import de.tum.cit.ase.maze.utils.exceptions.MapLoadingException;
+import de.tum.cit.ase.maze.utils.exceptions.ObjectTypeException;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -20,10 +21,14 @@ public final class MapLoader {
 
         try {
 
-        } catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException | ObjectTypeException e) {
             throw new MapLoadingException("Can't load map");
         }
 
+    }
+
+    public static List<Vector2> getMapCoordinates(ObjectType type) {
+        return new ArrayList<>(map.get(type));
     }
 }
 

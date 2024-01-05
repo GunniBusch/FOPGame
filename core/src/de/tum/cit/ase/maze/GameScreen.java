@@ -17,8 +17,10 @@ import de.tum.cit.ase.maze.Input.DeathListener;
 import de.tum.cit.ase.maze.Input.GameInputProcessor;
 import de.tum.cit.ase.maze.Input.ListenerClass;
 import de.tum.cit.ase.maze.objects.GameElement;
+import de.tum.cit.ase.maze.objects.ObjectType;
 import de.tum.cit.ase.maze.objects.dynamic.Enemy;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
+import de.tum.cit.ase.maze.objects.still.Wall;
 import de.tum.cit.ase.maze.utils.MapLoader;
 
 import java.util.ArrayList;
@@ -75,11 +77,13 @@ public class GameScreen implements Screen {
         //Gdx.gl.glEnable(GL20.GL_BLEND);
         this.b2DDr = new Box2DDebugRenderer(true, true, false, true, true, true);
         this.inputAdapter = new GameInputProcessor(game, player);
-        MapLoader mapLoader = new MapLoader(world, game.getSpriteCache());
+        MapLoader.loadMapFile(Gdx.files.internal("level-2.properties"));
+        Wall wall = new Wall(MapLoader.getMapCoordinates(ObjectType.Wall), game.getSpriteCache());
 
-        this.entities.add(new Enemy(world, deathListener, mapLoader.getWallList(), player, 10f * PPM * 2f, 1f * PPM * 2f));
-        this.entities.add(new Enemy(world, deathListener, mapLoader.getWallList(), player, 25f * PPM * 2f, 2f * PPM * 2f));
-        this.entities.add(new Enemy(world, deathListener, mapLoader.getWallList(), player, 30f * PPM * 2f, 1f * PPM * 2f));
+
+        this.entities.add(new Enemy(world, deathListener, MapLoader.getMapCoordinates(ObjectType.Wall), player, 10f * PPM * 2f, 1f * PPM * 2f));
+        this.entities.add(new Enemy(world, deathListener, MapLoader.getMapCoordinates(ObjectType.Wall), player, 25f * PPM * 2f, 2f * PPM * 2f));
+        this.entities.add(new Enemy(world, deathListener, MapLoader.getMapCoordinates(ObjectType.Wall), player, 30f * PPM * 2f, 1f * PPM * 2f));
 
         // Create and configure the camera for the game view
         this.shapeRenderer = new ShapeRenderer();
@@ -97,7 +101,7 @@ public class GameScreen implements Screen {
         this.game.getSpriteBatch().setProjectionMatrix(camera.combined);
         game.getSpriteCache().setProjectionMatrix(camera.combined);
         game.getSpriteCache().beginCache();
-        mapLoader.render(0f);
+        wall.render();
         mapCacheID = game.getSpriteCache().endCache();
 
 
