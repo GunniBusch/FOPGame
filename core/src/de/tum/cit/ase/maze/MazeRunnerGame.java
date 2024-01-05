@@ -76,8 +76,7 @@ public class MazeRunnerGame extends Game {
     /**
      * Switches to the game screen.
      */
-    public void goToGame() {
-        spriteCache.clear();
+    public void goToGame(boolean fromPause) {
         this.backgroundMusic.stop();
         this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("lost_in_a_labyrinth.mp3"));
         backgroundMusic.setLooping(true);

@@ -33,7 +33,7 @@ public class MenuScreen implements Screen {
      */
     public MenuScreen(MazeRunnerGame game) {
         var camera = new OrthographicCamera();
-        camera.zoom = 1.5f; // Set camera zoom for a closer view
+        camera.zoom = 1.25f; // Set camera zoom for a closer view
 
         Viewport viewport = new ScreenViewport(camera); // Create a viewport with the camera
         stage = new Stage(viewport, game.getSpriteBatch()); // Create a stage for UI elements
@@ -51,7 +51,7 @@ public class MenuScreen implements Screen {
         goToGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.goToGame(); // Change to the game screen when button is pressed
+                game.goToGame(false); // Change to the game screen when button is pressed
             }
         });
         // additional buttons and functionality for menu
@@ -74,6 +74,7 @@ public class MenuScreen implements Screen {
         });
 
 
+        stage.setDebugAll(CONSTANTS.DEBUG);
     }
 
     @Override

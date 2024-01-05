@@ -2,6 +2,7 @@ package de.tum.cit.ase.maze.objects.still;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteCache;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -18,21 +19,24 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
  * It reads an input file in the maps directory.
  */
 
-public class Wall {
+public class Wall implements Disposable {
     private SpriteCache spriteCache;
     private Texture img;
     private List<Vector2> outsideWalls;
     private List<Vector2> insideWalls;
-    private Body body;
+    private final Body body;
     private final float SCALE = 0.5f;
     private final int textureHeight = 32;
     private final int textureWidth = 32;
 
 
 
-
-
-    public Wall(List<Vector2> map, SpriteCache spriteCache) {
+    public Wall(List<Vector2> map, SpriteCache spriteCache, World world) {
+        BodyDef def = new BodyDef();
+        def.type = BodyDef.BodyType.StaticBody;
+        def.fixedRotation = true;
+        body = world.createBody(def);
+        body.setAwake(false);
         this.spriteCache = spriteCache;
         insideWalls = map.stream()
                 .filter(vector2 -> map.stream()
@@ -41,10 +45,13 @@ public class Wall {
                 .toList();
         outsideWalls = map;
         outsideWalls.removeAll(insideWalls);
+        createBody();
 
     }
 
     public void render() {
+        Texture texture = new Texture("basictiles.png");
+        TextureRegion textureRegion = new TextureRegion(texture, 16, 0, 16, 16);
         //TODO: logic checking wether inner or outer wall
 
         /*if(innerWall) {
@@ -57,9 +64,9 @@ public class Wall {
             img = new Texture("lava.png");
             spriteCache.draw(img, position.x, position.y);
         }*/
-        for (int i = 0; i < insideWalls.size(); i++) {
+        for (int i = 0; i < outsideWalls.size(); i++) {
             // Draw wall
-            spriteBatch.add(textureRegion, insideWalls.get(i).x - (textureHeight / SCALE / 2), insideWalls.get(i).y - (textureHeight / SCALE / 2), textureHeight / SCALE, textureHeight / SCALE);
+            spriteCache.add(textureRegion, outsideWalls.get(i).x * PPM / SCALE - (textureHeight / SCALE / 2), outsideWalls.get(i).y * PPM / SCALE - (textureHeight / SCALE / 2), textureHeight / SCALE, textureHeight / SCALE);
 
         }
 
