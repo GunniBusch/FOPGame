@@ -84,7 +84,7 @@ public class MazeRunnerGame extends Game {
             menuScreen.dispose(); // Dispose the menu screen if it exists
             menuScreen = null;
         }
-    }
+    }   
     //TODO: implement continue game method for MenuScreen
 
 

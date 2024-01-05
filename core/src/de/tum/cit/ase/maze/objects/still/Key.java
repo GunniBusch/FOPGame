@@ -9,6 +9,9 @@ import java.util.Vector;
 
 public class Key extends GameElement {
     private Vector2 position;
+    private boolean isCollected;
+
+    
     @Override
     public void render(SpriteBatch spriteBatch) {
 
