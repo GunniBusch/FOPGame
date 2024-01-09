@@ -58,7 +58,7 @@ public class GameScreen implements Screen {
     private final Hud hud;
     private boolean victory = false;
     private boolean end = false;
-    private final float zoom = 3f;
+    private final float zoom = .9f;
     private Vector3 target;
     private final Wall wall;
 
@@ -79,12 +79,14 @@ public class GameScreen implements Screen {
         this.deathListener = new DeathListener(this);
         this.entities = new ArrayList<>();
         this.world = new World(new Vector2(0, 0), true);
+        RayHandler.setGammaCorrection(true);
+
         this.rayHandler = new RayHandler(world);
         float val = 0.1f;
         rayHandler.setAmbientLight(new Color(val, val, val, 0.4f));
 
         RayHandler.useDiffuseLight(true);
-
+        rayHandler.setBlurNum(10);
         world.setContactListener(new ListenerClass());
 
 

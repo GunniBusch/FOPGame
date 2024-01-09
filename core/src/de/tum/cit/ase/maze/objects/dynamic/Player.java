@@ -22,14 +22,14 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.*;
  * Class represents the Player. The player is the main character that can be controlled by a person.
  */
 public class Player extends Character implements Movable {
-    private final int RAYS_NUM = 400;
+    private final int RAYS_NUM = 500;
     private final float lightDistance = 15f;
     /**
      * Marks if game is finished
      */
     private boolean isFinished = false;
-    private RayHandler rayHandler;
-    private PositionalLight light;
+    private final RayHandler rayHandler;
+    private final PositionalLight light;
 
 
     public Player(World world, DeathListener deathListener, RayHandler rayHandler) {
@@ -50,7 +50,7 @@ public class Player extends Character implements Movable {
         super(world, deathListener);
         this.rayHandler = rayHandler;
         this.light = new PointLight(rayHandler, RAYS_NUM, new Color(1, 1, 1, 0.89f), 15 * 2, x, y);
-        light.setSoftnessLength(2.5f);
+        light.setSoftnessLength(1.5f);
         var filter = new Filter();
         light.setSoft(true);
         filter.groupIndex = -SENSOR_BIT;

@@ -26,7 +26,7 @@ public final class MapLoader {
             List<String> lineList = new ArrayList<>(List.of(fileText.split("\\R")));
             map = lineList.stream()
                     .map(s -> new ArrayList<>(List.of(s.split("[,=]"))))
-                    .collect(Collectors.groupingBy(strings -> ObjectType.valueOfLabel(Integer.valueOf(strings.get(2))),
+                    .collect(Collectors.groupingBy(strings -> ObjectType.valueOfLabel(Integer.parseInt(strings.get(2))),
                                     Collectors.mapping(
                                             strings -> new Vector2(Float.parseFloat(strings.get(0)), Float.parseFloat(strings.get(1))), Collectors.toList()
                                     )

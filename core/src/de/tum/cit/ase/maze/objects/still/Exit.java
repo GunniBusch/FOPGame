@@ -24,12 +24,12 @@ public class Exit extends GameElement {
 
 
     private Vector2 openPosition = new Vector2();
-    private Vector2 closedPosition;
+    private final Vector2 closedPosition;
     public boolean open = false;
     private final GameScreen game;
     private Vector2 position;
-    private TextureRegion textureRegion;
-    private Music doorOpenSound;
+    private final TextureRegion textureRegion;
+    private final Music doorOpenSound;
 
     public Exit(World world, Vector2 position, GameScreen game) {
         super();
