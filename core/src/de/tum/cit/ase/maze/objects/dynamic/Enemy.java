@@ -14,10 +14,10 @@ import de.tum.cit.ase.maze.Input.DeathListener;
 import de.tum.cit.ase.maze.map.AStar;
 import de.tum.cit.ase.maze.map.path.Grid;
 import de.tum.cit.ase.maze.map.path.Node;
+import de.tum.cit.ase.maze.utils.MapLoader;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
@@ -40,16 +40,21 @@ public class Enemy extends Character {
 
 
     public Enemy(World world, DeathListener deathListener) {
-        this(world, deathListener, new ArrayList<>(), 0f, 0f);
+        this(world, deathListener, 0f, 0f);
     }
 
-    public Enemy(World world, DeathListener deathListener, List<Vector2> wallList, Player player, float x, float y) {
-        this(world, deathListener, wallList, x, y);
+    public Enemy(World world, DeathListener deathListener, Player player, Vector2 position) {
+        this(world, deathListener, player, position.x, position.y);
+    }
+
+
+    public Enemy(World world, DeathListener deathListener, Player player, float x, float y) {
+        this(world, deathListener, x, y);
         this.player = player;
     }
 
     // TODO: Other designs
-    public Enemy(World world, DeathListener deathListener, List<Vector2> wallList, float x, float y) {
+    public Enemy(World world, DeathListener deathListener, float x, float y) {
         super(world, deathListener);
         this.speed = 150f;
         frameWidth = 16;
@@ -98,18 +103,7 @@ public class Enemy extends Character {
         this.walkTypesAnimationMap.put(WalkDirection.UP, new Animation<>(FRAME_DURATION, walkFrames));
         walkFrames.clear();
 
-        int width = (int) wallList.stream().filter(vector2 -> vector2.y == 0f).max(Comparator.comparing(vector2 -> vector2.x)).orElseThrow().x;
-        int height = (int) wallList.stream().filter(vector2 -> vector2.x == 0f).max(Comparator.comparing(vector2 -> vector2.y)).orElseThrow().y;
-
-
-        grid = new Grid(width + 1, height + 1);
-
-        for (Vector2 vector2 : wallList) {
-            grid.setObstacle((int) vector2.x, (int) vector2.y, true);
-
-
-        }
-
+        grid = MapLoader.getGameGrid();
 
         path = new ArrayList<>();
 
@@ -126,8 +120,9 @@ public class Enemy extends Character {
 
         spriteBatch.draw(
                 this.getTexture(),
-                this.getPosition().x * PPM - (this.frameWidth / 2f),
-                this.getPosition().y * PPM - (this.frameHeight / 2f)
+                this.getPosition().x * PPM - (this.frameWidth * ZOOM / 2f),
+                this.getPosition().y * PPM - (this.frameHeight * ZOOM / 2f),
+                this.frameWidth * ZOOM, this.frameWidth * ZOOM
         );
 
     }

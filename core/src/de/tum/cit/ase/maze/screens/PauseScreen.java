@@ -2,7 +2,6 @@ package de.tum.cit.ase.maze.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -76,6 +75,7 @@ public class PauseScreen implements Screen {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0,0,0,1); // Clear the screen
+        stage.getViewport().apply(true);
         stage.act(delta); // Update the stage
         stage.draw(); // Draw the stage
     }

@@ -22,14 +22,15 @@ import de.tum.cit.ase.maze.objects.GameElement;
 import de.tum.cit.ase.maze.objects.ObjectType;
 import de.tum.cit.ase.maze.objects.dynamic.Enemy;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
+import de.tum.cit.ase.maze.objects.still.Entry;
+import de.tum.cit.ase.maze.objects.still.Exit;
 import de.tum.cit.ase.maze.objects.still.Wall;
 import de.tum.cit.ase.maze.utils.MapLoader;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.tum.cit.ase.maze.utils.CONSTANTS.DEBUG;
-import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
+import static de.tum.cit.ase.maze.utils.CONSTANTS.*;
 
 /**
  * The GameScreen class is responsible for rendering the gameplay screen.
@@ -41,7 +42,6 @@ public class GameScreen implements Screen {
     private final OrthographicCamera camera;
     private final OrthographicCamera hudCamera;
     private final Viewport viewport;
-    private final float SCALE = 1f;
     private final BitmapFont font;
     private final Player player;
     private final InputAdapter inputAdapter;
@@ -54,7 +54,7 @@ public class GameScreen implements Screen {
     private final Hud hud;
     private boolean victory = false;
     private boolean end = false;
-    private final float zoom = 0.95f;
+    private final float zoom = 0.9f;
     private Vector3 target;
     private final Wall wall;
 
@@ -81,7 +81,7 @@ public class GameScreen implements Screen {
         wall = new Wall(MapLoader.getMapCoordinates(ObjectType.Wall), game.getSpriteCache(), world);
 
         var playerCord = MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0);
-        this.player = new Player(world, deathListener, playerCord.x * PPM * 2f, playerCord.y * PPM * 2f);
+        this.player = new Player(world, deathListener, playerCord.scl(PPM ).scl(2f));
         this.entities.add(player);
         this.inputAdapter = new GameInputProcessor(game, player);
 
@@ -91,7 +91,7 @@ public class GameScreen implements Screen {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        camera.position.set(playerCord.cpy().scl(PPM).scl(2f),0);
+        camera.position.set(playerCord.cpy().scl(PPM).scl(2f), 0);
         camera.zoom = zoom;
         this.viewport = new ScreenViewport(camera);
         target = new Vector3(camera.position.cpy());
@@ -122,7 +122,7 @@ public class GameScreen implements Screen {
         ScreenUtils.clear(0, 0, 0, 1, true);
         //viewport.apply(false);
 
-        //b2DDr.render(world, camera.combined.cpy().scl(PPM));
+        b2DDr.render(world, camera.combined.cpy().scl(PPM));
 
         // Set up and begin drawing with the sprite batch
         game.getSpriteBatch().begin();
@@ -205,7 +205,26 @@ public class GameScreen implements Screen {
 
         }
         //camera.position.slerp(target, .1f);
-        camera.position.interpolate(target,.2f, Interpolation.smoother);
+        camera.position.interpolate(target, .2f, Interpolation.smoother);
+
+        Vector3 position = camera.position;
+        float viewX = zoom * (camera.viewportWidth / 2);
+        float viewY = zoom * (camera.viewportHeight / 2);
+        if (position.x < viewX) {
+            position.x = viewX;
+        }
+        if (position.y < viewY) {
+            position.y = viewY;
+        }
+        float w = MapLoader.width * PPM * SCALE - viewX * 2;
+        if (position.x > viewX + w) {
+            position.x = viewX + w;
+        }
+        float h = MapLoader.height * PPM * SCALE - viewY * 2;
+        if (position.y > viewY + h) {
+            position.y = viewY + h;
+        }
+        camera.position.set(position);
 
 
         viewport.apply();
@@ -222,9 +241,10 @@ public class GameScreen implements Screen {
 
         for (Vector2 enemyCord : MapLoader.getMapCoordinates(ObjectType.Enemy)) {
             var scaledEnemyCord = enemyCord.cpy().scl(PPM).scl(2f);
-            this.entities.add(new Enemy(world, deathListener, wall.getFullWalls(), player, scaledEnemyCord.x, scaledEnemyCord.y));
+            this.entities.add(new Enemy(world, deathListener, player, scaledEnemyCord));
         }
-
+        this.entities.add(new Exit(world, MapLoader.getMapCoordinates(ObjectType.Exit).get(0), this));
+        new Entry(world, MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0), this);
 
 
     }

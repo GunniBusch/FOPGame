@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import de.tum.cit.ase.maze.Input.DeathListener;
@@ -16,10 +17,18 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.*;
  * Class represents the Player. The player is the main character that can be controlled by a person.
  */
 public class Player extends Character implements Movable {
+    /**
+     * Marks if game is finished
+     */
+    private boolean isFinished = false;
 
 
     public Player(World world, DeathListener deathListener) {
         this(world, deathListener, 0, 0);
+    }
+
+    public Player(World world, DeathListener deathListener, Vector2 position) {
+        this(world, deathListener, position.x, position.y);
     }
 
     /**
@@ -103,6 +112,17 @@ public class Player extends Character implements Movable {
         }
     }
 
+    public void markAsFinished() {
+        this.isFinished = true;
+    }
+
+    /**
+     * @param damage damage to apply
+     */
+    @Override
+    public void makeDamage(int damage) {
+        if (!isFinished) super.makeDamage(damage);
+    }
 
     /**
      * Releases all resources of this object.
@@ -121,8 +141,9 @@ public class Player extends Character implements Movable {
     public void render(SpriteBatch spriteBatch) {
         spriteBatch.draw(
                 this.getTexture(),
-                this.getPosition().x * PPM - (this.getTexture().getRegionWidth() / 2f),
-                this.getPosition().y * PPM - (this.getTexture().getRegionHeight() / 2f)
+                this.getPosition().x * PPM - (this.getTexture().getRegionWidth() * ZOOM / 2f),
+                this.getPosition().y * PPM - (this.getTexture().getRegionHeight() * ZOOM / 2f),
+                this.getTexture().getRegionWidth() * ZOOM, this.getTexture().getRegionHeight() * ZOOM
         );
 
     }
