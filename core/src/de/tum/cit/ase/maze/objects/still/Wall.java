@@ -32,7 +32,6 @@ public class Wall implements Disposable {
     private final int textureWidth = 32;
 
 
-
     public Wall(List<Vector2> map, SpriteCache spriteCache, World world) {
         BodyDef def = new BodyDef();
         def.type = BodyDef.BodyType.StaticBody;
@@ -93,7 +92,7 @@ public class Wall implements Disposable {
 
 
             //If scaling uncomment and remove next line
-            corners = new Vector2[] {
+            corners = new Vector2[]{
                     new Vector2(x - halfSize, y - halfSize), // bottom-left
                     new Vector2(x + halfSize, y - halfSize), // bottom-right
                     new Vector2(x + halfSize, y + halfSize), // top-right
