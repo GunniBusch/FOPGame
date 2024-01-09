@@ -50,6 +50,8 @@ public class Hud implements Disposable {
         table.setFillParent(true);
 
         fps = new Label("60", skin);
+        fps.setVisible(DEBUG);
+
 
         table.add(fps);
         stage.addActor(table);
@@ -60,7 +62,6 @@ public class Hud implements Disposable {
         table.setFillParent(true);
 
         Label label = new Label("Health: ", skin);
-        label.setVisible(DEBUG);
         table.add(label).spaceRight(10.0f).align(Align.left);
 
         healthBar = new ProgressBar(0.0f, PLAYER_MAX_HEALTH, 1.0f, false, skin, "health");
