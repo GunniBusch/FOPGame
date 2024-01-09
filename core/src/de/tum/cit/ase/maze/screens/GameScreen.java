@@ -58,7 +58,7 @@ public class GameScreen implements Screen {
     private final Hud hud;
     private boolean victory = false;
     private boolean end = false;
-    private final float zoom = .9f;
+    private final float zoom = 3f;
     private Vector3 target;
     private final Wall wall;
 

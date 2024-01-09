@@ -150,7 +150,6 @@ public class Player extends Character implements Movable {
     @Override
     public void dispose() {
         this.texture.dispose();
-        light.dispose();
     }
 
     /**
