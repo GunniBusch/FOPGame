@@ -4,7 +4,7 @@ name: Deploy JavaDoc
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: [main]
+    branches: [ main ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -26,39 +26,25 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        
-    - name: Fetch Sources
-      uses: actions/checkout@v3
+      - name: Fetch Sources
+        uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-      # Cache Gradle Dependencies
-    - name: Setup Gradle Dependencies Cache
-      uses: actions/cache@v2.1.5
-      with:
-        path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', 'gradle.properties') }}
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@v2 # v2.6.0
+        with:
+          arguments: javadoc
 
-      # Cache Gradle Wrapper
-    - name: Setup Gradle Wrapper Cache
-      uses: actions/cache@v2.1.5
-      with:
-        path: ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-    - name: Build with Gradle
-      uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
-      with:
-        arguments: javadoc
-        
-    - name: Setup Pages
-      uses: actions/configure-pages@v4
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v2
-      with:
-        path: core/build/docs/javadoc
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: core/build/docs/javadoc
 
   # Deployment job
   deploy:
@@ -70,5 +56,5 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v3
+        uses: actions/deploy-pages@v4
         
