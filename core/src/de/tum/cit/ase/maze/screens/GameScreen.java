@@ -93,7 +93,7 @@ public class GameScreen implements Screen {
         MapLoader.loadMapFile(Gdx.files.internal("level-3.properties"));
         wall = new Wall(MapLoader.getMapCoordinates(ObjectType.Wall), game.getSpriteCache(), world);
 
-        var playerCord = MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0);
+        var playerCord = MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0).cpy();
         this.player = new Player(world, deathListener, rayHandler, playerCord.scl(PPM).scl(2f));
         this.entities.add(player);
         this.inputAdapter = new GameInputProcessor(game, player);

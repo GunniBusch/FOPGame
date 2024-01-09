@@ -45,7 +45,7 @@ public class MazeRunnerGame extends Game {
      */
     @Override
     public void create() {
-        if (CONSTANTS.DEBUG) Gdx.app.setLogLevel(Logger.ERROR);
+        if (CONSTANTS.DEBUG) Gdx.app.setLogLevel(Logger.DEBUG);
         else //noinspection GDXJavaLogLevel
             Gdx.app.setLogLevel(Logger.INFO);
         spriteBatch = new SpriteBatch(); // Create SpriteBatch

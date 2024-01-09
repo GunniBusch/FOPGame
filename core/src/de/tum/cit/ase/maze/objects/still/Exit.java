@@ -167,7 +167,7 @@ public class Exit extends GameElement {
      */
     @Override
     public void dispose() {
-
         this.texture.dispose();
+        this.doorOpenSound.dispose();
     }
 }
