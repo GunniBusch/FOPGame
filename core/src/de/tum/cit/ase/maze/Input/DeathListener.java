@@ -1,6 +1,6 @@
 package de.tum.cit.ase.maze.Input;
 
-import de.tum.cit.ase.maze.GameScreen;
+import de.tum.cit.ase.maze.screens.GameScreen;
 import de.tum.cit.ase.maze.objects.dynamic.Character;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
 

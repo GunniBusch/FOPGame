@@ -5,7 +5,7 @@
     <option name="VM_PARAMETERS" value="-XstartOnFirstThread" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="de.tum.cit.ase.maze.*" />
+        <option name="PATTERN" value="de.tum.cit.ase.maze.screens.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

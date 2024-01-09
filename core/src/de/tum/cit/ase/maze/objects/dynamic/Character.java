@@ -53,6 +53,8 @@ public abstract class Character extends GameElement {
      */
     protected DeathListener deathListener;
 
+    protected float ZOOM = 1.254f;
+
 
     public Character(World world, DeathListener deathListener) {
         this.world = world;
@@ -98,7 +100,7 @@ public abstract class Character extends GameElement {
         Body pBody = this.world.createBody(def);
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(this.frameWidth / 2f / PPM, this.frameHeight / 2f / PPM);
+        shape.setAsBox(this.frameWidth * ZOOM / 2f / PPM, this.frameHeight * ZOOM / 2f / PPM);
 
         FixtureDef fd = new FixtureDef();
         fd.shape = shape;

@@ -20,5 +20,6 @@ public final class CONSTANTS {
      * Tells if the game is in development mode.
      */
     public static final boolean DEBUG = true;
+    public static final float SCALE = 2f;
 
 }
