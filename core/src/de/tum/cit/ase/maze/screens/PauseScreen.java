@@ -17,7 +17,7 @@ import de.tum.cit.ase.maze.utils.CONSTANTS;
 
 
 public class PauseScreen implements Screen {
-    private MazeRunnerGame game;
+    private final MazeRunnerGame game;
     private final Stage stage;
 
 

@@ -26,7 +26,7 @@ allprojects {
         appName = "Maze Runner"
         gdxVersion = '1.12.1'
         roboVMVersion = '2.3.20'
-        box2DLightsVersion = '1.5'
+        box2DLightsVersion = '1.6-SNAPSHOT'
         ashleyVersion = '1.7.4'
         aiVersion = '1.8.2'
         gdxControllersVersion = '2.2.1'

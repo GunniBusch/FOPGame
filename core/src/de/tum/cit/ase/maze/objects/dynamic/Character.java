@@ -42,7 +42,7 @@ public abstract class Character extends GameElement {
     /**
      * List of moving animations
      */
-    protected Map<WalkDirection, Animation<TextureRegion>> walkTypesAnimationMap;
+    protected final Map<WalkDirection, Animation<TextureRegion>> walkTypesAnimationMap;
 
     /**
      * Time for a state
@@ -51,9 +51,9 @@ public abstract class Character extends GameElement {
     /**
      * Handles death of a Charter
      */
-    protected DeathListener deathListener;
+    protected final DeathListener deathListener;
 
-    protected float ZOOM = 1.254f;
+    protected final float ZOOM = 1.254f;
 
 
     public Character(World world, DeathListener deathListener) {

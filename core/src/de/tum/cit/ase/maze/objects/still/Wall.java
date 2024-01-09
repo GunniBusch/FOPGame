@@ -21,16 +21,15 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
  */
 
 public class Wall implements Disposable {
-    private SpriteCache spriteCache;
+    private final SpriteCache spriteCache;
     private Texture img;
-    private List<Vector2> outsideWalls;
-    private List<Vector2> insideWalls;
-    private List<Vector2> fullWalls;
+    private final List<Vector2> outsideWalls;
+    private final List<Vector2> insideWalls;
+    private final List<Vector2> fullWalls;
     private final Body body;
     private final float SCALE = 0.5f;
     private final int textureHeight = 32;
     private final int textureWidth = 32;
-
 
 
     public Wall(List<Vector2> map, SpriteCache spriteCache, World world) {
@@ -67,9 +66,9 @@ public class Wall implements Disposable {
             img = new Texture("lava.png");
             spriteCache.draw(img, position.x, position.y);
         }*/
-        for (int i = 0; i < outsideWalls.size(); i++) {
+        for (Vector2 outsideWall : outsideWalls) {
             // Draw wall
-            spriteCache.add(textureRegion, outsideWalls.get(i).x * PPM / SCALE - (textureHeight / SCALE / 2), outsideWalls.get(i).y * PPM / SCALE - (textureHeight / SCALE / 2), textureHeight / SCALE, textureHeight / SCALE);
+            spriteCache.add(textureRegion, outsideWall.x * PPM / SCALE - (textureHeight / SCALE / 2), outsideWall.y * PPM / SCALE - (textureHeight / SCALE / 2), textureHeight / SCALE, textureHeight / SCALE);
 
         }
 
@@ -93,7 +92,7 @@ public class Wall implements Disposable {
 
 
             //If scaling uncomment and remove next line
-            corners = new Vector2[] {
+            corners = new Vector2[]{
                     new Vector2(x - halfSize, y - halfSize), // bottom-left
                     new Vector2(x + halfSize, y - halfSize), // bottom-right
                     new Vector2(x + halfSize, y + halfSize), // top-right

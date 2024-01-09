@@ -1,9 +1,12 @@
 package de.tum.cit.ase.maze.screens;
 
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
@@ -39,6 +42,7 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.*;
 public class GameScreen implements Screen {
 
     private final MazeRunnerGame game;
+    private final Texture background;
     private final OrthographicCamera camera;
     private final OrthographicCamera hudCamera;
     private final Viewport viewport;
@@ -49,15 +53,16 @@ public class GameScreen implements Screen {
     private final World world;
     private final Box2DDebugRenderer b2DDr;
     private final ShapeRenderer shapeRenderer;
-    private final int mapCacheID;
+    private final int mapCacheID, backgroundCacheId;
     private final DeathListener deathListener;
     private final Hud hud;
     private boolean victory = false;
     private boolean end = false;
-    private final float zoom = 0.9f;
+    private final float zoom = .9f;
     private Vector3 target;
     private final Wall wall;
 
+    private final RayHandler rayHandler;
     //added boolean pause, for pause functionality
     private boolean paused;
 
@@ -70,21 +75,31 @@ public class GameScreen implements Screen {
      */
     public GameScreen(MazeRunnerGame game) {
         this.game = game;
+
         this.deathListener = new DeathListener(this);
         this.entities = new ArrayList<>();
         this.world = new World(new Vector2(0, 0), true);
+        RayHandler.setGammaCorrection(true);
+
+        this.rayHandler = new RayHandler(world);
+        float val = 0.1f;
+        rayHandler.setAmbientLight(new Color(val, val, val, 0.4f));
+
+        RayHandler.useDiffuseLight(true);
+        rayHandler.setBlurNum(10);
         world.setContactListener(new ListenerClass());
+
 
         //Gdx.gl.glEnable(GL20.GL_BLEND);
         this.b2DDr = new Box2DDebugRenderer(true, true, false, true, true, true);
         MapLoader.loadMapFile(Gdx.files.internal("level-3.properties"));
         wall = new Wall(MapLoader.getMapCoordinates(ObjectType.Wall), game.getSpriteCache(), world);
 
-        var playerCord = MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0);
-        this.player = new Player(world, deathListener, playerCord.scl(PPM ).scl(2f));
+        var playerCord = MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0).cpy();
+        this.player = new Player(world, deathListener, rayHandler, playerCord.scl(PPM).scl(2f));
         this.entities.add(player);
         this.inputAdapter = new GameInputProcessor(game, player);
-
+        this.background = new Texture("StoneFloorTexture.png");
         this.spawnEntities();
         // Create and configure the camera for the game view
         this.shapeRenderer = new ShapeRenderer();
@@ -110,6 +125,19 @@ public class GameScreen implements Screen {
         // Get the font from the game's skin
         font = game.getSkin().getFont("font");
 
+        var numW = Math.ceil((double) MapLoader.width * PPM * SCALE / background.getWidth());
+        var numH = Math.ceil((double) MapLoader.height * PPM * SCALE / background.getHeight());
+
+        this.game.getSpriteCache().beginCache();
+        for (int i = 0; i < numH; i++) {
+            for (int j = 0; j < numW; j++) {
+                this.game.getSpriteCache().add(background, j * background.getWidth() - 1 * PPM, i * background.getHeight() - 1 * PPM);
+
+            }
+        }
+
+        backgroundCacheId = game.getSpriteCache().endCache();
+
 
     }
 
@@ -121,8 +149,12 @@ public class GameScreen implements Screen {
         this.update(delta);
         ScreenUtils.clear(0, 0, 0, 1, true);
         //viewport.apply(false);
+        game.getSpriteCache().begin();
+        game.getSpriteCache().draw(backgroundCacheId);
+        game.getSpriteCache().draw(mapCacheID);
+        game.getSpriteCache().end();
 
-        b2DDr.render(world, camera.combined.cpy().scl(PPM));
+        if (DEBUG) b2DDr.render(world, camera.combined.cpy().scl(PPM));
 
         // Set up and begin drawing with the sprite batch
         game.getSpriteBatch().begin();
@@ -150,15 +182,14 @@ public class GameScreen implements Screen {
         }
 
 
-        game.getSpriteCache().begin();
-        game.getSpriteCache().draw(mapCacheID);
-        game.getSpriteCache().end();
+        rayHandler.render();
 
 
         this.renderHud(delta);
         if (end) {
             this.game.goToMenu();
         }
+
 
     }
 
@@ -169,6 +200,7 @@ public class GameScreen implements Screen {
      */
     private void update(float dt) {
         this.world.step(1 / 60f, 6, 2);
+        rayHandler.update();
         this.entities.parallelStream().forEach(entity -> entity.update(dt));
         hud.update(dt);
         this.cameraUpdate(dt);
@@ -178,8 +210,11 @@ public class GameScreen implements Screen {
 
 
         shapeRenderer.setProjectionMatrix(camera.combined);
-
-
+        float viewX = zoom * (camera.viewportWidth / 2);
+        float viewY = zoom * (camera.viewportHeight / 2);
+        Vector3 pos = camera.position.cpy().scl(PPM);
+        //rayHandler.setCombinedMatrix(camera.combined.cpy().scl(PPM), pos.x, pos.y, viewX, viewY);
+        rayHandler.setCombinedMatrix(camera.combined.cpy().scl(PPM));
     }
 
     /**
@@ -208,22 +243,34 @@ public class GameScreen implements Screen {
         camera.position.interpolate(target, .2f, Interpolation.smoother);
 
         Vector3 position = camera.position;
+        float extraSize = 0.5f; // 2 meters extra in both width and height
+        float mapStartX = -1*PPM; // X-coordinate where your map starts
+        float mapStartY = -1*PPM; // Y-coordinate where your map starts
         float viewX = zoom * (camera.viewportWidth / 2);
         float viewY = zoom * (camera.viewportHeight / 2);
-        if (position.x < viewX) {
-            position.x = viewX;
+
+// Adjust for map start coordinates and extra size
+        if (position.x < viewX + mapStartX) {
+            position.x = viewX + mapStartX;
         }
-        if (position.y < viewY) {
-            position.y = viewY;
+        if (position.y < viewY + mapStartY) {
+            position.y = viewY + mapStartY;
         }
-        float w = MapLoader.width * PPM * SCALE - viewX * 2;
-        if (position.x > viewX + w) {
-            position.x = viewX + w;
+
+// Adjust the width and height calculations
+        float adjustedWidth = MapLoader.width + extraSize;
+        float adjustedHeight = MapLoader.height + extraSize;
+        float w = (adjustedWidth * PPM * SCALE - mapStartX) - viewX * 2;
+        float h = (adjustedHeight * PPM * SCALE - mapStartY) - viewY * 2;
+
+// Right and top boundary checks with map start position and extra size
+        if (position.x > viewX + w + mapStartX) {
+            position.x = viewX + w + mapStartX;
         }
-        float h = MapLoader.height * PPM * SCALE - viewY * 2;
-        if (position.y > viewY + h) {
-            position.y = viewY + h;
+        if (position.y > viewY + h + mapStartY) {
+            position.y = viewY + h + mapStartY;
         }
+
         camera.position.set(position);
 
 
@@ -281,6 +328,8 @@ public class GameScreen implements Screen {
         this.b2DDr.dispose();
         this.world.dispose();
         this.hud.dispose();
+        rayHandler.dispose();
+        background.dispose();
 
 
     }

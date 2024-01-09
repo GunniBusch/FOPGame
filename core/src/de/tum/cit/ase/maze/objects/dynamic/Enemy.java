@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
+import static de.tum.cit.ase.maze.utils.CONSTANTS.SENSOR_BIT;
 
 /**
  * An enemy is a {@link Character} that can't be controlled by a GOD e.g. a person.
@@ -71,7 +72,7 @@ public class Enemy extends Character {
 
         FixtureDef fd = new FixtureDef();
         fd.isSensor = true;
-
+        fd.filter.groupIndex = -SENSOR_BIT;
         CircleShape shape = new CircleShape();
         shape.setRadius(DETECTION_RADIUS);
         fd.shape = shape;

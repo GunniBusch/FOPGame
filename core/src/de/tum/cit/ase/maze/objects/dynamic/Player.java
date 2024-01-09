@@ -1,10 +1,15 @@
 package de.tum.cit.ase.maze.objects.dynamic;
 
+import box2dLight.PointLight;
+import box2dLight.PositionalLight;
+import box2dLight.RayHandler;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import de.tum.cit.ase.maze.Input.DeathListener;
@@ -17,18 +22,22 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.*;
  * Class represents the Player. The player is the main character that can be controlled by a person.
  */
 public class Player extends Character implements Movable {
+    private final int RAYS_NUM = 500;
+    private final float lightDistance = 15f;
     /**
      * Marks if game is finished
      */
     private boolean isFinished = false;
+    private final RayHandler rayHandler;
+    private final PositionalLight light;
 
 
-    public Player(World world, DeathListener deathListener) {
-        this(world, deathListener, 0, 0);
+    public Player(World world, DeathListener deathListener, RayHandler rayHandler) {
+        this(world, deathListener, rayHandler, 0, 0);
     }
 
-    public Player(World world, DeathListener deathListener, Vector2 position) {
-        this(world, deathListener, position.x, position.y);
+    public Player(World world, DeathListener deathListener, RayHandler rayHandler, Vector2 position) {
+        this(world, deathListener, rayHandler, position.x, position.y);
     }
 
     /**
@@ -37,8 +46,16 @@ public class Player extends Character implements Movable {
      * @param x X-Coordinate
      * @param y Y-Coordinate
      */
-    public Player(World world, DeathListener deathListener, float x, float y) {
+    public Player(World world, DeathListener deathListener, RayHandler rayHandler, float x, float y) {
         super(world, deathListener);
+        this.rayHandler = rayHandler;
+        this.light = new PointLight(rayHandler, RAYS_NUM, new Color(1, 1, 1, 0.89f), 15 * 2, x, y);
+        light.setSoftnessLength(1.5f);
+        var filter = new Filter();
+        light.setSoft(true);
+        filter.groupIndex = -SENSOR_BIT;
+        filter.categoryBits = LIGHT_BIT;
+        this.light.setContactFilter(filter);
         this.health = PLAYER_MAX_HEALTH;
         this.speed = 150f;
         frameWidth = 16;
@@ -48,6 +65,9 @@ public class Player extends Character implements Movable {
 
         this.texture = new Texture("character.png");
         this.createBody(x, y);
+        this.light.attachToBody(body);
+        this.light.setActive(true);
+
         Array<TextureRegion> walkFrames = new Array<>(TextureRegion.class);
         // Add all frames to the animation
         for (int row = 0; row < 4; row++) {

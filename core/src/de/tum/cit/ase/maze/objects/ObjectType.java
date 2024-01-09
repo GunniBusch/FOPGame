@@ -1,6 +1,5 @@
 package de.tum.cit.ase.maze.objects;
 
-import de.tum.cit.ase.maze.utils.exceptions.MapLoadingException;
 import de.tum.cit.ase.maze.utils.exceptions.ObjectTypeException;
 
 public enum ObjectType {

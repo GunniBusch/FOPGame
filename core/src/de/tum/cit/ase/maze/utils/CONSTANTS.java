@@ -21,5 +21,13 @@ public final class CONSTANTS {
      */
     public static final boolean DEBUG = true;
     public static final float SCALE = 2f;
+    /**
+     * Filter bit for Box2d sensor
+     */
+    public static final short SENSOR_BIT = 0x0002;
+    /**
+     * Filter bit for Box2dLights
+     */
+    public static final short LIGHT_BIT = 0x0004;
 
 }

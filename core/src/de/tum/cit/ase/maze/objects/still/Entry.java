@@ -1,5 +1,6 @@
 package de.tum.cit.ase.maze.objects.still;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -26,7 +27,7 @@ public class Entry extends GameElement {
         def.type = BodyDef.BodyType.StaticBody;
         def.fixedRotation = true;
         body = world.createBody(def);
-        body.setAwake(false);
+        body.setAwake(true);
         // If in dev modem, allow to move out of the game world.
         if (DEBUG) body.setActive(false);
         createBody(position);
@@ -91,6 +92,7 @@ public class Entry extends GameElement {
         shape.set(corners[0], corners[1]);
         body.createFixture(shape, 0f);
         shape.dispose();
+        Gdx.app.debug("Entry Pos", "Bdd: " + corners[0] + ", " + corners[1] + " : " + position);
 
 
     }
