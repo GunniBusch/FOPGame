@@ -53,7 +53,7 @@ public class Player extends Character implements Movable {
         light.setSoftnessLength(1.5f);
         var filter = new Filter();
         light.setSoft(true);
-        filter.groupIndex = -SENSOR_BIT;
+        filter.groupIndex = IGNORE_GROUP_BIT;
         filter.categoryBits = LIGHT_BIT;
         this.light.setContactFilter(filter);
         this.health = PLAYER_MAX_HEALTH;
@@ -65,6 +65,9 @@ public class Player extends Character implements Movable {
 
         this.texture = new Texture("character.png");
         this.createBody(x, y);
+        var playerFilter = new Filter();
+        playerFilter.categoryBits = PLAYER_BIT;
+        this.body.getFixtureList().get(0).setFilterData(playerFilter);
         this.light.attachToBody(body);
         this.light.setActive(true);
 

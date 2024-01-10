@@ -21,6 +21,7 @@ import de.tum.cit.ase.maze.Input.DeathListener;
 import de.tum.cit.ase.maze.Input.GameInputProcessor;
 import de.tum.cit.ase.maze.Input.ListenerClass;
 import de.tum.cit.ase.maze.MazeRunnerGame;
+import de.tum.cit.ase.maze.objects.CollectableManager;
 import de.tum.cit.ase.maze.objects.GameElement;
 import de.tum.cit.ase.maze.objects.ObjectType;
 import de.tum.cit.ase.maze.objects.dynamic.Enemy;
@@ -28,6 +29,7 @@ import de.tum.cit.ase.maze.objects.dynamic.Player;
 import de.tum.cit.ase.maze.objects.still.Entry;
 import de.tum.cit.ase.maze.objects.still.Exit;
 import de.tum.cit.ase.maze.objects.still.Wall;
+import de.tum.cit.ase.maze.objects.still.collectable.HealthCollectable;
 import de.tum.cit.ase.maze.utils.MapLoader;
 
 import java.util.ArrayList;
@@ -61,6 +63,7 @@ public class GameScreen implements Screen {
     private final float zoom = .9f;
     private Vector3 target;
     private final Wall wall;
+    private final CollectableManager collectableManager;
 
     private final RayHandler rayHandler;
     //added boolean pause, for pause functionality
@@ -82,7 +85,8 @@ public class GameScreen implements Screen {
         RayHandler.setGammaCorrection(true);
 
         this.rayHandler = new RayHandler(world);
-        float val = 0.1f;
+        float val = 0.14f;
+        rayHandler.setShadows(true);
         rayHandler.setAmbientLight(new Color(val, val, val, 0.4f));
 
         RayHandler.useDiffuseLight(true);
@@ -97,7 +101,11 @@ public class GameScreen implements Screen {
 
         var playerCord = MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0).cpy();
         this.player = new Player(world, deathListener, rayHandler, playerCord.scl(PPM).scl(2f));
+        // To debug no damage
+        if (DEBUG) player.markAsFinished();
         this.entities.add(player);
+        this.collectableManager = new CollectableManager(world, rayHandler);
+        collectableManager.spawn(HealthCollectable.class, 0.01f);
         this.inputAdapter = new GameInputProcessor(game, player);
         this.background = new Texture("StoneFloorTexture.png");
         this.spawnEntities();
@@ -109,7 +117,7 @@ public class GameScreen implements Screen {
         camera.position.set(playerCord.cpy().scl(PPM).scl(2f), 0);
         camera.zoom = zoom;
         this.viewport = new ScreenViewport(camera);
-        target = new Vector3(camera.position.cpy());
+        target = new Vector3(camera.position);
         camera.position.set(target);
 
         hudCamera = new OrthographicCamera();
@@ -158,7 +166,9 @@ public class GameScreen implements Screen {
 
         // Set up and begin drawing with the sprite batch
         game.getSpriteBatch().begin();
+        collectableManager.render(this.game.getSpriteBatch());
         entities.forEach(entity -> entity.render(this.game.getSpriteBatch()));
+
         game.getSpriteBatch().end();
 
         if (DEBUG) {
@@ -167,9 +177,12 @@ public class GameScreen implements Screen {
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             for (Enemy mob : enemies) {
                 shapeRenderer.setColor(0.f, 1, 0f, 1f);
+                Vector2 o = new Vector2();
+                Vector2 p = new Vector2();
                 for (int i = 0; i < mob.getPath().size() - 2; ++i) {
-                    var o = mob.getPath().get(i).cpy().scl(PPM);
-                    var p = mob.getPath().get(i + 1).cpy().scl(PPM);
+
+                    o.set(mob.getPath().get(i).cpy().scl(PPM));
+                    p.set(mob.getPath().get(i + 1).cpy().scl(PPM));
                     shapeRenderer.line(o.x * 2f, o.y * 2f, p.x * 2f, p.y * 2f);
                 }
                 if (mob.getPath().size() > 1) {
@@ -202,6 +215,7 @@ public class GameScreen implements Screen {
         this.world.step(1 / 60f, 6, 2);
         rayHandler.update();
         this.entities.parallelStream().forEach(entity -> entity.update(dt));
+        this.collectableManager.update(dt);
         hud.update(dt);
         this.cameraUpdate(dt);
         game.getSpriteBatch().setProjectionMatrix(camera.combined);
@@ -234,9 +248,9 @@ public class GameScreen implements Screen {
     private void cameraUpdate(float dt) {
 
 
-        if (!camera.frustum.pointInFrustum(new Vector3(this.player.getPosition().cpy().scl(PPM), 0))) {
+        if (!camera.frustum.pointInFrustum(new Vector3(this.player.getPosition(), 0).scl(PPM))) {
 
-            target = new Vector3(player.getPosition().cpy().scl(PPM), 0);
+            target.set(player.getPosition().cpy().scl(PPM), 0);
 
         }
         //camera.position.slerp(target, .1f);
@@ -244,8 +258,8 @@ public class GameScreen implements Screen {
 
         Vector3 position = camera.position;
         float extraSize = 0.5f; // 2 meters extra in both width and height
-        float mapStartX = -1*PPM; // X-coordinate where your map starts
-        float mapStartY = -1*PPM; // Y-coordinate where your map starts
+        float mapStartX = -1 * PPM; // X-coordinate where your map starts
+        float mapStartY = -1 * PPM; // Y-coordinate where your map starts
         float viewX = zoom * (camera.viewportWidth / 2);
         float viewY = zoom * (camera.viewportHeight / 2);
 
@@ -330,6 +344,7 @@ public class GameScreen implements Screen {
         this.hud.dispose();
         rayHandler.dispose();
         background.dispose();
+        collectableManager.dispose();
 
 
     }

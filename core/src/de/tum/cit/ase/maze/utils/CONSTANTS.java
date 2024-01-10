@@ -22,12 +22,34 @@ public final class CONSTANTS {
     public static final boolean DEBUG = true;
     public static final float SCALE = 2f;
     /**
+     * Filter bit default
+     */
+    public static final short DEFAULT_BIT = 0x0001;
+
+    /**
      * Filter bit for Box2d sensor
      */
     public static final short SENSOR_BIT = 0x0002;
     /**
      * Filter bit for Box2dLights
      */
-    public static final short LIGHT_BIT = 0x0004;
+    public static final short LIGHT_BIT = 0x0003;
+    /**
+     * Filter bit for Player
+     */
+    public static final short PLAYER_BIT = 0x0004;
+    /**
+     * Filter bit for Enemy
+     */
+    public static final short ENEMY_BIT = 0x0005;
+
+    /**
+     * Filter bit for Collectable
+     */
+    public static final short COLLECTABLE_BIT = 0x0006;
+    /**
+     * Filter bit IGNORE
+     */
+    public static final short IGNORE_GROUP_BIT = -0x0007;
 
 }
