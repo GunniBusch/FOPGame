@@ -70,7 +70,7 @@ public class MazeRunnerGame extends Game {
         this.backgroundMusic.stop();
         this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Ancient Mystery Waltz Presto.mp3"));
         backgroundMusic.setLooping(true);
-        backgroundMusic.play();
+        //backgroundMusic.play();
         this.setScreen(new MenuScreen(this)); // Set the current screen to MenuScreen
         if (gameScreen != null) {
             gameScreen.dispose(); // Dispose the game screen if it exists
@@ -85,7 +85,7 @@ public class MazeRunnerGame extends Game {
         this.backgroundMusic.stop();
         this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Long Note Four.mp3"));
         backgroundMusic.setLooping(true);
-        backgroundMusic.play();
+        //backgroundMusic.play();
         if (!fromPause) {
             this.gameScreen = new GameScreen(this);
             this.setScreen(this.gameScreen); // Set the current screen to GameScreen
@@ -105,7 +105,7 @@ public class MazeRunnerGame extends Game {
         this.backgroundMusic.stop();
         this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Ancient Mystery Waltz Presto.mp3"));
         backgroundMusic.setLooping(true);
-        backgroundMusic.play();
+        //backgroundMusic.play();
         this.pauseScreen = new PauseScreen(this);
         this.setScreen(this.pauseScreen); // Set the current screen to GameScreen
 

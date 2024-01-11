@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
+import de.tum.cit.ase.maze.objects.still.collectable.Collectable;
 import de.tum.cit.ase.maze.utils.MapLoader;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -35,6 +36,7 @@ public class CollectableManager implements Disposable {
 
     public void update(float dt) {
         collectableList.forEach(collectable -> collectable.update(dt));
+        collectableList.removeIf(Collectable::isRemovable);
 
 
     }

@@ -5,6 +5,7 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import de.tum.cit.ase.maze.objects.still.collectable.Collectable;
 import de.tum.cit.ase.maze.objects.dynamic.Enemy;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
 import de.tum.cit.ase.maze.objects.still.Exit;
@@ -46,6 +47,11 @@ public class ListenerClass implements ContactListener {
 
                     ((Exit) contact.getFixtureB().getUserData()).requestOpening((Player) contact.getFixtureA().getUserData());
 
+                }
+                // Player Collect Collectable
+                if (contact.getFixtureA().getUserData() instanceof Player && contact.getFixtureB().getUserData() instanceof Collectable) {
+                    Gdx.app.debug("Collectable", "Player collected Collectable");
+                    ((Collectable) contact.getFixtureB().getUserData()).collect((Player) contact.getFixtureA().getUserData());
                 }
 
             } else {

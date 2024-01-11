@@ -13,7 +13,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import de.tum.cit.ase.maze.objects.Collectable;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
@@ -23,6 +22,7 @@ public class HealthCollectable extends Collectable {
     private final Animation<TextureRegion> animation;
     private float stateTime = 0f;
     private final ParticleEffect effect = new ParticleEffect();
+    private final int HEALTH_TO_RESTORE = 2;
 
 
     public HealthCollectable(Vector2 position, World world, RayHandler rayHandler) {
@@ -65,7 +65,7 @@ public class HealthCollectable extends Collectable {
      */
     @Override
     public void collect(Player player) {
-
+        if (player.heal(HEALTH_TO_RESTORE)) removable = true;
     }
 
     /**
@@ -92,6 +92,7 @@ public class HealthCollectable extends Collectable {
      */
     @Override
     public void update(float deltaTime) {
+        super.update(deltaTime);
         stateTime += deltaTime;
 
     }
@@ -101,8 +102,10 @@ public class HealthCollectable extends Collectable {
      */
     @Override
     public void dispose() {
-
         texture.dispose();
         effect.dispose();
+        if (removable) {
+            light.remove();
+        }
     }
 }
