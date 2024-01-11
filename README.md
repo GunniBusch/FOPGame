@@ -6,7 +6,7 @@
 
 ## Game
 
-TODO
+This is a very funny game.
 ## Documentation
 The javadoc of the game can be found at our [GitHub Pages](https://gunnibusch.github.io/FOPGame/) site.
 
