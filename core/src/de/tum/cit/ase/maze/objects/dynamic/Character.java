@@ -173,4 +173,11 @@ public abstract class Character extends GameElement {
         return health_restorable > 0;
     }
 
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
 }

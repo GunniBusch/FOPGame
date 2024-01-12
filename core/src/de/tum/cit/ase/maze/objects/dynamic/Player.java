@@ -13,8 +13,11 @@ import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import de.tum.cit.ase.maze.Input.DeathListener;
+import de.tum.cit.ase.maze.objects.still.collectable.TimedCollectable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.*;
 
@@ -22,7 +25,9 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.*;
  * Class represents the Player. The player is the main character that can be controlled by a person.
  */
 public class Player extends Character implements Movable {
+    public final float SPEED_BOOST = 1.8f;
     private final int RAYS_NUM = 500;
+    private final Set<TimedCollectable> timedCollectables;
     private final float lightDistance = 15f;
     /**
      * Marks if game is finished
@@ -30,6 +35,7 @@ public class Player extends Character implements Movable {
     private boolean isFinished = false;
     private final RayHandler rayHandler;
     private final PositionalLight light;
+    private boolean isSprint = false;
 
 
     public Player(World world, DeathListener deathListener, RayHandler rayHandler) {
@@ -48,6 +54,7 @@ public class Player extends Character implements Movable {
      */
     public Player(World world, DeathListener deathListener, RayHandler rayHandler, float x, float y) {
         super(world, deathListener);
+        this.timedCollectables = new HashSet<>();
         this.rayHandler = rayHandler;
         this.light = new PointLight(rayHandler, RAYS_NUM, new Color(1, 1, 1, 0.89f), 15 * 2, x, y);
         light.setSoftnessLength(1.5f);
@@ -83,6 +90,20 @@ public class Player extends Character implements Movable {
 
     }
 
+    public boolean addCollectable(TimedCollectable collectable) {
+        return timedCollectables.add(collectable);
+    }
+
+
+    /**
+     * @param deltaTime Time since last frame.
+     */
+    @Override
+    public void update(float deltaTime) {
+        super.update(deltaTime);
+        this.timedCollectables.stream().filter(TimedCollectable::isRemovable).forEach(collectable -> collectable.restore(this));
+        this.timedCollectables.removeIf(TimedCollectable::isRemovable);
+    }
 
     /**
      * Starts moving in defined direction.
@@ -122,17 +143,8 @@ public class Player extends Character implements Movable {
         }
     }
 
-    /**
-     * Requests elevated Speed
-     *
-     * @param sprint
-     */
-    public synchronized void setSprint(boolean sprint) {
-        if (sprint) {
-            speed *= 1.8f;
-        } else {
-            speed /= 1.8f;
-        }
+    public Set<TimedCollectable> getTimedCollectables() {
+        return timedCollectables;
     }
 
     public void markAsFinished() {
@@ -171,4 +183,22 @@ public class Player extends Character implements Movable {
 
     }
 
+    public synchronized boolean isSprint() {
+        return isSprint;
+    }
+
+    /**
+     * Requests elevated Speed
+     *
+     * @param sprint
+     */
+    public synchronized void setSprint(boolean sprint) {
+        if (sprint == this.isSprint()) return;
+        else isSprint = sprint;
+        if (sprint) {
+            speed *= SPEED_BOOST;
+        } else {
+            speed /= SPEED_BOOST;
+        }
+    }
 }

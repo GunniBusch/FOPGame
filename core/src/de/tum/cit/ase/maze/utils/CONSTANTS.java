@@ -3,7 +3,7 @@ package de.tum.cit.ase.maze.utils;
 /**
  * Saves constants
  */
-public final class CONSTANTS {
+public record CONSTANTS() {
     /**
      * Scale factor to convert Box2d meter to pixel.
      * Getting Box2D units: Multiply by PPM.

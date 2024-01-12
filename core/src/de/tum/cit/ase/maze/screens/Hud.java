@@ -4,11 +4,19 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
+import de.tum.cit.ase.maze.objects.still.collectable.SpeedBoost;
+import de.tum.cit.ase.maze.objects.still.collectable.TimedCollectable;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.DEBUG;
 import static de.tum.cit.ase.maze.utils.CONSTANTS.PLAYER_MAX_HEALTH;
@@ -26,6 +34,7 @@ public class Hud implements Disposable {
     private final Player player;
     private final ProgressBar healthBar;
     private final ProgressBar keyBar;
+    private Map<Class<? extends TimedCollectable>, Label> labelMap;
 
     /**
      * Creates a new HUD
@@ -59,7 +68,6 @@ public class Hud implements Disposable {
         // Bottom Table:
         table = new Table();
         table.align(Align.bottomLeft);
-        table.setFillParent(true);
 
         Label label = new Label("Health: ", skin);
         table.add(label).spaceRight(10.0f).align(Align.left);
@@ -77,6 +85,19 @@ public class Hud implements Disposable {
         table.add(keyBar).align(Align.left).width(36.0f);
 
         stage.addActor(table);
+        // Booster table
+        table = new Table();
+        table.setFillParent(true);
+
+        labelMap = new HashMap<>();
+        System.out.println(TimedCollectable.class.getClasses().length);
+        label = new Label("sd", skin);
+        label.setFontScale(0.7f);
+        table.add(label).expand().align(Align.bottomRight);
+        labelMap.put(SpeedBoost.class, label);
+
+        table.align(Align.bottomRight);
+        stage.addActor(table);
         //Debug stuff
         stage.setDebugAll(DEBUG);
     }
@@ -92,6 +113,21 @@ public class Hud implements Disposable {
      * Updates the HUD
      */
     public void update(float dt) {
+        labelMap.forEach((aClass, label) -> {
+            if (player.getTimedCollectables().stream().noneMatch(aClass::isInstance)) {
+                label.setVisible(false);
+
+            }
+        });
+        for (TimedCollectable timedCollectable : player.getTimedCollectables()) {
+            System.out.println(timedCollectable);
+            var lable = this.labelMap.get(timedCollectable.getClass());
+            lable.setVisible(true);
+            var durel = timedCollectable.getDurationAndElapsed();
+            lable.setText(timedCollectable.toString());
+
+        }
+
         this.fps.setText(Gdx.graphics.getFramesPerSecond());
         healthBar.setValue(player.getHealth());
         this.stage.act(dt);

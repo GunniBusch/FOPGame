@@ -42,10 +42,9 @@ public class HealthCollectable extends Collectable {
         this.light.setDistance(2);
         this.light.setSoft(false);
         this.light.setActive(true);
-        this.frameHeight = 16;
-        this.frameWidth = 16;
+
         texture = new Texture("objects.png");
-        createBoy(position);
+
         this.light.attachToBody(body);
         Array<TextureRegion> walkFrames = new Array<>(TextureRegion.class);
         int animationFrames = 4;

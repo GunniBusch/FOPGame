@@ -21,8 +21,15 @@ public abstract class Collectable extends GameElement {
     protected boolean removable = false;
 
     public Collectable(Vector2 position, World world, RayHandler rayHandler) {
+        this(position,world,rayHandler,16,16);
+
+    }
+    protected Collectable(Vector2 position, World world, RayHandler rayHandler, float frameWidth, float frameHeight) {
         this.world = world;
         this.rayHandler = rayHandler;
+        this.frameHeight = frameHeight;
+        this.frameWidth = frameWidth;
+        this.createBoy(position);
 
     }
 
@@ -36,7 +43,7 @@ public abstract class Collectable extends GameElement {
         if (this.removable) remove();
     }
 
-    public final void remove() {
+    public void remove() {
         world.destroyBody(body);
         this.dispose();
     }

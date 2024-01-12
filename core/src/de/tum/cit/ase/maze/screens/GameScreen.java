@@ -30,6 +30,7 @@ import de.tum.cit.ase.maze.objects.still.Entry;
 import de.tum.cit.ase.maze.objects.still.Exit;
 import de.tum.cit.ase.maze.objects.still.Wall;
 import de.tum.cit.ase.maze.objects.still.collectable.HealthCollectable;
+import de.tum.cit.ase.maze.objects.still.collectable.SpeedBoost;
 import de.tum.cit.ase.maze.utils.MapLoader;
 
 import java.util.ArrayList;
@@ -105,7 +106,7 @@ public class GameScreen implements Screen {
         if (DEBUG) player.markAsFinished();
         this.entities.add(player);
         this.collectableManager = new CollectableManager(world, rayHandler);
-        collectableManager.spawn(HealthCollectable.class, 0.01f);
+        spawnCollectables();
         this.inputAdapter = new GameInputProcessor(game, player);
         this.background = new Texture("StoneFloorTexture.png");
         this.spawnEntities();
@@ -146,6 +147,12 @@ public class GameScreen implements Screen {
 
         backgroundCacheId = game.getSpriteCache().endCache();
 
+
+    }
+
+    private void spawnCollectables() {
+        collectableManager.spawn(HealthCollectable.class, 0.01f);
+        collectableManager.spawn(SpeedBoost.class, 0.01f);
 
     }
 
