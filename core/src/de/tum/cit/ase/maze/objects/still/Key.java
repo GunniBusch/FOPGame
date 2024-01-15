@@ -8,13 +8,14 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import de.tum.cit.ase.maze.objects.GameElement;
-import de.tum.cit.ase.maze.screens.GameScreen;
+
 
 public class Key extends GameElement {
     private Vector2 position;
     private boolean isCollected;
 
     public Key(World world, Vector2 position) {
+        isCollected = false;
         BodyDef def = new BodyDef();
         def.type = BodyDef.BodyType.StaticBody;
         def.fixedRotation = true;
@@ -44,6 +45,11 @@ public class Key extends GameElement {
         body.createFixture(fixtureDef);
 
         shape.dispose();
+    }
+
+    public void collectKey() {
+        isCollected = true;
+        texture.dispose();
     }
     @Override
     public void render(SpriteBatch spriteBatch) {
