@@ -13,9 +13,8 @@ import de.tum.cit.ase.maze.screens.GameScreen;
 public class Key extends GameElement {
     private Vector2 position;
     private boolean isCollected;
-    private
 
-    public Key(World world, Vector2 position, GameScreen game) {
+    public Key(World world, Vector2 position) {
         BodyDef def = new BodyDef();
         def.type = BodyDef.BodyType.StaticBody;
         def.fixedRotation = true;
@@ -23,11 +22,12 @@ public class Key extends GameElement {
         body.setAwake(true);
         createBody(position);
 
-            texture = new Texture("gameKey.png");
+        texture = new Texture("gameKey.png");
+
 
     }
 
-    private void createBody(World world) {
+    private void createBody(Vector2 position) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
         bodyDef.position.set(position.x, position.y);

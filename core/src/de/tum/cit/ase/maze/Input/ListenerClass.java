@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import de.tum.cit.ase.maze.objects.dynamic.Enemy;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
 import de.tum.cit.ase.maze.objects.still.Exit;
+import de.tum.cit.ase.maze.objects.still.Key;
 
 /**
  * Class that receives collisions from {@link com.badlogic.gdx.physics.box2d.Box2D}
@@ -45,6 +46,10 @@ public class ListenerClass implements ContactListener {
                 if (contact.getFixtureB().getUserData() instanceof Exit && contact.getFixtureA().getUserData() instanceof Player) {
 
                     ((Exit) contact.getFixtureB().getUserData()).requestOpening((Player) contact.getFixtureA().getUserData());
+
+                }
+                //Player collected Key
+                if(contact.getFixtureB().getUserData() instanceof Key && contact.getFixtureA().getUserData() instanceof Player) {
 
                 }
 
