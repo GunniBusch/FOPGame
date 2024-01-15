@@ -1,15 +1,19 @@
 package de.tum.cit.ase.maze.objects.still;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import de.tum.cit.ase.maze.objects.GameElement;
 import de.tum.cit.ase.maze.screens.GameScreen;
 
 public class Key extends GameElement {
     private Vector2 position;
     private boolean isCollected;
+    private
 
     public Key(World world, Vector2 position, GameScreen game) {
         BodyDef def = new BodyDef();
@@ -18,10 +22,28 @@ public class Key extends GameElement {
         body = world.createBody(def);
         body.setAwake(true);
         createBody(position);
+
+            texture = new Texture("gameKey.png");
+
     }
 
-    private void createBody(Vector2 position) {
+    private void createBody(World world) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.position.set(position.x, position.y);
 
+        body = world.createBody(bodyDef);
+
+        CircleShape shape = new CircleShape();
+        //TODO adjust radius
+        shape.setRadius(1f);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+
+        body.createFixture(fixtureDef);
+
+        shape.dispose();
     }
     @Override
     public void render(SpriteBatch spriteBatch) {
@@ -35,6 +57,6 @@ public class Key extends GameElement {
 
     @Override
     public void dispose() {
-
+        texture.dispose();
     }
 }
