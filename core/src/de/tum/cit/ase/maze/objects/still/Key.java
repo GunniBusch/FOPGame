@@ -52,6 +52,7 @@ public class Key extends GameElement {
     public void collectKey() {
         isCollected = true;
         textureRegion.getTexture().dispose();
+        world.destroyBody(body);
         //TODO update HUD
     }
     @Override
@@ -67,5 +68,6 @@ public class Key extends GameElement {
     @Override
     public void dispose() {
         textureRegion.getTexture().dispose();
+        world.destroyBody(body);
     }
 }
