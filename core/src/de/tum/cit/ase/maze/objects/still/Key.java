@@ -67,7 +67,7 @@ public class Key extends GameElement {
 
     @Override
     public void dispose() {
-        textureRegion.getTexture().dispose();
-        world.destroyBody(body);
+        //textureRegion.getTexture().dispose();
+        //world.destroyBody(body);
     }
 }
