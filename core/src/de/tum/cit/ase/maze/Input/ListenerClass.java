@@ -50,7 +50,7 @@ public class ListenerClass implements ContactListener {
                 }
                 //Player collected Key
                 if(contact.getFixtureB().getUserData() instanceof Key && contact.getFixtureA().getUserData() instanceof Player) {
-
+                    ((Key) contact.getFixtureB().getUserData()).collectKey();
                 }
 
             } else {
