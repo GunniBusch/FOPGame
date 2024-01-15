@@ -2,6 +2,7 @@ package de.tum.cit.ase.maze.objects.still;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -13,6 +14,7 @@ import de.tum.cit.ase.maze.objects.GameElement;
 public class Key extends GameElement {
     private Vector2 position;
     private boolean isCollected;
+    private TextureRegion textureRegion;
 
     public Key(World world, Vector2 position) {
         isCollected = false;
@@ -24,7 +26,7 @@ public class Key extends GameElement {
         createBody(position);
 
         texture = new Texture("gameKey.png");
-
+        textureRegion = new TextureRegion(texture);
 
     }
 
@@ -50,10 +52,11 @@ public class Key extends GameElement {
     public void collectKey() {
         isCollected = true;
         texture.dispose();
+        //TODO update HUD
     }
     @Override
     public void render(SpriteBatch spriteBatch) {
-
+        spriteBatch.draw(textureRegion, position.x, position.y);
     }
 
     @Override
