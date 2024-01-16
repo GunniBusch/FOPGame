@@ -1,6 +1,9 @@
 package de.tum.cit.ase.maze.objects.still.collectable;
 
+import box2dLight.PointLight;
+import box2dLight.PositionalLight;
 import box2dLight.RayHandler;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -14,10 +17,12 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.*;
 
 public abstract class Collectable extends GameElement {
     protected Texture texture;
+    private final PositionalLight light;
+
     protected float ZOOM = 1.15f;
     protected RayHandler rayHandler;
     protected float frameWidth, frameHeight;
-    protected boolean aktive = true;
+    protected boolean active = true;
     protected boolean removable = false;
 
     public Collectable(Vector2 position, World world, RayHandler rayHandler) {
@@ -30,6 +35,13 @@ public abstract class Collectable extends GameElement {
         this.frameHeight = frameHeight;
         this.frameWidth = frameWidth;
         this.createBoy(position);
+        this.light = new PointLight(rayHandler, 10);
+        this.light.setColor(new Color(.8f, .8f, .8f, 1f));
+        this.light.setPosition(position);
+        this.light.setDistance(2);
+        this.light.setSoft(false);
+        this.light.setActive(true);
+        this.light.attachToBody(body);
 
     }
 
@@ -81,5 +93,25 @@ public abstract class Collectable extends GameElement {
         return removable;
     }
 
+    /**
+     * Tells if the collectable is active. A collectable should be active if it is NOT in use by a player.
+     * If it is active, it can safely not being updated and removed.
+     *
+     * @return if it is active
+     */
+    public boolean isActive() {
+        return active;
+    }
 
+    /**
+     *
+     */
+    @Override
+    public void dispose() {
+        if (removable) {
+            light.remove();
+        }
+        texture.dispose();
+
+    }
 }

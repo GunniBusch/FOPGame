@@ -18,6 +18,7 @@ public abstract class TimedCollectable extends Collectable {
 
     public TimedCollectable(Vector2 position, World world, RayHandler rayHandler) {
         super(position, world, rayHandler);
+
     }
 
     protected abstract void apply(Player player);
@@ -31,7 +32,7 @@ public abstract class TimedCollectable extends Collectable {
      */
     public Float[] getDurationAndElapsed() {
         return new Float[]{
-                MathUtils.clamp(elapsedTIme, 0, duration),
+                MathUtils.clamp(MathUtils.round(elapsedTIme), 0, duration),
                 duration
         };
     }
@@ -41,7 +42,7 @@ public abstract class TimedCollectable extends Collectable {
      */
     @Override
     public void update(float deltaTime) {
-        if (!aktive) {
+        if (!active) {
             this.elapsedTIme += deltaTime;
             if (elapsedTIme >= duration) {
                 this.removable = true;
@@ -59,7 +60,7 @@ public abstract class TimedCollectable extends Collectable {
     @Override
     public void collect(Player player) {
         if (player.addCollectable(this)) {
-            aktive = false;
+            active = false;
             apply(player);
         }
     }

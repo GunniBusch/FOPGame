@@ -47,6 +47,7 @@ public class SpeedBoost extends TimedCollectable {
         } else {
             player.setSpeed(this.originalSpeed);
         }
+        this.active = true;
 
     }
 
@@ -55,7 +56,7 @@ public class SpeedBoost extends TimedCollectable {
      */
     @Override
     public void render(SpriteBatch spriteBatch) {
-        if (aktive) {
+        if (active) {
             spriteBatch.draw(
                     this.textureRegion,
                     this.body.getPosition().x * PPM - (16 / 2f),
@@ -65,14 +66,6 @@ public class SpeedBoost extends TimedCollectable {
 
             );
         }
-
-    }
-
-    /**
-     *
-     */
-    @Override
-    public void dispose() {
 
     }
 

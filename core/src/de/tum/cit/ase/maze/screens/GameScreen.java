@@ -29,6 +29,7 @@ import de.tum.cit.ase.maze.objects.dynamic.Player;
 import de.tum.cit.ase.maze.objects.still.Entry;
 import de.tum.cit.ase.maze.objects.still.Exit;
 import de.tum.cit.ase.maze.objects.still.Wall;
+import de.tum.cit.ase.maze.objects.still.collectable.DamageDeflect;
 import de.tum.cit.ase.maze.objects.still.collectable.HealthCollectable;
 import de.tum.cit.ase.maze.objects.still.collectable.SpeedBoost;
 import de.tum.cit.ase.maze.utils.MapLoader;
@@ -105,7 +106,7 @@ public class GameScreen implements Screen {
         // To debug no damage
         if (DEBUG) player.markAsFinished();
         this.entities.add(player);
-        this.collectableManager = new CollectableManager(world, rayHandler);
+        this.collectableManager = new CollectableManager(world, rayHandler, true);
         spawnCollectables();
         this.inputAdapter = new GameInputProcessor(game, player);
         this.background = new Texture("StoneFloorTexture.png");
@@ -122,7 +123,7 @@ public class GameScreen implements Screen {
         camera.position.set(target);
 
         hudCamera = new OrthographicCamera();
-        this.hud = new Hud(hudCamera, this.game.getSpriteBatch(), player);
+        this.hud = new Hud(hudCamera, this.game.getSpriteBatch(), player, this);
 
         this.game.getSpriteBatch().setProjectionMatrix(camera.combined);
         game.getSpriteCache().setProjectionMatrix(camera.combined);
@@ -153,6 +154,7 @@ public class GameScreen implements Screen {
     private void spawnCollectables() {
         collectableManager.spawn(HealthCollectable.class, 0.01f);
         collectableManager.spawn(SpeedBoost.class, 0.01f);
+        collectableManager.spawn(DamageDeflect.class, 0.008f);
 
     }
 
@@ -336,10 +338,12 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(this.inputAdapter);
+        this.collectableManager.getTimer().start();
     }
 
     @Override
     public void hide() {
+        this.collectableManager.getTimer().stop();
     }
 
     @Override
@@ -354,5 +358,9 @@ public class GameScreen implements Screen {
         collectableManager.dispose();
 
 
+    }
+
+    public CollectableManager getCollectableManager() {
+        return collectableManager;
     }
 }
