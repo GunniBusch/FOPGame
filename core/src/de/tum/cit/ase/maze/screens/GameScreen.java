@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -60,16 +61,16 @@ public class GameScreen implements Screen {
     private final int mapCacheID, backgroundCacheId;
     private final DeathListener deathListener;
     private final Hud hud;
-    private boolean victory = false;
-    private boolean end = false;
     private final float zoom = .9f;
-    private Vector3 target;
     private final Wall wall;
     private final CollectableManager collectableManager;
-
     private final RayHandler rayHandler;
+    private boolean victory = false;
+    private boolean end = false;
+    private Vector3 target;
     //added boolean pause, for pause functionality
     private boolean paused;
+    private float stateTime = 0f;
 
     //ToDo Check what viewport does and if we need it.
 
@@ -222,6 +223,7 @@ public class GameScreen implements Screen {
      */
     private void update(float dt) {
         this.world.step(1 / 60f, 6, 2);
+        stateTime +=dt;
         rayHandler.update();
         this.entities.parallelStream().forEach(entity -> entity.update(dt));
         this.collectableManager.update(dt);
@@ -257,42 +259,43 @@ public class GameScreen implements Screen {
     private void cameraUpdate(float dt) {
 
 
-        if (!camera.frustum.pointInFrustum(new Vector3(this.player.getPosition(), 0).scl(PPM))) {
-
-            target.set(player.getPosition().cpy().scl(PPM), 0);
+        var frustum = camera.frustum;
+        Vector3 c1, c2, c3, c4, dim, pos;
+        dim = new Vector3(player.getDimensions(), 0).scl(0.5f);
+        pos = new Vector3(player.getPosition(), 0).scl(PPM);
+        c1 = pos.cpy().sub(dim);
+        c2 = pos.cpy().add(dim);
+        c3 = pos.cpy().sub(dim.x, 0, 0).add(0, dim.y, 0);
+        c4 = pos.cpy().sub(0, dim.y, 0).add(dim.x, 0, 0);
+        if (!(frustum.pointInFrustum(c1) && frustum.pointInFrustum(c2) && frustum.pointInFrustum(c3) && frustum.pointInFrustum(c4))) {
+            target.set(pos);
 
         }
-        //camera.position.slerp(target, .1f);
+        // Duration in seconds
+        var duration = .5;
+
         camera.position.interpolate(target, .2f, Interpolation.smoother);
 
         Vector3 position = camera.position;
         float extraSize = 0.5f; // 2 meters extra in both width and height
-        float mapStartX = -1 * PPM; // X-coordinate where your map starts
-        float mapStartY = -1 * PPM; // Y-coordinate where your map starts
+        float mapStartX = -extraSize * PPM; // X-coordinate where your map starts
+        float mapStartY = -extraSize * PPM; // Y-coordinate where your map starts
         float viewX = zoom * (camera.viewportWidth / 2);
         float viewY = zoom * (camera.viewportHeight / 2);
 
 // Adjust for map start coordinates and extra size
-        if (position.x < viewX + mapStartX) {
-            position.x = viewX + mapStartX;
-        }
-        if (position.y < viewY + mapStartY) {
-            position.y = viewY + mapStartY;
-        }
+
 
 // Adjust the width and height calculations
         float adjustedWidth = MapLoader.width + extraSize;
         float adjustedHeight = MapLoader.height + extraSize;
         float w = (adjustedWidth * PPM * SCALE - mapStartX) - viewX * 2;
         float h = (adjustedHeight * PPM * SCALE - mapStartY) - viewY * 2;
+        position.x = MathUtils.clamp(position.x, viewX + mapStartX, viewX + w + mapStartX);
+        position.y = MathUtils.clamp(position.y, viewY + mapStartY, viewY + h + mapStartY);
 
 // Right and top boundary checks with map start position and extra size
-        if (position.x > viewX + w + mapStartX) {
-            position.x = viewX + w + mapStartX;
-        }
-        if (position.y > viewY + h + mapStartY) {
-            position.y = viewY + h + mapStartY;
-        }
+
 
         camera.position.set(position);
 

@@ -4,7 +4,6 @@ import box2dLight.PointLight;
 import box2dLight.PositionalLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -16,9 +15,7 @@ import de.tum.cit.ase.maze.objects.dynamic.Player;
 import static de.tum.cit.ase.maze.utils.CONSTANTS.*;
 
 public abstract class Collectable extends GameElement {
-    protected Texture texture;
-    private final PositionalLight light;
-
+    protected final PositionalLight light;
     protected float ZOOM = 1.15f;
     protected RayHandler rayHandler;
     protected float frameWidth, frameHeight;
@@ -26,9 +23,10 @@ public abstract class Collectable extends GameElement {
     protected boolean removable = false;
 
     public Collectable(Vector2 position, World world, RayHandler rayHandler) {
-        this(position,world,rayHandler,16,16);
+        this(position, world, rayHandler, 16, 16);
 
     }
+
     protected Collectable(Vector2 position, World world, RayHandler rayHandler, float frameWidth, float frameHeight) {
         this.world = world;
         this.rayHandler = rayHandler;

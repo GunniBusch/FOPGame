@@ -180,4 +180,7 @@ public abstract class Character extends GameElement {
     public void setSpeed(float speed) {
         this.speed = speed;
     }
+    public Vector2 getDimensions(){
+        return new Vector2(frameWidth * ZOOM, frameHeight * ZOOM);
+    }
 }
