@@ -60,6 +60,8 @@ project(":desktop") {
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
         implementation "games.spooky.gdx:gdx-nativefilechooser-desktop-lwjgl:$gdxNativefilechooserVersion"
+        implementation 'org.reflections:reflections:0.10.2'
+
         api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
 
     }
@@ -75,6 +77,8 @@ project(":core") {
         implementation "games.spooky.gdx:gdx-nativefilechooser:$gdxNativefilechooserVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
+        implementation 'org.reflections:reflections:0.10.2'
+
 
 
     }

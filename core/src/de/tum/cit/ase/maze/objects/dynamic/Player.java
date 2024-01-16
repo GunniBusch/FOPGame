@@ -29,13 +29,14 @@ public class Player extends Character implements Movable {
     private final int RAYS_NUM = 500;
     private final Set<TimedCollectable> timedCollectables;
     private final float lightDistance = 15f;
+    private final RayHandler rayHandler;
+    private final PositionalLight light;
     /**
      * Marks if game is finished
      */
     private boolean isFinished = false;
-    private final RayHandler rayHandler;
-    private final PositionalLight light;
     private boolean isSprint = false;
+    private boolean isVulnerable = true;
 
 
     public Player(World world, DeathListener deathListener, RayHandler rayHandler) {
@@ -156,7 +157,7 @@ public class Player extends Character implements Movable {
      */
     @Override
     public void makeDamage(int damage) {
-        if (!isFinished) super.makeDamage(damage);
+        if (!isFinished && isVulnerable) super.makeDamage(damage);
     }
 
     /**
@@ -200,5 +201,13 @@ public class Player extends Character implements Movable {
         } else {
             speed /= SPEED_BOOST;
         }
+    }
+
+    public boolean isVulnerable() {
+        return isVulnerable;
+    }
+
+    public void setVulnerable(boolean vulnerable) {
+        isVulnerable = vulnerable;
     }
 }
