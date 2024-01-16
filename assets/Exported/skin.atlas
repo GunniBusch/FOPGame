@@ -1,0 +1,179 @@
+
+skin.png
+size: 1024, 1024
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+bar-000
+  rotate: false
+  xy: 1, 510
+  size: 114, 18
+  split: 11, 11, 7, 7
+  pad: 10, 10, 6, 6
+  orig: 114, 18
+  offset: 0, 0
+  index: -1
+bar-knob-000
+  rotate: false
+  xy: 260, 572
+  size: 1, 6
+  orig: 1, 6
+  offset: 0, 0
+  index: -1
+bar-knob-select-000
+  rotate: false
+  xy: 1016, 927
+  size: 7, 26
+  orig: 7, 26
+  offset: 0, 0
+  index: -1
+bar-knob-select-transperentPointer-000
+  rotate: false
+  xy: 1016, 955
+  size: 7, 26
+  orig: 7, 26
+  offset: 0, 0
+  index: -1
+divider-000
+  rotate: false
+  xy: 162, 556
+  size: 96, 22
+  split: 0, 16, 10, 10
+  orig: 96, 22
+  offset: 0, 0
+  index: -1
+divider-fade-000
+  rotate: false
+  xy: 509, 769
+  size: 96, 22
+  split: 48, 15, 10, 10
+  orig: 96, 22
+  offset: 0, 0
+  index: -1
+heart
+  rotate: false
+  xy: 117, 510
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+heart-bg
+  rotate: false
+  xy: 625, 809
+  size: 18, 18
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+key
+  rotate: false
+  xy: 559, 738
+  size: 18, 29
+  orig: 18, 29
+  offset: 0, 0
+  index: -1
+key-bg
+  rotate: false
+  xy: 509, 688
+  size: 18, 29
+  orig: 18, 29
+  offset: 0, 0
+  index: -1
+panel-000
+  rotate: false
+  xy: 509, 719
+  size: 48, 48
+  split: 12, 12, 12, 12
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+panel-border-000
+  rotate: false
+  xy: 1, 460
+  size: 48, 48
+  split: 12, 12, 12, 12
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+panel-transparent-border-000
+  rotate: false
+  xy: 1, 410
+  size: 48, 48
+  split: 12, 12, 12, 12
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+panel-transparent-center-000
+  rotate: false
+  xy: 51, 460
+  size: 48, 48
+  split: 12, 12, 12, 12
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+slider-000
+  rotate: false
+  xy: 1, 530
+  size: 159, 48
+  split: 12, 12, 12, 12
+  pad: 12, 12, 8, 8
+  orig: 159, 48
+  offset: 0, 0
+  index: -1
+slider-000-1
+  rotate: false
+  xy: 509, 793
+  size: 114, 34
+  split: 12, 12, 12, 12
+  pad: 12, 12, 8, 8
+  orig: 114, 34
+  offset: 0, 0
+  index: -1
+slider-knob-000-1
+  rotate: false
+  xy: 162, 536
+  size: 1, 18
+  orig: 1, 18
+  offset: 0, 0
+  index: -1
+slider-knob-select-000-1
+  rotate: false
+  xy: 1016, 983
+  size: 7, 38
+  orig: 7, 38
+  offset: 0, 0
+  index: -1
+KnightWarrior
+  rotate: false
+  xy: 1, 618
+  size: 505, 36
+  orig: 505, 36
+  offset: 0, 0
+  index: -1
+KnightWarriorBigWhite
+  rotate: false
+  xy: 509, 926
+  size: 505, 95
+  orig: 505, 95
+  offset: 0, 0
+  index: -1
+KnightWarriorFontDefault32
+  rotate: false
+  xy: 509, 829
+  size: 505, 95
+  orig: 505, 95
+  offset: 0, 0
+  index: -1
+KnightWarriorSmallWhite
+  rotate: false
+  xy: 1, 580
+  size: 505, 36
+  orig: 505, 36
+  offset: 0, 0
+  index: -1
+KnightWarriorTitleWhite
+  rotate: false
+  xy: 1, 656
+  size: 506, 365
+  orig: 506, 365
+  offset: 0, 0
+  index: -1
