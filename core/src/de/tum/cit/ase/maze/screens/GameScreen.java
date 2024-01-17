@@ -258,7 +258,6 @@ public class GameScreen implements Screen {
      */
     private void cameraUpdate(float dt) {
 
-
         var frustum = camera.frustum;
         Vector3 c1, c2, c3, c4, dim, pos;
         dim = new Vector3(player.getDimensions(), 0).scl(0.5f);
@@ -276,28 +275,28 @@ public class GameScreen implements Screen {
 
         camera.position.interpolate(target, .2f, Interpolation.smoother);
 
-        Vector3 position = camera.position;
-        float extraSize = 0.5f; // 2 meters extra in both width and height
-        float mapStartX = -extraSize * PPM; // X-coordinate where your map starts
-        float mapStartY = -extraSize * PPM; // Y-coordinate where your map starts
+
+        float extraSize = .5f; // 21 meters extra in all directions
+        float mapStartX = -extraSize * PPM * SCALE; // X-coordinate where the map starts
+        float mapStartY = -extraSize * PPM * SCALE; // Y-coordinate where the map starts
         float viewX = zoom * (camera.viewportWidth / 2);
         float viewY = zoom * (camera.viewportHeight / 2);
 
-// Adjust for map start coordinates and extra size
+// Adjusted width and height calculations
+        float adjustedWidth = (MapLoader.width + 2 * extraSize) * PPM * SCALE; // total world width in pixels
+        float adjustedHeight = (MapLoader.height + 2 * extraSize) * PPM * SCALE; // total world height in pixels
 
+// Calculate w and h
+        float w = adjustedWidth - viewX * 2;
+        float h = adjustedHeight - viewY * 2;
 
-// Adjust the width and height calculations
-        float adjustedWidth = MapLoader.width + extraSize;
-        float adjustedHeight = MapLoader.height + extraSize;
-        float w = (adjustedWidth * PPM * SCALE - mapStartX) - viewX * 2;
-        float h = (adjustedHeight * PPM * SCALE - mapStartY) - viewY * 2;
-        position.x = MathUtils.clamp(position.x, viewX + mapStartX, viewX + w + mapStartX);
-        position.y = MathUtils.clamp(position.y, viewY + mapStartY, viewY + h + mapStartY);
+// Ensure w and h are not negative
+        w = Math.max(w, 0);
+        h = Math.max(h, 0);
 
-// Right and top boundary checks with map start position and extra size
-
-
-        camera.position.set(position);
+// Adjust for map start coordinates
+        camera.position.x = MathUtils.clamp(camera.position.x, viewX + mapStartX, w + viewX + mapStartX);
+        camera.position.y = MathUtils.clamp(camera.position.y, viewY + mapStartY, h + viewY + mapStartY);
 
 
         viewport.apply();
@@ -308,7 +307,6 @@ public class GameScreen implements Screen {
         this.end = true;
         this.victory = victory;
     }
-
     private void spawnEntities() {
 
 
@@ -325,8 +323,6 @@ public class GameScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
-        //camera.setToOrtho(false, width / SCALE, height / SCALE);
-        //hudCamera.setToOrtho(false, width / SCALE, height / SCALE);
         hud.resize(width, height);
     }
 
