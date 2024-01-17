@@ -29,6 +29,7 @@ import de.tum.cit.ase.maze.objects.dynamic.Enemy;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
 import de.tum.cit.ase.maze.objects.still.Entry;
 import de.tum.cit.ase.maze.objects.still.Exit;
+import de.tum.cit.ase.maze.objects.still.Key;
 import de.tum.cit.ase.maze.objects.still.Wall;
 import de.tum.cit.ase.maze.objects.still.collectable.DamageDeflect;
 import de.tum.cit.ase.maze.objects.still.collectable.HealthCollectable;
@@ -99,7 +100,7 @@ public class GameScreen implements Screen {
 
         //Gdx.gl.glEnable(GL20.GL_BLEND);
         this.b2DDr = new Box2DDebugRenderer(true, true, false, true, true, true);
-        MapLoader.loadMapFile(Gdx.files.internal("level-3.properties"));
+        MapLoader.loadMapFile(Gdx.files.internal("level-1.properties"));
         wall = new Wall(MapLoader.getMapCoordinates(ObjectType.Wall), game.getSpriteCache(), world);
 
         var playerCord = MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0).cpy();
@@ -319,6 +320,9 @@ public class GameScreen implements Screen {
         this.entities.add(new Exit(world, MapLoader.getMapCoordinates(ObjectType.Exit).get(0), this));
         new Entry(world, MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0), this);
 
+        //spawns the key
+        Vector2 keyPosition = (Vector2) MapLoader.getMapCoordinates(ObjectType.Key);
+        this.entities.add(new Key(world, keyPosition));
 
     }
 
