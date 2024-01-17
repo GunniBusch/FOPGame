@@ -8,6 +8,9 @@ import de.tum.cit.ase.maze.objects.dynamic.Player;
 
 import java.util.Objects;
 
+/**
+ * A {@link TimedCollectable} is a {@link Collectable}, that applies an effect to the {@link Player} for a specified time. After that the effect is removed.
+ */
 public abstract class TimedCollectable extends Collectable {
     /**
      * Duration of the effect in seconds
@@ -21,8 +24,16 @@ public abstract class TimedCollectable extends Collectable {
 
     }
 
+    /**
+     * Applies the effect to the player. The effect is restored by {@link TimedCollectable#restore(Player)}
+     *
+     * @param player the {@link Player} to apply the effect to.
+     */
     protected abstract void apply(Player player);
 
+    /**
+     * Restores the changes made by {@link TimedCollectable#apply}
+     */
     public abstract void restore(Player player);
 
     /**
@@ -54,9 +65,7 @@ public abstract class TimedCollectable extends Collectable {
 
     }
 
-    /**
-     * @param player
-     */
+
     @Override
     public void collect(Player player) {
         if (player.addCollectable(this)) {

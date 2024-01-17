@@ -14,6 +14,9 @@ import de.tum.cit.ase.maze.objects.dynamic.Player;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.*;
 
+/**
+ * A collectable is a {@link GameElement} that can be collected by a player and then applies an effect to the {@link Player}.
+ */
 public abstract class Collectable extends GameElement {
     protected final PositionalLight light;
     protected float ZOOM = 1.15f;
@@ -43,6 +46,11 @@ public abstract class Collectable extends GameElement {
 
     }
 
+    /**
+     * Called when a {@link Player} is collects it.
+     *
+     * @param player the {@link Player} that collected it
+     */
     public abstract void collect(Player player);
 
     /**
@@ -53,11 +61,19 @@ public abstract class Collectable extends GameElement {
         if (this.removable) remove();
     }
 
+    /**
+     * Removes the collectable
+     */
     public void remove() {
         world.destroyBody(body);
         this.dispose();
     }
 
+    /**
+     * Creates the body
+     *
+     * @param position
+     */
     protected void createBoy(Vector2 position) {
 
         BodyDef def = new BodyDef();
@@ -84,8 +100,6 @@ public abstract class Collectable extends GameElement {
 
     /**
      * Tells if it is removable
-     *
-     * @return removable
      */
     public final boolean isRemovable() {
         return removable;
@@ -101,9 +115,6 @@ public abstract class Collectable extends GameElement {
         return active;
     }
 
-    /**
-     *
-     */
     @Override
     public void dispose() {
         if (removable) {

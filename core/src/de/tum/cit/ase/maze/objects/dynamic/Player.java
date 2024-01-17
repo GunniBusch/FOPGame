@@ -25,7 +25,7 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.*;
  * Class represents the Player. The player is the main character that can be controlled by a person.
  */
 public class Player extends Character implements Movable {
-    public final float SPEED_BOOST = 1.8f;
+    public final float SPRINT_BOOST = 1.8f;
     private final int RAYS_NUM = 500;
     private final Set<TimedCollectable> timedCollectables;
     private final float lightDistance = 15f;
@@ -57,7 +57,7 @@ public class Player extends Character implements Movable {
         super(world, deathListener);
         this.timedCollectables = new HashSet<>();
         this.rayHandler = rayHandler;
-        this.light = new PointLight(rayHandler, RAYS_NUM, new Color(1, 1, 1, 0.89f), 15 * 2, x, y);
+        this.light = new PointLight(rayHandler, RAYS_NUM, new Color(1, 1, 1, 0.89f), lightDistance * 2, x, y);
         light.setSoftnessLength(1.5f);
         var filter = new Filter();
         light.setSoft(true);
@@ -197,9 +197,9 @@ public class Player extends Character implements Movable {
         if (sprint == this.isSprint()) return;
         else isSprint = sprint;
         if (sprint) {
-            speed *= SPEED_BOOST;
+            speed *= SPRINT_BOOST;
         } else {
-            speed /= SPEED_BOOST;
+            speed /= SPRINT_BOOST;
         }
     }
 

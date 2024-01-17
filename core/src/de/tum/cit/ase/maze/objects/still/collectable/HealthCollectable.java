@@ -12,19 +12,19 @@ import de.tum.cit.ase.maze.objects.dynamic.Player;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 
+/**
+ * {@link Collectable} that restores the health of the player by {@link HealthCollectable#HEALTH_TO_RESTORE}
+ */
 public class HealthCollectable extends Collectable {
     private final Animation<TextureRegion> animation;
-    private float stateTime = 0f;
     private final int HEALTH_TO_RESTORE = 2;
-
+    private float stateTime = 0f;
 
     public HealthCollectable(Vector2 position, World world, RayHandler rayHandler) {
         super(position, world, rayHandler);
 
 
-
         texture = new Texture("objects.png");
-
 
         Array<TextureRegion> walkFrames = new Array<>(TextureRegion.class);
         int animationFrames = 4;
@@ -39,17 +39,12 @@ public class HealthCollectable extends Collectable {
 
     }
 
-    /**
-     * @param player
-     */
     @Override
     public void collect(Player player) {
         if (player.heal(HEALTH_TO_RESTORE)) removable = true;
     }
 
-    /**
-     * @param spriteBatch
-     */
+
     @Override
     public void render(SpriteBatch spriteBatch) {
 
@@ -65,13 +60,9 @@ public class HealthCollectable extends Collectable {
 
     }
 
-    /**
-     * @param deltaTime Time since last frame.
-     */
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
         stateTime += deltaTime;
-
     }
 }

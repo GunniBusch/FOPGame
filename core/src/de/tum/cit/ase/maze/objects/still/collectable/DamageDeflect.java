@@ -10,6 +10,9 @@ import de.tum.cit.ase.maze.objects.dynamic.Player;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 
+/**
+ * Makes the {@link Player} invulnerable for the {@link #duration} this has an effect
+ */
 public class DamageDeflect extends TimedCollectable {
     private final TextureRegion textureRegion;
 
@@ -21,9 +24,7 @@ public class DamageDeflect extends TimedCollectable {
 
     }
 
-    /**
-     * @param spriteBatch
-     */
+
     @Override
     public void render(SpriteBatch spriteBatch) {
         if (active) {
@@ -39,18 +40,12 @@ public class DamageDeflect extends TimedCollectable {
 
     }
 
-    /**
-     * @param player
-     */
     @Override
     protected void apply(Player player) {
         player.setVulnerable(false);
 
     }
 
-    /**
-     * @param player
-     */
     @Override
     public void restore(Player player) {
         player.setVulnerable(true);

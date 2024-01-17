@@ -52,7 +52,7 @@ public final class MapLoader {
     }
 
     public static List<Vector2> getMapCoordinates(ObjectType type) {
-        return new ArrayList<>(map.get(type));
+        return new ArrayList<>(map.getOrDefault(type, new ArrayList<>()));
     }
 
     public static Grid getGameGrid() {
