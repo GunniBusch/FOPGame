@@ -15,7 +15,7 @@ public class Traps extends GameElement {
     private TextureRegion textureRegion;
 
 
-    public Key(World world, Vector2 position) {
+    public Traps(World world, Vector2 position) {
         BodyDef def = new BodyDef();
         def.type = BodyDef.BodyType.StaticBody;
         def.fixedRotation = true;
