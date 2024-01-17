@@ -24,7 +24,7 @@ import java.util.Map;
  * Manages collectables like {@link Collectable} or {@link TimedCollectable}
  */
 public class CollectableManager implements Disposable {
-    public final float RESPAWN_TIME = 5f * 60;
+    public final float RESPAWN_TIME = .1f * 60;
     private final World world;
     private final RayHandler rayHandler;
     private final Array<Vector2> spawnablePoints;

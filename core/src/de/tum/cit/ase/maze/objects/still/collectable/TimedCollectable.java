@@ -79,13 +79,24 @@ public abstract class TimedCollectable extends Collectable {
      */
     @Override
     public void remove() {
-        this.isDisposed = true;
-        if (body != null) {
-            world.destroyBody(body);
-            body = null;
-        }
-        this.dispose();
+        if (!this.isDisposed) {
 
+            if (body != null) {
+                world.destroyBody(body);
+                body = null;
+            }
+            light.remove();
+            this.dispose();
+            this.isDisposed = true;
+        }
+    }
+
+    @Override
+    public void dispose() {
+        if (!isDisposed) {
+            this.isDisposed = true;
+            texture.dispose();
+        }
     }
 
     @Override

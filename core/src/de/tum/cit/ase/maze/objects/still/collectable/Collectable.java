@@ -66,6 +66,8 @@ public abstract class Collectable extends GameElement {
      */
     public void remove() {
         world.destroyBody(body);
+        light.setActive(false);
+        light.remove();
         this.dispose();
     }
 
@@ -118,7 +120,7 @@ public abstract class Collectable extends GameElement {
     @Override
     public void dispose() {
         if (removable) {
-            light.remove();
+
         }
         texture.dispose();
 
