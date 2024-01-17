@@ -11,8 +11,7 @@ import de.tum.cit.ase.maze.objects.GameElement;
 import de.tum.cit.ase.maze.screens.GameScreen;
 import de.tum.cit.ase.maze.utils.MapLoader;
 
-import static de.tum.cit.ase.maze.utils.CONSTANTS.DEBUG;
-import static de.tum.cit.ase.maze.utils.CONSTANTS.SCALE;
+import static de.tum.cit.ase.maze.utils.CONSTANTS.*;
 
 /**
  * Defines the entry of the game. Cant be passed.
@@ -44,12 +43,12 @@ public class Entry extends GameElement {
 
     private void createBody(Vector2 position) {
         float x, y;
-        var halfSize = 1f;
+        var halfSize = 1f * Wall.width / PPM;
         EdgeShape shape = new EdgeShape();
-        x = position.x * SCALE;
-        y = position.y * SCALE;
+        x = position.x * Wall.width / PPM / SCALE;
+        y = position.y * Wall.width / PPM / SCALE;
 
-        var p = position.cpy().sub(new Vector2(MapLoader.width, MapLoader.height).scl(0.5f));
+        var p = position.cpy().sub(new Vector2(MapLoader.width, MapLoader.height).scl(1 / SCALE));
         Vector2[] corners;
         if (MathUtils.round(Math.abs(p.x)) > MathUtils.round(Math.abs(p.y))) {
             // Side

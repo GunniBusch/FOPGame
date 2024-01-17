@@ -9,6 +9,7 @@ import de.tum.cit.ase.maze.objects.dynamic.Enemy;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
 import de.tum.cit.ase.maze.objects.still.Exit;
 import de.tum.cit.ase.maze.objects.still.Key;
+import de.tum.cit.ase.maze.objects.still.collectable.Collectable;
 
 /**
  * Class that receives collisions from {@link com.badlogic.gdx.physics.box2d.Box2D}
@@ -25,28 +26,32 @@ public class ListenerClass implements ContactListener {
     public void beginContact(Contact contact) {
 
         // Ignore enemies colliding;
-        if (contact.getFixtureA().getUserData() instanceof Enemy && contact.getFixtureB().getUserData() instanceof Enemy)
-            return;
-        ;
-        if (contact.getFixtureA().getUserData() != null && contact.getFixtureB().getUserData() != null) {
 
+        if (contact.getFixtureA().getUserData() != null && contact.getFixtureB().getUserData() != null) {
+            if (contact.getFixtureA().getUserData() instanceof Enemy && contact.getFixtureB().getUserData() instanceof Enemy)
+                return;
 
             if (contact.getFixtureB().isSensor()) {
                 Gdx.app.debug("Contact with sensor", contact.getFixtureA().getUserData().getClass().getName() + " : " + contact.getFixtureB().getUserData().getClass().getName());
 
                 // Player seen by Enemy
-                if (contact.getFixtureB().getUserData() instanceof Enemy && contact.getFixtureA().getUserData() instanceof Player) {
+                if (contact.getFixtureB().getUserData() instanceof Enemy enemy && contact.getFixtureA().getUserData() instanceof Player player) {
 
 
-                    ((Enemy) contact.getFixtureB().getUserData()).setPlayer((Player) contact.getFixtureA().getUserData());
-                    ((Enemy) contact.getFixtureB().getUserData()).isFollowing = true;
+                    enemy.setPlayer(player);
+                    enemy.isFollowing = true;
 
                 }
                 // Player reached Exit
-                if (contact.getFixtureB().getUserData() instanceof Exit && contact.getFixtureA().getUserData() instanceof Player) {
+                if (contact.getFixtureB().getUserData() instanceof Exit exit && contact.getFixtureA().getUserData() instanceof Player player) {
 
-                    ((Exit) contact.getFixtureB().getUserData()).requestOpening((Player) contact.getFixtureA().getUserData());
+                    exit.requestOpening(player);
 
+                }
+                // Player Collect Collectable
+                if (contact.getFixtureA().getUserData() instanceof Player player && contact.getFixtureB().getUserData() instanceof Collectable collectable) {
+                    Gdx.app.debug("Collectable", "Player collected Collectable");
+                    collectable.collect(player);
                 }
                 //Player collected Key
                 if(contact.getFixtureB().getUserData() instanceof Key && contact.getFixtureA().getUserData() instanceof Player) {
@@ -57,23 +62,23 @@ public class ListenerClass implements ContactListener {
                 Gdx.app.debug("Contact with class", contact.getFixtureA().getUserData().getClass().getName() + " : " + contact.getFixtureB().getUserData().getClass().getName());
 
                 // Player bumped into an Enemy
-                if (contact.getFixtureB().getUserData() instanceof Enemy && contact.getFixtureA().getUserData() instanceof Player) {
+                if (contact.getFixtureB().getUserData() instanceof Enemy enemy && contact.getFixtureA().getUserData() instanceof Player player) {
 
 
-                    ((Enemy) contact.getFixtureB().getUserData()).setPlayer((Player) contact.getFixtureA().getUserData());
-                    ((Enemy) contact.getFixtureB().getUserData()).isFollowing = false;
+                    enemy.setPlayer(player);
+                    enemy.isFollowing = false;
 
-                    ((Player) contact.getFixtureA().getUserData()).makeDamage(1);
+                    player.makeDamage(1);
 
 
                 } // Enemy bumped into a Player
-                else if (contact.getFixtureA().getUserData() instanceof Enemy && contact.getFixtureB().getUserData() instanceof Player) {
+                else if (contact.getFixtureA().getUserData() instanceof Enemy enemy && contact.getFixtureB().getUserData() instanceof Player player) {
 
 
-                    ((Enemy) contact.getFixtureA().getUserData()).setPlayer((Player) contact.getFixtureB().getUserData());
-                    ((Enemy) contact.getFixtureA().getUserData()).isFollowing = false;
+                    enemy.setPlayer(player);
+                    enemy.isFollowing = false;
 
-                    ((Player) contact.getFixtureB().getUserData()).makeDamage(1);
+                    player.makeDamage(1);
 
                 }
 
@@ -89,22 +94,21 @@ public class ListenerClass implements ContactListener {
     @Override
     public void endContact(Contact contact) {
         // Ignore enemies colliding;
-        if (contact.getFixtureA().getUserData() instanceof Enemy && contact.getFixtureB().getUserData() instanceof Enemy)
-            return;
-        ;
+
 
         if (contact.getFixtureA().getUserData() != null && contact.getFixtureB().getUserData() != null) {
-
+            if (contact.getFixtureA().getUserData() instanceof Enemy && contact.getFixtureB().getUserData() instanceof Enemy)
+                return;
 
             if (contact.getFixtureB().isSensor()) {
                 Gdx.app.debug("End contact with sensor", contact.getFixtureA().getUserData().getClass().getName() + " : " + contact.getFixtureB().getUserData().getClass().getName());
 
                 //Player cant be seen by Enemy
-                if (contact.getFixtureB().getUserData() instanceof Enemy && contact.getFixtureA().getUserData() instanceof Player) {
+                if (contact.getFixtureB().getUserData() instanceof Enemy enemy && contact.getFixtureA().getUserData() instanceof Player player) {
 
 
-                    ((Enemy) contact.getFixtureB().getUserData()).setPlayer((Player) contact.getFixtureA().getUserData());
-                    ((Enemy) contact.getFixtureB().getUserData()).isFollowing = false;
+                    enemy.setPlayer(player);
+                    enemy.isFollowing = false;
 
                 }
 
@@ -113,19 +117,19 @@ public class ListenerClass implements ContactListener {
                 Gdx.app.debug("End contact with class", contact.getFixtureA().getUserData().getClass().getName() + " : " + contact.getFixtureB().getUserData().getClass().getName());
 
                 // Player bumped into an Enemy
-                if (contact.getFixtureB().getUserData() instanceof Enemy && contact.getFixtureA().getUserData() instanceof Player) {
+                if (contact.getFixtureB().getUserData() instanceof Enemy enemy && contact.getFixtureA().getUserData() instanceof Player player) {
 
 
-                    ((Enemy) contact.getFixtureB().getUserData()).setPlayer((Player) contact.getFixtureA().getUserData());
-                    ((Enemy) contact.getFixtureB().getUserData()).isFollowing = true;
+                    enemy.setPlayer(player);
+                    enemy.isFollowing = true;
 
 
                 } // Enemy bumped into a Player
-                else if (contact.getFixtureA().getUserData() instanceof Enemy && contact.getFixtureB().getUserData() instanceof Player) {
+                else if (contact.getFixtureA().getUserData() instanceof Enemy enemy && contact.getFixtureB().getUserData() instanceof Player player) {
 
 
-                    ((Enemy) contact.getFixtureA().getUserData()).setPlayer((Player) contact.getFixtureB().getUserData());
-                    ((Enemy) contact.getFixtureA().getUserData()).isFollowing = true;
+                    enemy.setPlayer(player);
+                    enemy.isFollowing = true;
 
                 }
             }

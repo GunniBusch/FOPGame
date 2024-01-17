@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -21,6 +22,7 @@ import de.tum.cit.ase.maze.Input.DeathListener;
 import de.tum.cit.ase.maze.Input.GameInputProcessor;
 import de.tum.cit.ase.maze.Input.ListenerClass;
 import de.tum.cit.ase.maze.MazeRunnerGame;
+import de.tum.cit.ase.maze.objects.CollectableManager;
 import de.tum.cit.ase.maze.objects.GameElement;
 import de.tum.cit.ase.maze.objects.ObjectType;
 import de.tum.cit.ase.maze.objects.dynamic.Enemy;
@@ -28,6 +30,9 @@ import de.tum.cit.ase.maze.objects.dynamic.Player;
 import de.tum.cit.ase.maze.objects.still.Entry;
 import de.tum.cit.ase.maze.objects.still.Exit;
 import de.tum.cit.ase.maze.objects.still.Wall;
+import de.tum.cit.ase.maze.objects.still.collectable.DamageDeflect;
+import de.tum.cit.ase.maze.objects.still.collectable.HealthCollectable;
+import de.tum.cit.ase.maze.objects.still.collectable.SpeedBoost;
 import de.tum.cit.ase.maze.utils.MapLoader;
 
 import java.util.ArrayList;
@@ -56,15 +61,16 @@ public class GameScreen implements Screen {
     private final int mapCacheID, backgroundCacheId;
     private final DeathListener deathListener;
     private final Hud hud;
+    private final float zoom = .9f;
+    private final Wall wall;
+    private final CollectableManager collectableManager;
+    private final RayHandler rayHandler;
     private boolean victory = false;
     private boolean end = false;
-    private final float zoom = .9f;
     private Vector3 target;
-    private final Wall wall;
-
-    private final RayHandler rayHandler;
     //added boolean pause, for pause functionality
     private boolean paused;
+    private float stateTime = 0f;
 
     //ToDo Check what viewport does and if we need it.
 
@@ -82,7 +88,8 @@ public class GameScreen implements Screen {
         RayHandler.setGammaCorrection(true);
 
         this.rayHandler = new RayHandler(world);
-        float val = 0.1f;
+        float val = 0.14f;
+        rayHandler.setShadows(true);
         rayHandler.setAmbientLight(new Color(val, val, val, 0.4f));
 
         RayHandler.useDiffuseLight(true);
@@ -97,7 +104,11 @@ public class GameScreen implements Screen {
 
         var playerCord = MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0).cpy();
         this.player = new Player(world, deathListener, rayHandler, playerCord.scl(PPM).scl(2f));
+        // To debug no damage
+        if (DEBUG) player.markAsFinished();
         this.entities.add(player);
+        this.collectableManager = new CollectableManager(world, rayHandler, true);
+        spawnCollectables();
         this.inputAdapter = new GameInputProcessor(game, player);
         this.background = new Texture("StoneFloorTexture.png");
         this.spawnEntities();
@@ -109,11 +120,11 @@ public class GameScreen implements Screen {
         camera.position.set(playerCord.cpy().scl(PPM).scl(2f), 0);
         camera.zoom = zoom;
         this.viewport = new ScreenViewport(camera);
-        target = new Vector3(camera.position.cpy());
+        target = new Vector3(camera.position);
         camera.position.set(target);
 
         hudCamera = new OrthographicCamera();
-        this.hud = new Hud(hudCamera, this.game.getSpriteBatch(), player);
+        this.hud = new Hud(hudCamera, this.game.getSpriteBatch(), player, this);
 
         this.game.getSpriteBatch().setProjectionMatrix(camera.combined);
         game.getSpriteCache().setProjectionMatrix(camera.combined);
@@ -141,6 +152,13 @@ public class GameScreen implements Screen {
 
     }
 
+    private void spawnCollectables() {
+        collectableManager.spawn(HealthCollectable.class, 0.01f);
+        collectableManager.spawn(SpeedBoost.class, 0.01f);
+        collectableManager.spawn(DamageDeflect.class, 0.008f);
+
+    }
+
 
     // Screen interface methods with necessary functionality
     @Override
@@ -158,7 +176,9 @@ public class GameScreen implements Screen {
 
         // Set up and begin drawing with the sprite batch
         game.getSpriteBatch().begin();
+        collectableManager.render(this.game.getSpriteBatch());
         entities.forEach(entity -> entity.render(this.game.getSpriteBatch()));
+
         game.getSpriteBatch().end();
 
         if (DEBUG) {
@@ -167,9 +187,12 @@ public class GameScreen implements Screen {
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             for (Enemy mob : enemies) {
                 shapeRenderer.setColor(0.f, 1, 0f, 1f);
+                Vector2 o = new Vector2();
+                Vector2 p = new Vector2();
                 for (int i = 0; i < mob.getPath().size() - 2; ++i) {
-                    var o = mob.getPath().get(i).cpy().scl(PPM);
-                    var p = mob.getPath().get(i + 1).cpy().scl(PPM);
+
+                    o.set(mob.getPath().get(i).cpy().scl(PPM));
+                    p.set(mob.getPath().get(i + 1).cpy().scl(PPM));
                     shapeRenderer.line(o.x * 2f, o.y * 2f, p.x * 2f, p.y * 2f);
                 }
                 if (mob.getPath().size() > 1) {
@@ -200,8 +223,10 @@ public class GameScreen implements Screen {
      */
     private void update(float dt) {
         this.world.step(1 / 60f, 6, 2);
+        stateTime +=dt;
         rayHandler.update();
         this.entities.parallelStream().forEach(entity -> entity.update(dt));
+        this.collectableManager.update(dt);
         hud.update(dt);
         this.cameraUpdate(dt);
         game.getSpriteBatch().setProjectionMatrix(camera.combined);
@@ -234,42 +259,43 @@ public class GameScreen implements Screen {
     private void cameraUpdate(float dt) {
 
 
-        if (!camera.frustum.pointInFrustum(new Vector3(this.player.getPosition().cpy().scl(PPM), 0))) {
-
-            target = new Vector3(player.getPosition().cpy().scl(PPM), 0);
+        var frustum = camera.frustum;
+        Vector3 c1, c2, c3, c4, dim, pos;
+        dim = new Vector3(player.getDimensions(), 0).scl(0.5f);
+        pos = new Vector3(player.getPosition(), 0).scl(PPM);
+        c1 = pos.cpy().sub(dim);
+        c2 = pos.cpy().add(dim);
+        c3 = pos.cpy().sub(dim.x, 0, 0).add(0, dim.y, 0);
+        c4 = pos.cpy().sub(0, dim.y, 0).add(dim.x, 0, 0);
+        if (!(frustum.pointInFrustum(c1) && frustum.pointInFrustum(c2) && frustum.pointInFrustum(c3) && frustum.pointInFrustum(c4))) {
+            target.set(pos);
 
         }
-        //camera.position.slerp(target, .1f);
+        // Duration in seconds
+        var duration = .5;
+
         camera.position.interpolate(target, .2f, Interpolation.smoother);
 
         Vector3 position = camera.position;
         float extraSize = 0.5f; // 2 meters extra in both width and height
-        float mapStartX = -1*PPM; // X-coordinate where your map starts
-        float mapStartY = -1*PPM; // Y-coordinate where your map starts
+        float mapStartX = -extraSize * PPM; // X-coordinate where your map starts
+        float mapStartY = -extraSize * PPM; // Y-coordinate where your map starts
         float viewX = zoom * (camera.viewportWidth / 2);
         float viewY = zoom * (camera.viewportHeight / 2);
 
 // Adjust for map start coordinates and extra size
-        if (position.x < viewX + mapStartX) {
-            position.x = viewX + mapStartX;
-        }
-        if (position.y < viewY + mapStartY) {
-            position.y = viewY + mapStartY;
-        }
+
 
 // Adjust the width and height calculations
         float adjustedWidth = MapLoader.width + extraSize;
         float adjustedHeight = MapLoader.height + extraSize;
         float w = (adjustedWidth * PPM * SCALE - mapStartX) - viewX * 2;
         float h = (adjustedHeight * PPM * SCALE - mapStartY) - viewY * 2;
+        position.x = MathUtils.clamp(position.x, viewX + mapStartX, viewX + w + mapStartX);
+        position.y = MathUtils.clamp(position.y, viewY + mapStartY, viewY + h + mapStartY);
 
 // Right and top boundary checks with map start position and extra size
-        if (position.x > viewX + w + mapStartX) {
-            position.x = viewX + w + mapStartX;
-        }
-        if (position.y > viewY + h + mapStartY) {
-            position.y = viewY + h + mapStartY;
-        }
+
 
         camera.position.set(position);
 
@@ -315,10 +341,12 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(this.inputAdapter);
+        this.collectableManager.getTimer().start();
     }
 
     @Override
     public void hide() {
+        this.collectableManager.getTimer().stop();
     }
 
     @Override
@@ -330,7 +358,12 @@ public class GameScreen implements Screen {
         this.hud.dispose();
         rayHandler.dispose();
         background.dispose();
+        collectableManager.dispose();
 
 
+    }
+
+    public CollectableManager getCollectableManager() {
+        return collectableManager;
     }
 }

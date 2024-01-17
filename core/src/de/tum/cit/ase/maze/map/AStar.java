@@ -18,7 +18,7 @@ public class AStar {
      * @param end   {@link Vector2} that defines the end position in the grid. Gets converted to a node
      * @return List of nodes that represent the found path between start and end in the grid
      */
-    public static List<Node> findPath(Grid grid, Vector2 start, Vector2 end) {
+    public static synchronized List<Node> findPath(Grid grid, Vector2 start, Vector2 end) {
         Node startNode = getNodeFromVector(grid, start);
         Node endNode = getNodeFromVector(grid, end);
 
@@ -26,9 +26,9 @@ public class AStar {
         Set<Node> closedList = new HashSet<>();
 
         openList.add(startNode);
-
+        Node currentNode;
         while (!openList.isEmpty()) {
-            Node currentNode = openList.poll();
+            currentNode = openList.poll();
 
             closedList.add(currentNode);
 
