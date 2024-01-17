@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public final class MapLoader {
     private static Map<ObjectType, List<Vector2>> map;
     private static Grid gameGrid;
-    public static int width, height;
+    public static float width, height;
 
     public static void loadMapFile(FileHandle fileHandle) {
         map = new HashMap<>();
@@ -41,7 +41,8 @@ public final class MapLoader {
         height = (int) getMapCoordinates(ObjectType.Wall).stream().filter(vector2 -> vector2.x == 0f).max(Comparator.comparing(vector2 -> vector2.y)).orElseThrow().y;
 
 
-        gameGrid = new Grid(width + 1, height + 1);
+
+        gameGrid = new Grid((int) (width + 1), (int) (height + 1));
 
         for (Vector2 vector2 : map.get(ObjectType.Wall)) {
             gameGrid.setObstacle((int) vector2.x, (int) vector2.y, true);
@@ -51,7 +52,7 @@ public final class MapLoader {
     }
 
     public static List<Vector2> getMapCoordinates(ObjectType type) {
-        return new ArrayList<>(map.get(type));
+        return new ArrayList<>(map.getOrDefault(type, new ArrayList<>()));
     }
 
     public static Grid getGameGrid() {

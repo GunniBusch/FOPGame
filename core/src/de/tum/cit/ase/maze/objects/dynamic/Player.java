@@ -13,8 +13,11 @@ import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import de.tum.cit.ase.maze.Input.DeathListener;
+import de.tum.cit.ase.maze.objects.still.collectable.TimedCollectable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.*;
 
@@ -22,14 +25,18 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.*;
  * Class represents the Player. The player is the main character that can be controlled by a person.
  */
 public class Player extends Character implements Movable {
+    public final float SPRINT_BOOST = 1.8f;
     private final int RAYS_NUM = 500;
+    private final Set<TimedCollectable> timedCollectables;
     private final float lightDistance = 15f;
+    private final RayHandler rayHandler;
+    private final PositionalLight light;
     /**
      * Marks if game is finished
      */
     private boolean isFinished = false;
-    private final RayHandler rayHandler;
-    private final PositionalLight light;
+    private boolean isSprint = false;
+    private boolean isVulnerable = true;
 
 
     public Player(World world, DeathListener deathListener, RayHandler rayHandler) {
@@ -48,12 +55,13 @@ public class Player extends Character implements Movable {
      */
     public Player(World world, DeathListener deathListener, RayHandler rayHandler, float x, float y) {
         super(world, deathListener);
+        this.timedCollectables = new HashSet<>();
         this.rayHandler = rayHandler;
-        this.light = new PointLight(rayHandler, RAYS_NUM, new Color(1, 1, 1, 0.89f), 15 * 2, x, y);
+        this.light = new PointLight(rayHandler, RAYS_NUM, new Color(1, 1, 1, 0.89f), lightDistance * 2, x, y);
         light.setSoftnessLength(1.5f);
         var filter = new Filter();
         light.setSoft(true);
-        filter.groupIndex = -SENSOR_BIT;
+        filter.groupIndex = IGNORE_GROUP_BIT;
         filter.categoryBits = LIGHT_BIT;
         this.light.setContactFilter(filter);
         this.health = PLAYER_MAX_HEALTH;
@@ -65,6 +73,9 @@ public class Player extends Character implements Movable {
 
         this.texture = new Texture("character.png");
         this.createBody(x, y);
+        var playerFilter = new Filter();
+        playerFilter.categoryBits = PLAYER_BIT;
+        this.body.getFixtureList().get(0).setFilterData(playerFilter);
         this.light.attachToBody(body);
         this.light.setActive(true);
 
@@ -80,6 +91,20 @@ public class Player extends Character implements Movable {
 
     }
 
+    public boolean addCollectable(TimedCollectable collectable) {
+        return timedCollectables.add(collectable);
+    }
+
+
+    /**
+     * @param deltaTime Time since last frame.
+     */
+    @Override
+    public void update(float deltaTime) {
+        super.update(deltaTime);
+        this.timedCollectables.stream().filter(TimedCollectable::isRemovable).forEach(collectable -> collectable.restore(this));
+        this.timedCollectables.removeIf(TimedCollectable::isRemovable);
+    }
 
     /**
      * Starts moving in defined direction.
@@ -119,17 +144,8 @@ public class Player extends Character implements Movable {
         }
     }
 
-    /**
-     * Requests elevated Speed
-     *
-     * @param sprint
-     */
-    public synchronized void setSprint(boolean sprint) {
-        if (sprint) {
-            speed *= 1.8f;
-        } else {
-            speed /= 1.8f;
-        }
+    public Set<TimedCollectable> getTimedCollectables() {
+        return timedCollectables;
     }
 
     public void markAsFinished() {
@@ -141,7 +157,7 @@ public class Player extends Character implements Movable {
      */
     @Override
     public void makeDamage(int damage) {
-        if (!isFinished) super.makeDamage(damage);
+        if (!isFinished && isVulnerable) super.makeDamage(damage);
     }
 
     /**
@@ -168,4 +184,30 @@ public class Player extends Character implements Movable {
 
     }
 
+    public synchronized boolean isSprint() {
+        return isSprint;
+    }
+
+    /**
+     * Requests elevated Speed
+     *
+     * @param sprint
+     */
+    public synchronized void setSprint(boolean sprint) {
+        if (sprint == this.isSprint()) return;
+        else isSprint = sprint;
+        if (sprint) {
+            speed *= SPRINT_BOOST;
+        } else {
+            speed /= SPRINT_BOOST;
+        }
+    }
+
+    public boolean isVulnerable() {
+        return isVulnerable;
+    }
+
+    public void setVulnerable(boolean vulnerable) {
+        isVulnerable = vulnerable;
+    }
 }

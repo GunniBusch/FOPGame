@@ -1,0 +1,294 @@
+{
+"BitmapFont": {
+	"KnightWarriorBigWhite": {
+		"file": "KnightWarriorBigWhite.fnt",
+		"scaledSize": -1,
+		"markupEnabled": false,
+		"flip": false
+	},
+	"KnightWarriorFontDefault32": {
+		"file": "KnightWarriorFontDefault32.fnt",
+		"scaledSize": -1,
+		"markupEnabled": true,
+		"flip": false
+	},
+	"KnightWarriorSmallBlack": {
+		"file": "KnightWarrior.fnt",
+		"scaledSize": -1,
+		"markupEnabled": false,
+		"flip": false
+	},
+	"KnightWarriorSmallWhite": {
+		"file": "KnightWarriorSmallWhite.fnt",
+		"scaledSize": -1,
+		"markupEnabled": false,
+		"flip": false
+	},
+	"KnightWarriorTitleWhite": {
+		"file": "KnightWarriorTitleWhite.fnt",
+		"scaledSize": -1,
+		"markupEnabled": false,
+		"flip": false
+	}
+},
+"Color": {
+	"Black": {
+		"r": 0,
+		"g": 0,
+		"b": 0,
+		"a": 1
+	},
+	"Grey": {
+		"r": 0.6117647,
+		"g": 0.6117647,
+		"b": 0.6117647,
+		"a": 1
+	},
+	"GreyTransparent": {
+		"r": 0.44313726,
+		"g": 0.44313726,
+		"b": 0.44313726,
+		"a": 0.5898876
+	},
+	"Transparent": {
+		"r": 1,
+		"g": 1,
+		"b": 1,
+		"a": 0
+	},
+	"White": {
+		"r": 1,
+		"g": 1,
+		"b": 1,
+		"a": 1
+	},
+	"White-transparent": {
+		"r": 1,
+		"g": 1,
+		"b": 1,
+		"a": 0.28235295
+	}
+},
+"TintedDrawable": {
+	"panel-000-grey-trans": {
+		"name": "panel-000",
+		"color": "GreyTransparent"
+	},
+	"panel-border-000-greyTrans": {
+		"name": "panel-border-000",
+		"color": "GreyTransparent"
+	},
+	"panel-transparent-center-000-black": {
+		"name": "panel-transparent-center-000",
+		"color": "Black"
+	},
+	"bar-000-grey-transparent": {
+		"name": "bar-000",
+		"color": "GreyTransparent"
+	},
+	"bar-000-white-transparent": {
+		"name": "bar-000",
+		"color": "White-transparent"
+	},
+	"bar-knob-select-000-grey-transparent": {
+		"name": "bar-knob-select-000",
+		"color": "GreyTransparent"
+	},
+	"bar-knob-000-grey-transparent": {
+		"name": "bar-knob-000",
+		"color": "GreyTransparent"
+	},
+	"slider-000-1-grey-transparent": {
+		"name": "slider-000-1",
+		"color": "GreyTransparent"
+	},
+	"slider-knob-000-1-grey-transparent": {
+		"name": "slider-knob-000-1",
+		"color": "GreyTransparent"
+	},
+	"panel-border-000-white-transparent": {
+		"name": "panel-border-000",
+		"color": "White-transparent"
+	},
+	"panel-000-white-trans": {
+		"name": "panel-000",
+		"color": "White-transparent"
+	}
+},
+"TiledDrawable": {
+	"heart-tiled": {
+		"region": "heart",
+		"color": "White",
+		"minWidth": 18,
+		"minHeight": 18
+	},
+	"heart-bg-tiled": {
+		"region": "heart-bg",
+		"color": "White",
+		"minWidth": 18,
+		"minHeight": 18
+	},
+	"key-tiled": {
+		"region": "key",
+		"color": "White",
+		"minWidth": 18,
+		"minHeight": 29
+	},
+	"key-bg-tiled": {
+		"region": "key-bg",
+		"color": "White",
+		"minWidth": 18,
+		"minHeight": 29
+	}
+},
+"ButtonStyle": {
+	"default": {
+		"up": "panel-000-white-trans",
+		"down": "panel-000",
+		"over": "panel-transparent-center-000",
+		"disabled": "panel-000-grey-trans"
+	}
+},
+"CheckBoxStyle": {
+	"default": {
+		"checkboxOn": "panel-000",
+		"checkboxOff": "panel-border-000",
+		"checkboxOnOver": "panel-transparent-border-000",
+		"checkboxOver": "panel-transparent-center-000",
+		"checkboxOnDisabled": "panel-000-grey-trans",
+		"checkboxOffDisabled": "panel-border-000-greyTrans",
+		"font": "KnightWarriorBigWhite"
+	}
+},
+"LabelStyle": {
+	"default": {
+		"font": "KnightWarriorBigWhite"
+	},
+	"Filled": {
+		"parent": "default",
+		"font": "KnightWarriorBigWhite",
+		"fontColor": "Black",
+		"background": "panel-000"
+	},
+	"borderTransparent": {
+		"parent": "default",
+		"fontColor": "Black",
+		"background": "panel-transparent-border-000"
+	},
+	"filledTransparent": {
+		"parent": "default",
+		"background": "panel-transparent-center-000"
+	},
+	"border-only": {
+		"font": "KnightWarriorBigWhite",
+		"background": "panel-border-000"
+	},
+	"title": {
+		"font": "KnightWarriorTitleWhite"
+	}
+},
+"ListStyle": {
+	"default": {
+		"font": "KnightWarriorBigWhite",
+		"fontColorSelected": "Black",
+		"fontColorUnselected": "White",
+		"selection": "panel-000",
+		"over": "panel-border-000-white-transparent",
+		"background": "panel-border-000"
+	},
+	"no-border": {
+		"font": "KnightWarriorBigWhite",
+		"fontColorSelected": "Black",
+		"fontColorUnselected": "White",
+		"selection": "panel-000",
+		"over": "panel-border-000-white-transparent"
+	}
+},
+"ProgressBarStyle": {
+	"default-horizontal": {
+		"background": "slider-000-1",
+		"disabledBackground": "slider-000-1-grey-transparent",
+		"knobBefore": "slider-knob-000-1",
+		"disabledKnobBefore": "slider-knob-000-1-grey-transparent"
+	},
+	"health-bar": {
+		"background": "panel-border-000",
+		"knobBefore": "heart-tiled",
+		"knobAfter": "heart-bg-tiled"
+	},
+	"key-bar": {
+		"background": "panel-border-000",
+		"knobBefore": "key-tiled",
+		"knobAfter": "key-bg-tiled"
+	},
+	"key-bar-no-border": {
+		"background": "key-bg-tiled",
+		"knobBefore": "key-tiled"
+	},
+	"health-bar-no-border": {
+		"background": "heart-bg-tiled",
+		"knobBefore": "heart-tiled"
+	}
+},
+"ScrollPaneStyle": {
+	"default": {
+		"background": "panel-transparent-center-000"
+	},
+	"pop-up": {
+		"background": "panel-border-000"
+	}
+},
+"SelectBoxStyle": {
+	"default": {
+		"font": "KnightWarriorBigWhite",
+		"fontColor": "White",
+		"disabledFontColor": "GreyTransparent",
+		"background": "panel-border-000-white-transparent",
+		"scrollStyle": "pop-up",
+		"listStyle": "no-border",
+		"backgroundOver": "panel-border-000",
+		"backgroundOpen": "panel-transparent-center-000",
+		"backgroundDisabled": "panel-border-000-greyTrans"
+	}
+},
+"SliderStyle": {
+	"default-horizontal": {
+		"backgroundOver": "bar-000",
+		"knobDown": "bar-knob-select-000",
+		"background": "bar-000-white-transparent",
+		"disabledBackground": "bar-000-grey-transparent",
+		"knob": "bar-knob-select-transperentPointer-000",
+		"disabledKnob": "bar-knob-select-000-grey-transparent",
+		"knobBefore": "bar-knob-000",
+		"disabledKnobBefore": "bar-knob-000-grey-transparent"
+	}
+},
+"SplitPaneStyle": {
+	"default-vertical": {
+		"handle": "divider-000"
+	}
+},
+"TextButtonStyle": {
+	"default": {
+		"font": "KnightWarriorBigWhite",
+		"fontColor": "White",
+		"disabledFontColor": "GreyTransparent",
+		"up": "panel-border-000-white-transparent",
+		"down": "panel-transparent-center-000",
+		"over": "panel-border-000",
+		"disabled": "panel-border-000-greyTrans"
+	}
+},
+"TextFieldStyle": {
+	"default": {
+		"font": "KnightWarriorBigWhite",
+		"fontColor": "White"
+	}
+},
+"TextTooltipStyle": {
+	"default": {
+		"label": "default",
+		"background": "panel-border-000"
+	}
+}
+}

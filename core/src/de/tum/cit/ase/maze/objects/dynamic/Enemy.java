@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
@@ -20,8 +21,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
-import static de.tum.cit.ase.maze.utils.CONSTANTS.SENSOR_BIT;
+import static de.tum.cit.ase.maze.utils.CONSTANTS.*;
 
 /**
  * An enemy is a {@link Character} that can't be controlled by a GOD e.g. a person.
@@ -70,9 +70,12 @@ public class Enemy extends Character {
         this.createBody(x, y);
         nodeProximityThreshold = body.getFixtureList().get(0).getShape().getRadius() * PPM;
 
+        var enemyFilter = new Filter();
+        enemyFilter.categoryBits = ENEMY_BIT;
+        this.body.getFixtureList().get(0).setFilterData(enemyFilter);
         FixtureDef fd = new FixtureDef();
         fd.isSensor = true;
-        fd.filter.groupIndex = -SENSOR_BIT;
+        fd.filter.groupIndex = IGNORE_GROUP_BIT;
         CircleShape shape = new CircleShape();
         shape.setRadius(DETECTION_RADIUS);
         fd.shape = shape;

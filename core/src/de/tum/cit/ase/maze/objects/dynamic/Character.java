@@ -2,6 +2,7 @@ package de.tum.cit.ase.maze.objects.dynamic;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import de.tum.cit.ase.maze.Input.DeathListener;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static de.tum.cit.ase.maze.utils.CONSTANTS.PLAYER_MAX_HEALTH;
 import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 
 /**
@@ -158,4 +160,27 @@ public abstract class Character extends GameElement {
         this.health -= damage;
     }
 
+
+    /**
+     * Heals the Character
+     *
+     * @param amountToHeal Health amount to restore
+     * @return if health was full
+     */
+    public boolean heal(int amountToHeal) {
+        var health_restorable = MathUtils.clamp(amountToHeal, 0, PLAYER_MAX_HEALTH - health);
+        this.health += health_restorable;
+        return health_restorable > 0;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+    public Vector2 getDimensions(){
+        return new Vector2(frameWidth * ZOOM, frameHeight * ZOOM);
+    }
 }

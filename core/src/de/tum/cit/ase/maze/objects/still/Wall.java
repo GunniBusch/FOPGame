@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Disposable;
+import de.tum.cit.ase.maze.utils.CONSTANTS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,15 +22,15 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
  */
 
 public class Wall implements Disposable {
+    public static int height = 32;
+    public static int width = 32;
     private final SpriteCache spriteCache;
-    private Texture img;
     private final List<Vector2> outsideWalls;
     private final List<Vector2> insideWalls;
     private final List<Vector2> fullWalls;
     private final Body body;
-    private final float SCALE = 0.5f;
-    private final int textureHeight = 32;
-    private final int textureWidth = 32;
+    private final float SCALE = 1 / CONSTANTS.SCALE;
+    private Texture img;
 
 
     public Wall(List<Vector2> map, SpriteCache spriteCache, World world) {
@@ -68,7 +69,7 @@ public class Wall implements Disposable {
         }*/
         for (Vector2 outsideWall : outsideWalls) {
             // Draw wall
-            spriteCache.add(textureRegion, outsideWall.x * PPM / SCALE - (textureHeight / SCALE / 2), outsideWall.y * PPM / SCALE - (textureHeight / SCALE / 2), textureHeight / SCALE, textureHeight / SCALE);
+            spriteCache.add(textureRegion, outsideWall.x * width / SCALE - (width / SCALE / 2), outsideWall.y * height / SCALE - (height / SCALE / 2), width / SCALE, height / SCALE);
 
         }
 
@@ -77,7 +78,7 @@ public class Wall implements Disposable {
     private void createBody() {
 
 
-        var halfSize = 1f;
+        var halfSize = 1f * width / PPM;
         //If  scaling uncomment and remove next line
 
         float x, y;
@@ -87,8 +88,8 @@ public class Wall implements Disposable {
 
 
             shape = new ChainShape();
-            x = outsideWall.x / SCALE;
-            y = outsideWall.y / SCALE;
+            x = outsideWall.x * width / PPM / SCALE;
+            y = outsideWall.y * width / PPM / SCALE;
 
 
             //If scaling uncomment and remove next line

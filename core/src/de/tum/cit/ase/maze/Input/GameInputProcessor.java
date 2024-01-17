@@ -1,17 +1,18 @@
 package de.tum.cit.ase.maze.Input;
 
-import com.badlogic.gdx.*;
-import de.tum.cit.ase.maze.screens.GameScreen;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
 import de.tum.cit.ase.maze.MazeRunnerGame;
 import de.tum.cit.ase.maze.objects.dynamic.Movable;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
 import de.tum.cit.ase.maze.objects.dynamic.WalkDirection;
+import de.tum.cit.ase.maze.screens.GameScreen;
 
 public class GameInputProcessor extends InputAdapter {
-    private final Game game;
+    private final MazeRunnerGame game;
     private final Movable character;
 
-    public GameInputProcessor(Game game, Movable character) {
+    public GameInputProcessor(MazeRunnerGame game, Movable character) {
         this.game = game;
         this.character = character;
     }
@@ -29,7 +30,7 @@ public class GameInputProcessor extends InputAdapter {
                 case Input.Keys.S -> character.startMoving(WalkDirection.DOWN);
                 case Input.Keys.D -> character.startMoving(WalkDirection.RIGHT);
                 case Input.Keys.SHIFT_LEFT -> ((Player) character).setSprint(true);
-                case Input.Keys.ESCAPE -> ((MazeRunnerGame) game).goToPause();
+                case Input.Keys.ESCAPE -> game.goToPause();
             }
             return true;
         } else {
