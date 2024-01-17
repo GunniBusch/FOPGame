@@ -120,6 +120,10 @@ public class CollectableManager implements Disposable {
         this.spawn(collectableClass, MathUtils.round(spawnablePoints.size * MathUtils.clamp(areaToCover, MathUtils.FLOAT_ROUNDING_ERROR, 1)));
     }
 
+    public final void spawn(@NonNull Class<? extends Collectable> collectableClass, List<Vector2> positionList) {
+        this.spawn();
+    }
+
     /**
      * Schedules a respawn. Called by the {@link RespawnTask respawn task}.
      */

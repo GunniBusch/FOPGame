@@ -14,8 +14,10 @@ import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import de.tum.cit.ase.maze.Input.DeathListener;
+import de.tum.cit.ase.maze.objects.ObjectType;
 import de.tum.cit.ase.maze.objects.still.Key;
 import de.tum.cit.ase.maze.objects.still.collectable.TimedCollectable;
+import de.tum.cit.ase.maze.utils.MapLoader;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -41,6 +43,7 @@ public class Player extends Character implements Movable {
     private boolean isFinished = false;
     private boolean isSprint = false;
     private boolean isVulnerable = true;
+    public final int numberOfKeys;
 
 
     public Player(World world, DeathListener deathListener, RayHandler rayHandler) {
@@ -60,6 +63,7 @@ public class Player extends Character implements Movable {
     public Player(World world, DeathListener deathListener, RayHandler rayHandler, float x, float y) {
         super(world, deathListener);
         keyList = new ArrayList<>();
+        numberOfKeys = MapLoader.getMapCoordinates(ObjectType.Key).size();
         this.timedCollectables = new HashSet<>();
         this.rayHandler = rayHandler;
         this.light = new PointLight(rayHandler, RAYS_NUM, new Color(1, 1, 1, 0.89f), lightDistance * 2, x, y);

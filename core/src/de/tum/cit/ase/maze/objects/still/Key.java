@@ -16,6 +16,8 @@ import de.tum.cit.ase.maze.objects.dynamic.Player;
 import de.tum.cit.ase.maze.objects.still.collectable.Collectable;
 import de.tum.cit.ase.maze.utils.MapLoader;
 
+import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
+
 
 public class Key extends Collectable {
     private boolean isCollected;
@@ -30,11 +32,18 @@ public class Key extends Collectable {
 
     @Override
     public void render(SpriteBatch spriteBatch) {
-        spriteBatch.draw();
+        spriteBatch.draw(
+                this.textureRegion,
+                this.body.getPosition().x * PPM - (16 / 2f),
+                body.getPosition().y * PPM - (16 / 2f),
+                frameWidth * ZOOM,
+                frameHeight * ZOOM
+        );
     }
 
     @Override
     public void collect(Player player) {
+        player.collectKey(this);
         removable = true;
     }
 }

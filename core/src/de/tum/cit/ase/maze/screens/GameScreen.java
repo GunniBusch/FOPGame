@@ -323,7 +323,6 @@ public class GameScreen implements Screen {
         //spawns the key
 
 
-
     }
 
     @Override
