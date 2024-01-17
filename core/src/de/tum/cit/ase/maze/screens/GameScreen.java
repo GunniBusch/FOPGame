@@ -321,7 +321,8 @@ public class GameScreen implements Screen {
         new Entry(world, MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0), this);
 
         //spawns the key
-        Vector2 keyPosition = (Vector2) MapLoader.getMapCoordinates(ObjectType.Key);
+
+        Vector2 keyPosition =  MapLoader.getMapCoordinates(ObjectType.Key).get(0);
         this.entities.add(new Key(world, keyPosition));
 
     }
