@@ -1,10 +1,24 @@
 sourceCompatibility = 17
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
-sourceSets.main.java.srcDirs = [ "src/" ]
+sourceSets.main.java.srcDirs = ["src/"]
 
 eclipse.project.name = appName + "-core"
+repositories { maven { url 'https://jitpack.io' } }
+configurations {
+    umlDoclet
+}
+
+dependencies {
+    umlDoclet "nl.talsmasoftware:umldoclet:2.1.1"
+}
 javadoc {
+
     options.stylesheetFile = new File(projectDir, '../dracula-javadoc8.css')
+
     // And some options...
+    // options.destinationDirectory = new File('build/docs/javadoc')
+    source = sourceSets.main.allJava
+    options.docletpath = configurations.umlDoclet.files.asType(List)
+    options.doclet = "nl.talsmasoftware.umldoclet.UMLDoclet"
 }
