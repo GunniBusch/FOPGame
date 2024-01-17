@@ -9,6 +9,8 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import de.tum.cit.ase.maze.objects.GameElement;
+import de.tum.cit.ase.maze.objects.ObjectType;
+import de.tum.cit.ase.maze.utils.MapLoader;
 
 
 public class Key extends GameElement {
@@ -16,7 +18,9 @@ public class Key extends GameElement {
     private boolean isCollected;
     private TextureRegion textureRegion;
 
-    public Key(World world, Vector2 position) {
+    public Key(World world) {
+        this.position = MapLoader.getMapCoordinates(ObjectType.Key).get(0);
+        this.world = world;
         isCollected = false;
         BodyDef def = new BodyDef();
         def.type = BodyDef.BodyType.StaticBody;
