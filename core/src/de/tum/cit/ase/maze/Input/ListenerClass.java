@@ -53,10 +53,7 @@ public class ListenerClass implements ContactListener {
                     Gdx.app.debug("Collectable", "Player collected Collectable");
                     collectable.collect(player);
                 }
-                //Player collected Key
-                if(contact.getFixtureB().getUserData() instanceof Key && contact.getFixtureA().getUserData() instanceof Player) {
-                    ((Key) contact.getFixtureB().getUserData()).collectKey();
-                }
+
 
             } else {
                 Gdx.app.debug("Contact with class", contact.getFixtureA().getUserData().getClass().getName() + " : " + contact.getFixtureB().getUserData().getClass().getName());

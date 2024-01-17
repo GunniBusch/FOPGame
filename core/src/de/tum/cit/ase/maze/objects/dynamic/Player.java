@@ -3,6 +3,7 @@ package de.tum.cit.ase.maze.objects.dynamic;
 import box2dLight.PointLight;
 import box2dLight.PositionalLight;
 import box2dLight.RayHandler;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -13,10 +14,12 @@ import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import de.tum.cit.ase.maze.Input.DeathListener;
+import de.tum.cit.ase.maze.objects.still.Key;
 import de.tum.cit.ase.maze.objects.still.collectable.TimedCollectable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.*;
@@ -25,6 +28,7 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.*;
  * Class represents the Player. The player is the main character that can be controlled by a person.
  */
 public class Player extends Character implements Movable {
+    private List<Key> keyList;
     public final float SPRINT_BOOST = 1.8f;
     private final int RAYS_NUM = 500;
     private final Set<TimedCollectable> timedCollectables;
@@ -55,6 +59,7 @@ public class Player extends Character implements Movable {
      */
     public Player(World world, DeathListener deathListener, RayHandler rayHandler, float x, float y) {
         super(world, deathListener);
+        keyList = new ArrayList<>();
         this.timedCollectables = new HashSet<>();
         this.rayHandler = rayHandler;
         this.light = new PointLight(rayHandler, RAYS_NUM, new Color(1, 1, 1, 0.89f), lightDistance * 2, x, y);
@@ -142,6 +147,10 @@ public class Player extends Character implements Movable {
 
             this.body.setLinearVelocity(0, 0);
         }
+    }
+
+    public void collectKey(Key key) {
+        keyList.add(key);
     }
 
     public Set<TimedCollectable> getTimedCollectables() {
