@@ -95,7 +95,7 @@ public class Hud implements Disposable {
         table.add(label).align(Align.left);
 
         keyBar = new ProgressBar(0.0f, player.numberOfKeys, 1.0f, false, skin, "key-bar-no-border");
-        table.add(keyBar).align(Align.left).width(18 * 4);
+        table.add(keyBar).align(Align.left).width(18 * player.numberOfKeys);
 
         stage.addActor(table);
         // Booster table
