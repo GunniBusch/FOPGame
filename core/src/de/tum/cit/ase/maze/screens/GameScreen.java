@@ -67,7 +67,7 @@ public class GameScreen implements Screen {
     private final RayHandler rayHandler;
     private boolean victory = false;
     private boolean end = false;
-    private Vector3 target;
+    private final Vector3 target;
     //added boolean pause, for pause functionality
     private boolean paused;
     private float stateTime = 0f;
@@ -223,7 +223,7 @@ public class GameScreen implements Screen {
      */
     private void update(float dt) {
         this.world.step(1 / 60f, 6, 2);
-        stateTime +=dt;
+        stateTime += dt;
         rayHandler.update();
         this.entities.parallelStream().forEach(entity -> entity.update(dt));
         this.collectableManager.update(dt);
@@ -307,6 +307,7 @@ public class GameScreen implements Screen {
         this.end = true;
         this.victory = victory;
     }
+
     private void spawnEntities() {
 
 
@@ -361,5 +362,9 @@ public class GameScreen implements Screen {
 
     public CollectableManager getCollectableManager() {
         return collectableManager;
+    }
+
+    public ShapeRenderer getShapeRenderer() {
+        return shapeRenderer;
     }
 }

@@ -38,8 +38,9 @@ public class Hud implements Disposable {
     private final ProgressBar healthBar;
     private final ProgressBar keyBar;
     private final GameScreen gameScreen;
-    private ProgressBar respawnBarDebug;
     private final Map<Class<? extends TimedCollectable>, List<Widget>> labelMap;
+    private final MiniMap miniMap;
+    private ProgressBar respawnBarDebug;
 
     /**
      * Creates a new HUD
@@ -58,6 +59,7 @@ public class Hud implements Disposable {
 
         this.stage = new Stage(new ScreenViewport(hudCamera), spriteBatch);
         this.skin = new Skin(Gdx.files.internal("Exported/skin.json"));
+        this.miniMap = new MiniMap(gameScreen, spriteBatch, player);
 
         // Top Table:
         Table table = new Table();
@@ -151,12 +153,14 @@ public class Hud implements Disposable {
      */
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        miniMap.resize(width, height);
     }
 
     /**
      * Updates the HUD
      */
     public void update(float dt) {
+        this.miniMap.update(dt);
         labelMap.forEach((aClass, widgets) -> {
             var label = ((Label) widgets.get(0));
             var progBar = ((ProgressBar) widgets.get(1));
@@ -190,6 +194,7 @@ public class Hud implements Disposable {
      * Renders the HUD
      */
     public void render() {
+        this.miniMap.render();
         this.stage.getViewport().apply(true);
         this.stage.draw();
 
