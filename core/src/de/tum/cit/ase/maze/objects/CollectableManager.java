@@ -24,7 +24,7 @@ import java.util.Map;
  * Manages collectables like {@link Collectable} or {@link TimedCollectable}
  */
 public class CollectableManager implements Disposable {
-    public final float RESPAWN_TIME = .1f * 60;
+    public final float RESPAWN_TIME = 10f * 60;
     private final World world;
     private final RayHandler rayHandler;
     private final Array<Vector2> spawnablePoints;
@@ -77,13 +77,14 @@ public class CollectableManager implements Disposable {
     }
 
     /**
-     * Renders all {@link Collectable Collectables}.
-     *
-     * @param spriteBatch the {@link SpriteBatch} to render
+     * Respawns the {@link Collectable collectables}.
      */
-    public void render(SpriteBatch spriteBatch) {
-        collectableList.forEach(collectable -> collectable.render(spriteBatch));
+    private void respawn() {
+        this.collectableList.stream().filter(Collectable::isActive).forEach(Collectable::remove);
+        this.collectableList.removeIf(Collectable::isActive);
+        this.spawnMap.forEach(this::spawn);
 
+        this.scheduledRespawn = false;
     }
 
     /**
@@ -107,6 +108,16 @@ public class CollectableManager implements Disposable {
         } catch (ReflectiveOperationException e) {
             Gdx.app.error("Collectable Manager", "Could not load collectable " + collectableClass.getTypeName(), e);
         }
+
+    }
+
+    /**
+     * Renders all {@link Collectable Collectables}.
+     *
+     * @param spriteBatch the {@link SpriteBatch} to render
+     */
+    public void render(SpriteBatch spriteBatch) {
+        collectableList.forEach(collectable -> collectable.render(spriteBatch));
 
     }
 
@@ -137,17 +148,6 @@ public class CollectableManager implements Disposable {
     protected synchronized final void scheduleRespawn() {
         this.scheduledRespawn = true;
 
-    }
-
-    /**
-     * Respawns the {@link Collectable collectables}.
-     */
-    private void respawn() {
-        this.collectableList.stream().filter(Collectable::isActive).forEach(Collectable::remove);
-        this.collectableList.removeIf(Collectable::isActive);
-        this.spawnMap.forEach(this::spawn);
-
-        this.scheduledRespawn = false;
     }
 
     public Timer getTimer() {

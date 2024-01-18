@@ -66,9 +66,9 @@ public class GameScreen implements Screen {
     private final Wall wall;
     private final CollectableManager collectableManager;
     private final RayHandler rayHandler;
+    private final Vector3 target;
     private boolean victory = false;
     private boolean end = false;
-    private Vector3 target;
     //added boolean pause, for pause functionality
     private boolean paused;
     private float stateTime = 0f;
@@ -100,7 +100,7 @@ public class GameScreen implements Screen {
 
         //Gdx.gl.glEnable(GL20.GL_BLEND);
         this.b2DDr = new Box2DDebugRenderer(true, true, false, true, true, true);
-        MapLoader.loadMapFile(Gdx.files.internal("level-1.properties"));
+        MapLoader.loadMapFile(Gdx.files.internal("level-4.properties"));
         wall = new Wall(MapLoader.getMapCoordinates(ObjectType.Wall), game.getSpriteCache(), world);
 
         var playerCord = MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0).cpy();
@@ -121,8 +121,9 @@ public class GameScreen implements Screen {
         camera.position.set(playerCord.cpy().scl(PPM).scl(2f), 0);
         camera.zoom = zoom;
         this.viewport = new ScreenViewport(camera);
-        target = new Vector3(camera.position);
+        target = new Vector3(player.getPosition(), 0).scl(PPM);
         camera.position.set(target);
+        viewport.apply(false);
 
         hudCamera = new OrthographicCamera();
         this.hud = new Hud(hudCamera, this.game.getSpriteBatch(), player, this);
@@ -161,6 +162,29 @@ public class GameScreen implements Screen {
 
     }
 
+    private void spawnEntities() {
+
+
+        for (Vector2 enemyCord : MapLoader.getMapCoordinates(ObjectType.Enemy)) {
+            var scaledEnemyCord = enemyCord.cpy().scl(PPM).scl(2f);
+            this.entities.add(new Enemy(world, deathListener, player, scaledEnemyCord));
+        }
+        this.entities.add(new Exit(world, MapLoader.getMapCoordinates(ObjectType.Exit).get(0), this));
+        new Entry(world, MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0), this);
+
+
+    }
+
+    public void handleEndOfGame(boolean victory) {
+        this.end = true;
+        this.victory = victory;
+    }
+
+    @Override
+    public void show() {
+        Gdx.input.setInputProcessor(this.inputAdapter);
+        this.collectableManager.getTimer().start();
+    }
 
     // Screen interface methods with necessary functionality
     @Override
@@ -225,7 +249,7 @@ public class GameScreen implements Screen {
      */
     private void update(float dt) {
         this.world.step(1 / 60f, 6, 2);
-        stateTime +=dt;
+        stateTime += dt;
         rayHandler.update();
         this.entities.parallelStream().forEach(entity -> entity.update(dt));
         this.collectableManager.update(dt);
@@ -305,25 +329,6 @@ public class GameScreen implements Screen {
 
     }
 
-    public void handleEndOfGame(boolean victory) {
-        this.end = true;
-        this.victory = victory;
-    }
-    private void spawnEntities() {
-
-
-        for (Vector2 enemyCord : MapLoader.getMapCoordinates(ObjectType.Enemy)) {
-            var scaledEnemyCord = enemyCord.cpy().scl(PPM).scl(2f);
-            this.entities.add(new Enemy(world, deathListener, player, scaledEnemyCord));
-        }
-        this.entities.add(new Exit(world, MapLoader.getMapCoordinates(ObjectType.Exit).get(0), this));
-        new Entry(world, MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0), this);
-
-
-
-
-    }
-
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
@@ -336,12 +341,6 @@ public class GameScreen implements Screen {
 
     @Override
     public void resume() {
-    }
-
-    @Override
-    public void show() {
-        Gdx.input.setInputProcessor(this.inputAdapter);
-        this.collectableManager.getTimer().start();
     }
 
     @Override

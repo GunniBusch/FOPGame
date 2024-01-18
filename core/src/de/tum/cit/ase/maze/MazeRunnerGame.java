@@ -18,6 +18,7 @@ import games.spooky.gdx.nativefilechooser.NativeFileChooser;
  * It manages the screens and global resources like SpriteBatch and Skin.
  */
 public class MazeRunnerGame extends Game {
+    Music backgroundMusic;
     // Screens
     private MenuScreen menuScreen;
     private GameScreen gameScreen;
@@ -25,9 +26,6 @@ public class MazeRunnerGame extends Game {
     // Sprite Batch for rendering
     private SpriteBatch spriteBatch;
     private SpriteCache spriteCache;
-    Music backgroundMusic;
-
-
     // UI Skin
     private Skin skin;
 
@@ -49,7 +47,7 @@ public class MazeRunnerGame extends Game {
         else //noinspection GDXJavaLogLevel
             Gdx.app.setLogLevel(Logger.INFO);
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
-        spriteCache = new SpriteCache();
+        spriteCache = new SpriteCache(8191, false);
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
         //this.loadCharacterAnimation(); // Load character animation
 
