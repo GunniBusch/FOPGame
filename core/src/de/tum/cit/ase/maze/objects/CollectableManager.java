@@ -124,7 +124,7 @@ public class CollectableManager implements Disposable {
 
         try {
             for (Vector2 spawnPoint : positionList) {
-                collectableList.add(collectableClass.getConstructor(Vector2.class, World.class, RayHandler.class).newInstance(spawnPoint, world, rayHandler));
+                collectableList.add(collectableClass.getConstructor(Vector2.class, World.class, RayHandler.class).newInstance(spawnPoint.cpy(), world, rayHandler));
             }
         } catch (ReflectiveOperationException e) {
             Gdx.app.error("Collectable Manager", "Could not load collectable " + collectableClass.getTypeName(), e);
