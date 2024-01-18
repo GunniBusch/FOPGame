@@ -98,9 +98,6 @@ public class Player extends Character implements Movable {
         this(world, deathListener, rayHandler, position.x, position.y);
     }
 
-    public List<Key> getKeyList() {
-        return keyList;
-    }
 
     public boolean addCollectable(TimedCollectable collectable) {
         return timedCollectables.add(collectable);
@@ -205,10 +202,15 @@ public class Player extends Character implements Movable {
 
     public void setVulnerable(boolean vulnerable) {
         isVulnerable = vulnerable;
-    }    public synchronized boolean isSprint() {
-        return isSprint;
     }
 
+    public List<Key> getKeyList() {
+        return keyList;
+    }
+
+    public synchronized boolean isSprint() {
+        return isSprint;
+    }
 
 
     /**
