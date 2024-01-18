@@ -143,7 +143,7 @@ public class CollectableManager implements Disposable {
      * Respawns the {@link Collectable collectables}.
      */
     private void respawn() {
-        this.collectableList.forEach(Collectable::remove);
+        this.collectableList.stream().filter(Collectable::isActive).peek(Collectable::remove);
         this.collectableList.removeIf(Collectable::isActive);
         this.spawnMap.forEach(this::spawn);
         this.scheduledRespawn = false;
