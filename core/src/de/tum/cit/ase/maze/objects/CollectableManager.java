@@ -146,6 +146,7 @@ public class CollectableManager implements Disposable {
         this.collectableList.stream().filter(Collectable::isActive).forEach(Collectable::remove);
         this.collectableList.removeIf(Collectable::isActive);
         this.spawnMap.forEach(this::spawn);
+
         this.scheduledRespawn = false;
     }
 
