@@ -38,8 +38,8 @@ public class Hud implements Disposable {
     private final ProgressBar healthBar;
     private final ProgressBar keyBar;
     private final GameScreen gameScreen;
-    private ProgressBar respawnBarDebug;
     private final Map<Class<? extends TimedCollectable>, List<Widget>> labelMap;
+    private ProgressBar respawnBarDebug;
 
     /**
      * Creates a new HUD
@@ -94,7 +94,7 @@ public class Hud implements Disposable {
         label.setName("key-lable");
         table.add(label).align(Align.left);
 
-        keyBar = new ProgressBar(0.0f, 2, 1.0f, false, skin, "key-bar-no-border");
+        keyBar = new ProgressBar(0.0f, player.numberOfKeys, 1.0f, false, skin, "key-bar-no-border");
         table.add(keyBar).align(Align.left).width(18 * 4);
 
         stage.addActor(table);
@@ -182,6 +182,7 @@ public class Hud implements Disposable {
             this.respawnBarDebug.setValue(this.gameScreen.getCollectableManager().getRespawnTask().getTimeToExecutionInSeconds());
         }
         healthBar.setValue(player.getHealth());
+        keyBar.setValue(player.getKeyList().size());
         this.stage.act(dt);
 
     }

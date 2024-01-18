@@ -3,7 +3,6 @@ package de.tum.cit.ase.maze.objects.dynamic;
 import box2dLight.PointLight;
 import box2dLight.PositionalLight;
 import box2dLight.RayHandler;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -30,28 +29,23 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.*;
  * Class represents the Player. The player is the main character that can be controlled by a person.
  */
 public class Player extends Character implements Movable {
-    private List<Key> keyList;
     public final float SPRINT_BOOST = 1.8f;
+    public final int numberOfKeys;
     private final int RAYS_NUM = 500;
     private final Set<TimedCollectable> timedCollectables;
     private final float lightDistance = 15f;
     private final RayHandler rayHandler;
     private final PositionalLight light;
+    private final List<Key> keyList;
     /**
      * Marks if game is finished
      */
     private boolean isFinished = false;
     private boolean isSprint = false;
     private boolean isVulnerable = true;
-    public final int numberOfKeys;
-
 
     public Player(World world, DeathListener deathListener, RayHandler rayHandler) {
         this(world, deathListener, rayHandler, 0, 0);
-    }
-
-    public Player(World world, DeathListener deathListener, RayHandler rayHandler, Vector2 position) {
-        this(world, deathListener, rayHandler, position.x, position.y);
     }
 
     /**
@@ -100,6 +94,14 @@ public class Player extends Character implements Movable {
 
     }
 
+    public Player(World world, DeathListener deathListener, RayHandler rayHandler, Vector2 position) {
+        this(world, deathListener, rayHandler, position.x, position.y);
+    }
+
+    public List<Key> getKeyList() {
+        return keyList;
+    }
+
     public boolean addCollectable(TimedCollectable collectable) {
         return timedCollectables.add(collectable);
     }
@@ -113,6 +115,14 @@ public class Player extends Character implements Movable {
         super.update(deltaTime);
         this.timedCollectables.stream().filter(TimedCollectable::isRemovable).forEach(collectable -> collectable.restore(this));
         this.timedCollectables.removeIf(TimedCollectable::isRemovable);
+    }
+
+    /**
+     * @param damage damage to apply
+     */
+    @Override
+    public void makeDamage(int damage) {
+        if (!isFinished && isVulnerable) super.makeDamage(damage);
     }
 
     /**
@@ -166,14 +176,6 @@ public class Player extends Character implements Movable {
     }
 
     /**
-     * @param damage damage to apply
-     */
-    @Override
-    public void makeDamage(int damage) {
-        if (!isFinished && isVulnerable) super.makeDamage(damage);
-    }
-
-    /**
      * Releases all resources of this object.
      */
     @Override
@@ -197,9 +199,17 @@ public class Player extends Character implements Movable {
 
     }
 
-    public synchronized boolean isSprint() {
+    public boolean isVulnerable() {
+        return isVulnerable;
+    }
+
+    public void setVulnerable(boolean vulnerable) {
+        isVulnerable = vulnerable;
+    }    public synchronized boolean isSprint() {
         return isSprint;
     }
+
+
 
     /**
      * Requests elevated Speed
@@ -216,11 +226,5 @@ public class Player extends Character implements Movable {
         }
     }
 
-    public boolean isVulnerable() {
-        return isVulnerable;
-    }
 
-    public void setVulnerable(boolean vulnerable) {
-        isVulnerable = vulnerable;
-    }
 }
