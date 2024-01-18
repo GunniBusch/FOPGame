@@ -157,6 +157,7 @@ public class GameScreen implements Screen {
         collectableManager.spawn(HealthCollectable.class, 0.01f);
         collectableManager.spawn(SpeedBoost.class, 0.01f);
         collectableManager.spawn(DamageDeflect.class, 0.008f);
+        collectableManager.spawn(Key.class, MapLoader.getMapCoordinates(ObjectType.Key));
 
     }
 
@@ -320,7 +321,7 @@ public class GameScreen implements Screen {
         this.entities.add(new Exit(world, MapLoader.getMapCoordinates(ObjectType.Exit).get(0), this));
         new Entry(world, MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0), this);
 
-        //spawns the key
+
 
 
     }

@@ -27,6 +27,7 @@ public class Key extends Collectable {
         super(position, world, rayHandler);
         texture = new Texture("gameKey.png");
         textureRegion = new TextureRegion(texture);
+        active = false;
     }
 
 
@@ -45,5 +46,6 @@ public class Key extends Collectable {
     public void collect(Player player) {
         player.collectKey(this);
         removable = true;
+        active = true;
     }
 }
