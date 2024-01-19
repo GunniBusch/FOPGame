@@ -61,43 +61,45 @@ public class MiniMap implements Disposable {
         int viewportY = Gdx.graphics.getHeight() - viewportHeight / 2; // Align bottom
 
 // Set the screen bounds of the viewport
-        viewport.setScreenBounds(viewportX, viewportY, viewportWidth, viewportHeight);
+        viewport.setScreenBounds(viewportX - 10, viewportY - 10, viewportWidth, viewportHeight);
     }
 
     public void render() {
         viewport.apply(true);
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
-        spriteBatch.begin();
+
+        game.getShapeRenderer().setProjectionMatrix(viewport.getCamera().combined);
+
+        game.getShapeRenderer().begin(ShapeRenderer.ShapeType.Filled);
         for (Map.Entry<TileType, List<Vector2>> visitedEntry : visited.entrySet()) {
             switch (visitedEntry.getKey()) {
                 case Wall -> {
                     textureRegion.setRegionX(16);
                     textureRegion.setRegionY(0);
+                    game.getShapeRenderer().setColor(1.0f, 1.0f, 1.0f, 1.0f);
+
                     for (Vector2 position : visitedEntry.getValue()) {
-                        spriteBatch.draw(textureRegion, position.cpy().scl(Wall.width).x, position.cpy().scl(Wall.height).y, Wall.width / SCALE, Wall.height / SCALE);
+                        game.getShapeRenderer().rect(position.cpy().scl(Wall.width).x, position.cpy().scl(Wall.height).y, Wall.width / SCALE, Wall.height / SCALE);
+
+                        //spriteBatch.draw(textureRegion, position.cpy().scl(Wall.width).x, position.cpy().scl(Wall.height).y, Wall.width / SCALE, Wall.height / SCALE);
                     }
                 }
                 case Path -> {
                     textureRegion.setRegionX(16);
                     textureRegion.setRegionY(16);
+                    game.getShapeRenderer().setColor(1.0f, 0.0f, 0.0f, 1.0f);
+
                     for (Vector2 position : visitedEntry.getValue()) {
+                        game.getShapeRenderer().rect(position.cpy().scl(Wall.width).x, position.cpy().scl(Wall.height).y, Wall.width / SCALE, Wall.height / SCALE);
                         //spriteBatch.draw(textureRegion, position.cpy().scl(Wall.width).x, position.cpy().scl(Wall.height).y, Wall.width / SCALE, Wall.height / SCALE);
                     }
                 }
             }
         }
 
-        //spriteBatch.draw(textureRegion, player.getPosition().cpy().scl(PPM).x / SCALE, player.getPosition().cpy().scl(PPM).y / SCALE);
-
-        spriteBatch.end();
-
-        game.getShapeRenderer().setColor(0.0f, 1.0f, 1.0f, 1.0f);
-
-        game.getShapeRenderer().begin(ShapeRenderer.ShapeType.Filled);
-
 
         var plpos = player.getPosition().cpy().scl(PPM);
-        game.getShapeRenderer().circle(plpos.x / SCALE, plpos.y / SCALE, 16);
+        game.getShapeRenderer().circle(plpos.x / SCALE, plpos.y / SCALE, 8);
         game.getShapeRenderer().end();
 
 
@@ -108,8 +110,6 @@ public class MiniMap implements Disposable {
         float range = 5f;
         for (TileType type : notVisited.keySet()) {
             for (Vector2 vector2 : notVisited.getOrDefault(type, new ArrayList<>())) {
-
-
                 if ((vector2.cpy().scl(SCALE).x > player.getPosition().x - range && vector2.cpy().scl(SCALE).x < player.getPosition().x + range) && (vector2.cpy().scl(SCALE).y > player.getPosition().y - range && vector2.cpy().scl(SCALE).y < player.getPosition().y + range)) {
                     tempList.add(vector2.cpy());
                 }
@@ -145,7 +145,11 @@ public class MiniMap implements Disposable {
         int viewportY = height - viewportHeight / 2; // Align bottom
 
 // Set the screen bounds of the viewport
-        viewport.setScreenBounds(viewportX, viewportY, viewportWidth, viewportHeight);
+        viewport.setScreenBounds(viewportX - 10, viewportY - 10, viewportWidth, viewportHeight);
+    }
+
+    public Viewport getViewport() {
+        return viewport;
     }
 
     /**

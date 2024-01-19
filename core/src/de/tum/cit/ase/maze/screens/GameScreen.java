@@ -124,7 +124,7 @@ public class GameScreen implements Screen {
         camera.position.set(target);
 
         hudCamera = new OrthographicCamera();
-        this.hud = new Hud(hudCamera, this.game.getSpriteBatch(), player, this);
+        this.hud = new Hud(hudCamera, this.game.getSpriteBatch(), player, this, true);
 
         this.game.getSpriteBatch().setProjectionMatrix(camera.combined);
         game.getSpriteCache().setProjectionMatrix(camera.combined);
