@@ -1,9 +1,12 @@
 package de.tum.cit.ase.maze.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
@@ -157,6 +160,27 @@ public class Hud implements Disposable {
         stage.addActor(table);
         //Debug stuff
         stage.setDebugAll(DEBUG);
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean keyUp(InputEvent event, int keycode) {
+
+                switch (keycode) {
+                    // For me this is the "+" key
+                    case Input.Keys.RIGHT_BRACKET -> {
+                        if (minimapEnabled) {
+                            miniMap.switchZoom();
+                            var minimapView = miniMap.getViewport();
+                            minimapBorder.setBounds(minimapView.getScreenX() - 5, minimapView.getScreenY() - 5, (minimapView.getScreenWidth() / 2f) + 15, (minimapView.getScreenHeight() / 2f) + 15);
+                            minimapBorder.setVisible(miniMap.getZoomState() != MiniMap.ZoomState.Off);
+                            return true;
+                        } else return false;
+                    }
+                    default -> {
+                        return false;
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -224,6 +248,10 @@ public class Hud implements Disposable {
         this.minimapEnabled = minimapEnabled;
         minimapBorder.setVisible(minimapEnabled);
 
+    }
+
+    public Stage getStage() {
+        return stage;
     }
 
     @Override

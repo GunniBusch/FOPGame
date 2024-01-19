@@ -3,6 +3,7 @@ package de.tum.cit.ase.maze.screens;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -53,6 +54,7 @@ public class GameScreen implements Screen {
     private final Viewport viewport;
     private final BitmapFont font;
     private final Player player;
+    private final InputMultiplexer inputMultiplexer;
     private final InputAdapter inputAdapter;
     private final List<GameElement> entities;
     private final World world;
@@ -109,7 +111,6 @@ public class GameScreen implements Screen {
         this.entities.add(player);
         this.collectableManager = new CollectableManager(world, rayHandler, true);
         spawnCollectables();
-        this.inputAdapter = new GameInputProcessor(game, player);
         this.background = new Texture("StoneFloorTexture.png");
         this.spawnEntities();
         // Create and configure the camera for the game view
@@ -125,6 +126,10 @@ public class GameScreen implements Screen {
 
         hudCamera = new OrthographicCamera();
         this.hud = new Hud(hudCamera, this.game.getSpriteBatch(), player, this, true);
+        this.inputAdapter = new GameInputProcessor(game, player);
+        this.inputMultiplexer = new InputMultiplexer();
+        this.inputMultiplexer.addProcessor(hud.getStage());
+        this.inputMultiplexer.addProcessor(this.inputAdapter);
 
         this.game.getSpriteBatch().setProjectionMatrix(camera.combined);
         game.getSpriteCache().setProjectionMatrix(camera.combined);
@@ -337,7 +342,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(this.inputAdapter);
+        Gdx.input.setInputProcessor(this.inputMultiplexer);
         this.collectableManager.getTimer().start();
     }
 

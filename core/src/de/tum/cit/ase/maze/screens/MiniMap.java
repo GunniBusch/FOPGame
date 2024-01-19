@@ -23,7 +23,8 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 import static de.tum.cit.ase.maze.utils.CONSTANTS.SCALE;
 
 public class MiniMap implements Disposable {
-    private final double relationToSize = 0.3;
+    private ZoomState zoomState = ZoomState.Default;
+    private double relationToSize = 0.3;
     private final Viewport viewport;
     private final GameScreen game;
     private final SpriteBatch spriteBatch;
@@ -52,16 +53,7 @@ public class MiniMap implements Disposable {
         this.notVisited.put(TileType.Path, temp);
 
         viewport = new FillViewport((MapLoader.width + 1) * Wall.width * SCALE, (MapLoader.height + 1) * Wall.height * SCALE);
-// Calculate width and height of the viewport based on the aspect ratio
-        int viewportWidth = (int) (Gdx.graphics.getWidth() * relationToSize);
-        int viewportHeight = (int) (viewportWidth / aspactRatio);
-
-// Calculate the position of the viewport
-        int viewportX = Gdx.graphics.getWidth() - viewportWidth / 2; // Align right
-        int viewportY = Gdx.graphics.getHeight() - viewportHeight / 2; // Align bottom
-
-// Set the screen bounds of the viewport
-        viewport.setScreenBounds(viewportX - 10, viewportY - 10, viewportWidth, viewportHeight);
+        updateBounds();
     }
 
     public void render() {
@@ -139,8 +131,12 @@ public class MiniMap implements Disposable {
 
     }
 
-    public void resize(int width, int height) {
-// Calculate width and height of the viewport based on the aspect ratio
+    private void updateBounds() {
+        updateBounds(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    }
+
+    private void updateBounds(int width, int height) {
+        relationToSize = zoomState.relationToSize;
         int viewportWidth = (int) (width * relationToSize);
         int viewportHeight = (int) (viewportWidth / aspactRatio);
 
@@ -152,8 +148,35 @@ public class MiniMap implements Disposable {
         viewport.setScreenBounds(viewportX - 10, viewportY - 10, viewportWidth, viewportHeight);
     }
 
+    public void resize(int width, int height) {
+        updateBounds(width, height);
+    }
+
+    public void switchZoom() {
+        zoomState = ZoomState.values()[(zoomState.ordinal() + 1) % (ZoomState.values().length)];
+        updateBounds();
+    }
+
+    public ZoomState getZoomState() {
+        return zoomState;
+    }
+
     public Viewport getViewport() {
         return viewport;
+    }
+
+    public void setZoomState(ZoomState zoomState) {
+        this.zoomState = zoomState;
+        relationToSize = zoomState.relationToSize;
+        int viewportWidth = (int) (Gdx.graphics.getWidth() * relationToSize);
+        int viewportHeight = (int) (viewportWidth / aspactRatio);
+
+// Calculate the position of the viewport
+        int viewportX = Gdx.graphics.getWidth() - viewportWidth / 2; // Align right
+        int viewportY = Gdx.graphics.getHeight() - viewportHeight / 2; // Align bottom
+
+// Set the screen bounds of the viewport
+        viewport.setScreenBounds(viewportX - 10, viewportY - 10, viewportWidth, viewportHeight);
     }
 
     /**
@@ -161,5 +184,15 @@ public class MiniMap implements Disposable {
      */
     public enum TileType {
         Wall, Path
+    }
+
+    public enum ZoomState {
+        ZoomedIn(0.2f), Default(0.3f), ZoomedOut(0.5f), Off(0f);
+
+        private final float relationToSize;
+
+        ZoomState(float relationToSize) {
+            this.relationToSize = relationToSize;
+        }
     }
 }
