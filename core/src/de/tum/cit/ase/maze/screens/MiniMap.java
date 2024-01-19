@@ -22,6 +22,12 @@ import java.util.Map;
 import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 import static de.tum.cit.ase.maze.utils.CONSTANTS.SCALE;
 
+/**
+ * The MiniMap class represents a mini map that can be displayed in a game screen.
+ * It displays the visited and not visited tiles on the map, as well as the player's position.
+ * <p>
+ * The mini map can be zoomed in, zoomed out, or turned off.
+ */
 public class MiniMap implements Disposable {
     private ZoomState zoomState = ZoomState.Default;
     private double relationToSize = 0.3;
@@ -31,10 +37,17 @@ public class MiniMap implements Disposable {
     private final Map<TileType, List<Vector2>> visited;
     private final Map<TileType, List<Vector2>> notVisited;
     private final Player player;
-    private final float aspactRatio = MapLoader.width / MapLoader.height;
+    private final float aspectRatio = MapLoader.width / MapLoader.height;
     private final Texture texture = new Texture("basictiles.png");
     private final TextureRegion textureRegion = new TextureRegion(texture, 16, 0, 16, 16);
 
+    /**
+     * Represents a minimap for the game.
+     *
+     * @param game        The game screen.
+     * @param spriteBatch The sprite batch used for rendering.
+     * @param player      The player object.
+     */
     public MiniMap(GameScreen game, SpriteBatch spriteBatch, Player player) {
         this.game = game;
         this.spriteBatch = spriteBatch;
@@ -56,6 +69,10 @@ public class MiniMap implements Disposable {
         updateBounds();
     }
 
+    /**
+     * Renders the mini map on the screen.
+     * It applies the given viewport and sets the projection matrix of the sprite batch and shape renderer.
+     */
     public void render() {
         viewport.apply(true);
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
@@ -94,13 +111,18 @@ public class MiniMap implements Disposable {
 //        game.getShapeRenderer().setColor(0.1f, 0.453f, 1f, 1f);
         game.getShapeRenderer().setColor(0f, 0f, 0f, 1.0f);
 
-        var plpos = player.getPosition().cpy().scl(PPM);
-        game.getShapeRenderer().circle(plpos.x / SCALE, plpos.y / SCALE, Wall.width);
+        var playerPosition = player.getPosition().cpy().scl(PPM);
+        game.getShapeRenderer().circle(playerPosition.x / SCALE, playerPosition.y / SCALE, Wall.width);
         game.getShapeRenderer().end();
 
 
     }
 
+    /**
+     * Updates the mini map based on the given delta time.
+     *
+     * @param dt the delta time.
+     */
     public void update(float dt) {
         var tempList = new ArrayList<Vector2>();
         float range = 5f;
@@ -128,7 +150,7 @@ public class MiniMap implements Disposable {
 
     @Override
     public void dispose() {
-
+        this.texture.dispose();
     }
 
     private void updateBounds() {
@@ -138,7 +160,7 @@ public class MiniMap implements Disposable {
     private void updateBounds(int width, int height) {
         relationToSize = zoomState.relationToSize;
         int viewportWidth = (int) (width * relationToSize);
-        int viewportHeight = (int) (viewportWidth / aspactRatio);
+        int viewportHeight = (int) (viewportWidth / aspectRatio);
 
 // Calculate the position of the viewport
         int viewportX = width - viewportWidth / 2; // Align right
@@ -148,10 +170,19 @@ public class MiniMap implements Disposable {
         viewport.setScreenBounds(viewportX - 10, viewportY - 10, viewportWidth, viewportHeight);
     }
 
+    /**
+     * Resizes the mini map to the specified width and height.
+     *
+     * @param width  The new width of the mini map.
+     * @param height The new height of the mini map.
+     */
     public void resize(int width, int height) {
         updateBounds(width, height);
     }
 
+    /**
+     * Switches the zoom state of the mini map.
+     */
     public void switchZoom() {
         zoomState = ZoomState.values()[(zoomState.ordinal() + 1) % (ZoomState.values().length)];
         updateBounds();
@@ -167,16 +198,7 @@ public class MiniMap implements Disposable {
 
     public void setZoomState(ZoomState zoomState) {
         this.zoomState = zoomState;
-        relationToSize = zoomState.relationToSize;
-        int viewportWidth = (int) (Gdx.graphics.getWidth() * relationToSize);
-        int viewportHeight = (int) (viewportWidth / aspactRatio);
-
-// Calculate the position of the viewport
-        int viewportX = Gdx.graphics.getWidth() - viewportWidth / 2; // Align right
-        int viewportY = Gdx.graphics.getHeight() - viewportHeight / 2; // Align bottom
-
-// Set the screen bounds of the viewport
-        viewport.setScreenBounds(viewportX - 10, viewportY - 10, viewportWidth, viewportHeight);
+        updateBounds();
     }
 
     /**
@@ -186,6 +208,9 @@ public class MiniMap implements Disposable {
         Wall, Path
     }
 
+    /**
+     * Represents the state of zoom in a mini map.
+     */
     public enum ZoomState {
         ZoomedIn(0.2f), Default(0.3f), ZoomedOut(0.5f), Off(0f);
 

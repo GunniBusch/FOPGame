@@ -168,9 +168,9 @@ public abstract class Character extends GameElement {
      * @return if health was full
      */
     public boolean heal(int amountToHeal) {
-        var health_restorable = MathUtils.clamp(amountToHeal, 0, PLAYER_MAX_HEALTH - health);
-        this.health += health_restorable;
-        return health_restorable > 0;
+        var healAmount = MathUtils.clamp(amountToHeal, 0, PLAYER_MAX_HEALTH - health);
+        this.health += healAmount;
+        return healAmount > 0;
     }
 
     public float getSpeed() {
@@ -180,7 +180,8 @@ public abstract class Character extends GameElement {
     public void setSpeed(float speed) {
         this.speed = speed;
     }
-    public Vector2 getDimensions(){
+
+    public Vector2 getDimensions() {
         return new Vector2(frameWidth * ZOOM, frameHeight * ZOOM);
     }
 }

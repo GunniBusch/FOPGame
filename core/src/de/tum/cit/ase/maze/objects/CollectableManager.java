@@ -117,7 +117,7 @@ public class CollectableManager implements Disposable {
      * Spawns {@link Collectable Collectables}
      *
      * @param collectableClass the class of the {@link Collectable} to spawn
-     * @param areaToCover      percentage of the area the will be covered
+     * @param areaToCover      percentage of the area that will be covered
      */
     public final void spawn(@NonNull Class<? extends Collectable> collectableClass, float areaToCover) {
         this.spawn(collectableClass, MathUtils.round(spawnablePoints.size * MathUtils.clamp(areaToCover, MathUtils.FLOAT_ROUNDING_ERROR, 1)));
