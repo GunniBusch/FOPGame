@@ -4,6 +4,7 @@ import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -35,8 +36,10 @@ public class CollectableManager implements Disposable {
     private boolean scheduledRespawn = false;
     private Timer timer;
     private RespawnTask respawnTask;
+    private final TextureAtlas textureAtlas;
 
     public CollectableManager(World world, RayHandler rayHandler, boolean canRespawn) {
+        this.textureAtlas = new TextureAtlas("Powerup Assets/output/Collectables.atlas");
         this.world = world;
         this.canRespawn = true;
         this.rayHandler = rayHandler;
@@ -99,7 +102,7 @@ public class CollectableManager implements Disposable {
             if (spawnablePoints.size >= amount) {
                 for (int i = 0; i < amount; i++) {
                     var spawnPoint = spawnablePoints.random();
-                    collectableList.add(collectableClass.getConstructor(Vector2.class, World.class, RayHandler.class).newInstance(spawnPoint, world, rayHandler));
+                    collectableList.add(collectableClass.getConstructor(Vector2.class, World.class, RayHandler.class, TextureAtlas.class).newInstance(spawnPoint, world, rayHandler, textureAtlas));
                     spawnablePoints.removeValue(spawnPoint, false);
 
                 }
@@ -150,6 +153,7 @@ public class CollectableManager implements Disposable {
     public void dispose() {
         this.collectableList.forEach(Collectable::dispose);
         this.timer.stop();
+        this.textureAtlas.dispose();
     }
 
     /**

@@ -1,6 +1,7 @@
 package de.tum.cit.ase.maze.objects.still.collectable;
 
 import box2dLight.RayHandler;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -19,8 +20,8 @@ public abstract class TimedCollectable extends Collectable {
     protected float elapsedTIme = 0f;
     private boolean isDisposed = false;
 
-    public TimedCollectable(Vector2 position, World world, RayHandler rayHandler) {
-        super(position, world, rayHandler);
+    public TimedCollectable(Vector2 position, World world, RayHandler rayHandler, TextureAtlas textureAtlas) {
+        super(position, world, rayHandler, textureAtlas);
 
     }
 
@@ -95,7 +96,6 @@ public abstract class TimedCollectable extends Collectable {
     public void dispose() {
         if (!isDisposed) {
             this.isDisposed = true;
-            texture.dispose();
         }
     }
 
