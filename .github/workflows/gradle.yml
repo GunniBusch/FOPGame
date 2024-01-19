@@ -38,5 +38,5 @@ jobs:
       - name: Execute Gradle build
         run: ./gradlew build
       - name: Check dependencies
-        uses: mikepenz/gradle-dependency-submission@{latest}
+        uses: mikepenz/gradle-dependency-submission@v0.9.2
 
