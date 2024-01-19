@@ -99,7 +99,7 @@ public class GameScreen implements Screen {
 
         //Gdx.gl.glEnable(GL20.GL_BLEND);
         this.b2DDr = new Box2DDebugRenderer(true, true, false, true, true, true);
-        MapLoader.loadMapFile(Gdx.files.internal("level-3.properties"));
+        MapLoader.loadMapFile(Gdx.files.internal("level-4.properties"));
         wall = new Wall(MapLoader.getMapCoordinates(ObjectType.Wall), game.getSpriteCache(), world);
 
         var playerCord = MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0).cpy();

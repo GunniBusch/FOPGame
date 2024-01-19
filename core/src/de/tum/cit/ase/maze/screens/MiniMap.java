@@ -79,7 +79,7 @@ public class MiniMap implements Disposable {
                     game.getShapeRenderer().setColor(1.0f, 1.0f, 1.0f, 1.0f);
 
                     for (Vector2 position : visitedEntry.getValue()) {
-                        game.getShapeRenderer().rect(position.cpy().scl(Wall.width).x, position.cpy().scl(Wall.height).y, Wall.width / SCALE, Wall.height / SCALE);
+                        game.getShapeRenderer().rect(position.cpy().scl(Wall.width).x, position.cpy().scl(Wall.height).y, Wall.width, Wall.height);
 
                         //spriteBatch.draw(textureRegion, position.cpy().scl(Wall.width).x, position.cpy().scl(Wall.height).y, Wall.width / SCALE, Wall.height / SCALE);
                     }
@@ -89,8 +89,9 @@ public class MiniMap implements Disposable {
                     textureRegion.setRegionY(16);
                     game.getShapeRenderer().setColor(1.0f, 0.0f, 0.0f, 1.0f);
 
+
                     for (Vector2 position : visitedEntry.getValue()) {
-                        game.getShapeRenderer().rect(position.cpy().scl(Wall.width).x, position.cpy().scl(Wall.height).y, Wall.width / SCALE, Wall.height / SCALE);
+                        game.getShapeRenderer().rect(position.cpy().scl(Wall.width).x, position.cpy().scl(Wall.height).y, Wall.width, Wall.height);
                         //spriteBatch.draw(textureRegion, position.cpy().scl(Wall.width).x, position.cpy().scl(Wall.height).y, Wall.width / SCALE, Wall.height / SCALE);
                     }
                 }
@@ -98,8 +99,11 @@ public class MiniMap implements Disposable {
         }
 
 
+//        game.getShapeRenderer().setColor(0.1f, 0.453f, 1f, 1f);
+        game.getShapeRenderer().setColor(0f, 0f, 0f, 1.0f);
+
         var plpos = player.getPosition().cpy().scl(PPM);
-        game.getShapeRenderer().circle(plpos.x / SCALE, plpos.y / SCALE, 8);
+        game.getShapeRenderer().circle(plpos.x / SCALE, plpos.y / SCALE, Wall.width);
         game.getShapeRenderer().end();
 
 
