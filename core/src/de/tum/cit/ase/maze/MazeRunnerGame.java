@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteCache;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Logger;
+import de.tum.cit.ase.editor.screens.Editor;
 import de.tum.cit.ase.maze.screens.GameScreen;
 import de.tum.cit.ase.maze.screens.MenuScreen;
 import de.tum.cit.ase.maze.screens.PauseScreen;
@@ -59,7 +60,8 @@ public class MazeRunnerGame extends Game {
         backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("epic_menu.mp3"));
 
 
-        goToMenu(); // Navigate to the menu screen
+        //goToMenu(); // Navigate to the menu screen
+        this.setScreen(new Editor(this));
     }
 
     /**
