@@ -1,13 +1,12 @@
 package de.tum.cit.ase.maze.objects.still.collectable;
 
 import box2dLight.RayHandler;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Array;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
@@ -20,23 +19,9 @@ public class HealthCollectable extends Collectable {
     private final int HEALTH_TO_RESTORE = 2;
     private float stateTime = 0f;
 
-    public HealthCollectable(Vector2 position, World world, RayHandler rayHandler) {
-        super(position, world, rayHandler);
-
-
-        texture = new Texture("objects.png");
-
-        Array<TextureRegion> walkFrames = new Array<>(TextureRegion.class);
-        int animationFrames = 4;
-        // Add all frames to the animation
-        int row = 3;
-        for (int col = 0; col < animationFrames; col++) {
-            walkFrames.add(new TextureRegion(this.texture, col * 16, row * 16, 16, 16));
-        }
-        this.animation = new Animation<>(0.1f, walkFrames);
-        walkFrames.clear();
-
-
+    public HealthCollectable(Vector2 position, World world, RayHandler rayHandler, TextureAtlas textureAtlas) {
+        super(position, world, rayHandler, textureAtlas);
+        animation = new Animation<>(0.1f, textureAtlas.findRegions("heart"), Animation.PlayMode.LOOP);
     }
 
     @Override
@@ -64,5 +49,9 @@ public class HealthCollectable extends Collectable {
     public void update(float deltaTime) {
         super.update(deltaTime);
         stateTime += deltaTime;
+    }
+
+    @Override
+    public void dispose() {
     }
 }

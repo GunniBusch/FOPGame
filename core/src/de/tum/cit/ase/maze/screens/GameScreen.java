@@ -3,6 +3,7 @@ package de.tum.cit.ase.maze.screens;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -53,6 +54,7 @@ public class GameScreen implements Screen {
     private final Viewport viewport;
     private final BitmapFont font;
     private final Player player;
+    private final InputMultiplexer inputMultiplexer;
     private final InputAdapter inputAdapter;
     private final List<GameElement> entities;
     private final World world;
@@ -67,7 +69,7 @@ public class GameScreen implements Screen {
     private final RayHandler rayHandler;
     private boolean victory = false;
     private boolean end = false;
-    private Vector3 target;
+    private final Vector3 target;
     //added boolean pause, for pause functionality
     private boolean paused;
     private float stateTime = 0f;
@@ -99,7 +101,7 @@ public class GameScreen implements Screen {
 
         //Gdx.gl.glEnable(GL20.GL_BLEND);
         this.b2DDr = new Box2DDebugRenderer(true, true, false, true, true, true);
-        MapLoader.loadMapFile(Gdx.files.internal("level-3.properties"));
+        MapLoader.loadMapFile(Gdx.files.internal("level-4.properties"));
         wall = new Wall(MapLoader.getMapCoordinates(ObjectType.Wall), game.getSpriteCache(), world);
 
         var playerCord = MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0).cpy();
@@ -109,7 +111,6 @@ public class GameScreen implements Screen {
         this.entities.add(player);
         this.collectableManager = new CollectableManager(world, rayHandler, true);
         spawnCollectables();
-        this.inputAdapter = new GameInputProcessor(game, player);
         this.background = new Texture("StoneFloorTexture.png");
         this.spawnEntities();
         // Create and configure the camera for the game view
@@ -124,7 +125,11 @@ public class GameScreen implements Screen {
         camera.position.set(target);
 
         hudCamera = new OrthographicCamera();
-        this.hud = new Hud(hudCamera, this.game.getSpriteBatch(), player, this);
+        this.hud = new Hud(hudCamera, this.game.getSpriteBatch(), player, this, true);
+        this.inputAdapter = new GameInputProcessor(game, player);
+        this.inputMultiplexer = new InputMultiplexer();
+        this.inputMultiplexer.addProcessor(hud.getStage());
+        this.inputMultiplexer.addProcessor(this.inputAdapter);
 
         this.game.getSpriteBatch().setProjectionMatrix(camera.combined);
         game.getSpriteCache().setProjectionMatrix(camera.combined);
@@ -223,7 +228,7 @@ public class GameScreen implements Screen {
      */
     private void update(float dt) {
         this.world.step(1 / 60f, 6, 2);
-        stateTime +=dt;
+        stateTime += dt;
         rayHandler.update();
         this.entities.parallelStream().forEach(entity -> entity.update(dt));
         this.collectableManager.update(dt);
@@ -307,6 +312,7 @@ public class GameScreen implements Screen {
         this.end = true;
         this.victory = victory;
     }
+
     private void spawnEntities() {
 
 
@@ -336,7 +342,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(this.inputAdapter);
+        Gdx.input.setInputProcessor(this.inputMultiplexer);
         this.collectableManager.getTimer().start();
     }
 
@@ -361,5 +367,9 @@ public class GameScreen implements Screen {
 
     public CollectableManager getCollectableManager() {
         return collectableManager;
+    }
+
+    public ShapeRenderer getShapeRenderer() {
+        return shapeRenderer;
     }
 }
