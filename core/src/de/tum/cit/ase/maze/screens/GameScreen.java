@@ -27,10 +27,7 @@ import de.tum.cit.ase.maze.objects.GameElement;
 import de.tum.cit.ase.maze.objects.ObjectType;
 import de.tum.cit.ase.maze.objects.dynamic.Enemy;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
-import de.tum.cit.ase.maze.objects.still.Entry;
-import de.tum.cit.ase.maze.objects.still.Exit;
-import de.tum.cit.ase.maze.objects.still.Key;
-import de.tum.cit.ase.maze.objects.still.Wall;
+import de.tum.cit.ase.maze.objects.still.*;
 import de.tum.cit.ase.maze.objects.still.collectable.DamageDeflect;
 import de.tum.cit.ase.maze.objects.still.collectable.HealthCollectable;
 import de.tum.cit.ase.maze.objects.still.collectable.SpeedBoost;
@@ -100,7 +97,7 @@ public class GameScreen implements Screen {
 
         //Gdx.gl.glEnable(GL20.GL_BLEND);
         this.b2DDr = new Box2DDebugRenderer(true, true, false, true, true, true);
-        MapLoader.loadMapFile(Gdx.files.internal("level-4.properties"));
+        MapLoader.loadMapFile(Gdx.files.internal("level-1.properties"));
         wall = new Wall(MapLoader.getMapCoordinates(ObjectType.Wall), game.getSpriteCache(), world);
 
         var playerCord = MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0).cpy();
@@ -159,6 +156,7 @@ public class GameScreen implements Screen {
         collectableManager.spawn(SpeedBoost.class, 0.01f);
         collectableManager.spawn(DamageDeflect.class, 0.008f);
         collectableManager.spawn(Key.class, MapLoader.getMapCoordinates(ObjectType.Key));
+        collectableManager.spawn(Traps.class, MapLoader.getMapCoordinates(ObjectType.Trap));
 
     }
 

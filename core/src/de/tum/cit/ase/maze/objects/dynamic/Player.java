@@ -31,7 +31,7 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.*;
 public class Player extends Character implements Movable {
     public final float SPRINT_BOOST = 1.8f;
     public final int numberOfKeys;
-    private final int RAYS_NUM = 500;
+    private final int RAYS_NUM = 200;
     private final Set<TimedCollectable> timedCollectables;
     private final float lightDistance = 15f;
     private final RayHandler rayHandler;
