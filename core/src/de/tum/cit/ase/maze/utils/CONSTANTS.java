@@ -19,7 +19,7 @@ public record CONSTANTS() {
     /**
      * Tells if the game is in development mode.
      */
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     public static final float SCALE = 2f;
     /**
      * Filter bit default

@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Logger;
 import de.tum.cit.ase.maze.screens.GameScreen;
 import de.tum.cit.ase.maze.screens.MenuScreen;
 import de.tum.cit.ase.maze.screens.PauseScreen;
+import de.tum.cit.ase.maze.screens.VictoryScreen;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
 import games.spooky.gdx.nativefilechooser.NativeFileChooser;
 
@@ -70,6 +71,22 @@ public class MazeRunnerGame extends Game {
         backgroundMusic.setLooping(true);
         //backgroundMusic.play();
         this.setScreen(new MenuScreen(this)); // Set the current screen to MenuScreen
+        if (gameScreen != null) {
+            gameScreen.dispose(); // Dispose the game screen if it exists
+            gameScreen = null;
+        }
+    }
+
+    /**
+     * Switches to the victory screen.
+     */
+    public void goToVictoryScreen() {
+        spriteCache.clear();
+        this.backgroundMusic.stop();
+        this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Victory(chosic.com).mp3"));
+        backgroundMusic.setLooping(true);
+        //backgroundMusic.play();
+        this.setScreen(new VictoryScreen(this)); // Set the current screen to MenuScreen
         if (gameScreen != null) {
             gameScreen.dispose(); // Dispose the game screen if it exists
             gameScreen = null;

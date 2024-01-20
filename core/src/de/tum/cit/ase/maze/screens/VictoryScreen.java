@@ -15,22 +15,20 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import de.tum.cit.ase.maze.MazeRunnerGame;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
 
-
 /**
- * The MenuScreen class is responsible for displaying the main menu of the game.
- * It extends the LibGDX Screen class and sets up the UI components for the menu.
+ * The VictoryScreen class is responsible for displaying the victory screen of the game.
+ * It extends the LibGDX Screen class and sets up the UI components for the victory screen.
  */
-public class MenuScreen implements Screen {
+public class VictoryScreen implements Screen {
 
     private final Stage stage;
 
-
     /**
-     * Constructor for MenuScreen. Sets up the camera, viewport, stage, and UI elements.
+     * Constructor for VictoryScreen. Sets up the camera, viewport, stage, and UI elements.
      *
      * @param game The main game class, used to access global resources and methods.
      */
-    public MenuScreen(MazeRunnerGame game) {
+    public VictoryScreen(MazeRunnerGame game) {
         var camera = new OrthographicCamera();
         camera.zoom = 1.25f; // Set camera zoom for a closer view
 
@@ -42,36 +40,27 @@ public class MenuScreen implements Screen {
         stage.addActor(table); // Add the table to the stage
 
         // Add a label as a title
-        table.add(new Label("Welcome to [Gamename]!", game.getSkin(), "title")).padBottom(80).row();
+        table.add(new Label("Congratulations! You have conquered the maze!", game.getSkin(), "title")).padBottom(80).row();
 
-        // Create and add a button to go to the game screen
+        // Create and add a button to start a new journey
         TextButton goToGameButton = new TextButton("Start new journey", game.getSkin());
         table.add(goToGameButton).width(400).row();
         goToGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.goToGame(false); // Change to the game screen when button is pressed
-            }
-        });
-        // additional buttons and functionality for menu
-        //TODO: pausing game when pressing esc
-        TextButton continueGameButton = new TextButton("Continue journey", game.getSkin());
-        table.add(continueGameButton).width(400).row();
-        continueGameButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                game.resume(); // Change to the game screen when button is pressed
-            }
-        });
-        TextButton exitGameButton = new TextButton("Leave journey", game.getSkin());
-        table.add(exitGameButton).width(400).row();
-        continueGameButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                game.goToMenu(); // Change to the game screen when button is pressed
+                game.goToGame(false); // Change to the game screen when the button is pressed
             }
         });
 
+        // Create and add a button to return to the main menu
+        TextButton returnToMenuButton = new TextButton("Return to main menu", game.getSkin());
+        table.add(returnToMenuButton).width(400).row();
+        returnToMenuButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.goToMenu(); // Change to the main menu when the button is pressed
+            }
+        });
 
         stage.setDebugAll(CONSTANTS.DEBUG);
     }
@@ -79,9 +68,7 @@ public class MenuScreen implements Screen {
     @Override
     public void show() {
         // Set the input processor so the stage can receive input events
-
         Gdx.input.setInputProcessor(stage);
-
     }
 
     @Override
@@ -111,7 +98,7 @@ public class MenuScreen implements Screen {
 
     @Override
     public void dispose() {
-        // Dispose of the stage when screen is disposed
+        // Dispose of the stage when the screen is disposed
         stage.dispose();
     }
 }
