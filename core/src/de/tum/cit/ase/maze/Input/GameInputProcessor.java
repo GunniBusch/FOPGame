@@ -29,6 +29,10 @@ public class GameInputProcessor extends InputAdapter {
                 case Input.Keys.A -> character.startMoving(WalkDirection.LEFT);
                 case Input.Keys.S -> character.startMoving(WalkDirection.DOWN);
                 case Input.Keys.D -> character.startMoving(WalkDirection.RIGHT);
+                case Input.Keys.UP -> character.startMoving(WalkDirection.UP);
+                case Input.Keys.LEFT -> character.startMoving(WalkDirection.LEFT);
+                case Input.Keys.DOWN -> character.startMoving(WalkDirection.DOWN);
+                case Input.Keys.RIGHT -> character.startMoving(WalkDirection.RIGHT);
                 case Input.Keys.SHIFT_LEFT -> ((Player) character).setSprint(true);
                 case Input.Keys.ESCAPE -> game.goToPause();
             }
