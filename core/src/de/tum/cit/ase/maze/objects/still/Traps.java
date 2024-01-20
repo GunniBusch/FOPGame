@@ -34,7 +34,7 @@ public class Traps extends Collectable {
 
     @Override
     public void collect(Player player) {
-
+        player.makeDamage(1);
     }
 
 }
