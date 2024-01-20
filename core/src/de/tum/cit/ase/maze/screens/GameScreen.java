@@ -67,7 +67,6 @@ public class GameScreen implements Screen {
     private boolean victory = false;
     private boolean end = false;
     //added boolean pause, for pause functionality
-    private boolean paused;
     private float stateTime = 0f;
 
     //ToDo Check what viewport does and if we need it.
