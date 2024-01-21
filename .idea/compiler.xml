@@ -9,12 +9,11 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.checkerframework/checker-util/3.28.0/d15573be6f12e49bf4c3f0743c1c11ae3fd83132/checker-util-3.28.0.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.checkerframework/checker-qual/3.28.0/8d5b904e460c47bf22fa20f35da0f38de6bcacf6/checker-qual-3.28.0.jar" />
         </processorPath>
-        <module name="FOPGame.desktop.main" />
+        <module name="Introduction to Informatics INHN0001 - Heilbronn - WS 2324.FOPGame.core.main" />
         <module name="FOPGame.core.test" />
+        <module name="Introduction to Informatics INHN0001 - Heilbronn - WS 2324.FOPGame.desktop.main" />
         <module name="FOPGame.desktop.test" />
-        <module name="FOPGame.core.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="17" />
   </component>
 </project>
