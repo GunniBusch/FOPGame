@@ -7,9 +7,10 @@ public class EditorUi extends Stage {
     private final Editor editor;
 
     public EditorUi(Editor editor) {
-        super(new ScreenViewport());
+        super(new ScreenViewport(), editor.getGame().getSpriteBatch());
         this.editor = editor;
     }
+
 
     @Override
     public void draw() {
