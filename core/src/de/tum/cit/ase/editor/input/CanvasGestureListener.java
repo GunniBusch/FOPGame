@@ -2,13 +2,13 @@ package de.tum.cit.ase.editor.input;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.input.GestureDetector;
-import de.tum.cit.ase.editor.screens.Editor;
+import de.tum.cit.ase.editor.screens.EditorCanvas;
 
-public class EditorGestureProcessor extends GestureDetector.GestureAdapter {
-    private final Editor editor;
-    private final EditorInputProcessor inputProcessor;
+public class CanvasGestureListener extends GestureDetector.GestureAdapter {
+    private final EditorCanvas editor;
+    private final CanvasInputProcessor inputProcessor;
 
-    public EditorGestureProcessor(Editor editor, EditorInputProcessor inputProcessor) {
+    public CanvasGestureListener(EditorCanvas editor, CanvasInputProcessor inputProcessor) {
         this.editor = editor;
         this.inputProcessor = inputProcessor;
     }

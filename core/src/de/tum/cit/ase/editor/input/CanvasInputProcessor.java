@@ -3,20 +3,22 @@ package de.tum.cit.ase.editor.input;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
-import de.tum.cit.ase.editor.screens.Editor;
+import de.tum.cit.ase.editor.screens.EditorCanvas;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class EditorInputProcessor extends InputAdapter {
-    private final Editor editor;
-    private final Set<Integer> pressedKeys = new HashSet<>(10);
-    private boolean isToched;
+import static de.tum.cit.ase.maze.utils.CONSTANTS.DEBUG;
 
-    public EditorInputProcessor(Editor editor) {
+public class CanvasInputProcessor extends InputAdapter {
+    private final EditorCanvas editorCanvas;
+    private final Set<Integer> pressedKeys = new HashSet<>(10);
+    private boolean isTouched;
+
+    public CanvasInputProcessor(EditorCanvas editorCanvas) {
         super();
-        this.editor = editor;
+        this.editorCanvas = editorCanvas;
     }
 
     // Todo Shortcuts
@@ -26,25 +28,30 @@ public class EditorInputProcessor extends InputAdapter {
 
 
         if (keycode == Input.Keys.SPACE) {
-            editor.getEditorCanvas().setSize(64, 64);
+            editorCanvas.setSize(64, 64);
         }
         this.pressedKeys.add(keycode);
+        this.editorCanvas.getEditor().handleLostUiFocus();
         return true;
     }
 
     @Override
     public boolean keyUp(int keycode) {
         this.pressedKeys.remove(keycode);
-        if (keycode == Input.Keys.SPACE) {
-            editor.getEditorCanvas().setSize(16, 16);
+        if (DEBUG && keycode == Input.Keys.SPACE) {
+            editorCanvas.setSize(16, 16);
+            return true;
+
         }
-        return true;
+        return false;
     }
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Gdx.app.debug("touchDown", String.format("screenX: %s, screenY: %s, pointer: %s", screenX, screenY, pointer));
-        return super.touchDown(screenX, screenY, pointer, button);
+        this.editorCanvas.getEditor().handleLostUiFocus();
+
+        return editorCanvas.processMouseInput(screenX, screenY, button);
     }
 
     @Override
@@ -65,17 +72,15 @@ public class EditorInputProcessor extends InputAdapter {
     public boolean scrolled(float amountX, float amountY) {
         amountX *= 1.5f;
         amountY *= 1.5f * -1;
-        //Gdx.app.debug("Scrolled", String.format("amountX: %s, amountY: %s", amountX, amountY));
         if (isShortcut(KeyCombination.ZOOM)) {
             Gdx.app.debug("Scrolled", "Zoomed");
 
-            this.editor.moveCanvas(0, 0, amountY);
+            this.editorCanvas.move(0, 0, amountY);
 
             return true;
 
         } else {
-            //Gdx.app.debug("Scrolled", "Scrolled");
-            this.editor.moveCanvas(amountX, amountY, 0);
+            this.editorCanvas.move(amountX, amountY, 0);
 
             return true;
         }
