@@ -10,27 +10,26 @@ import games.spooky.gdx.nativefilechooser.desktop.DesktopFileChooser;
  * It sets up the game window and launches the game using LibGDX framework.
  */
 public class DesktopLauncher {
-	/**
-	 * The main method sets up the configuration for the game window and starts the application.
-	 *
-	 * @param arg Command line arguments (not used in this application)
-	 */
-	public static void main(String[] arg) {
-		// Configuration for the game window
-		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-		config.setTitle("Maze Runner"); // Set the window title
+    /**
+     * The main method sets up the configuration for the game window and starts the application.
+     *
+     * @param arg Command line arguments (not used in this application)
+     */
+    public static void main(String[] arg) {
+        // Configuration for the game window
+        Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+        config.setTitle("Maze Runner"); // Set the window title
 
-		// Get the display mode of the current monitor
-		Graphics.DisplayMode displayMode = Lwjgl3ApplicationConfiguration.getDisplayMode();
-		// Set the window size to 80% of the screen width and height
-		config.setWindowedMode(
-				Math.round(0.8f * displayMode.width),
-				Math.round(0.8f * displayMode.height)
-		);
-		config.useVsync(true); // Enable vertical sync
-		config.setForegroundFPS(60); // Set the foreground frames per second
-
-		// Launch the game
-		new Lwjgl3Application(new MazeRunnerGame(new DesktopFileChooser()), config);
-	}
+        // Get the display mode of the current monitor
+        Graphics.DisplayMode displayMode = Lwjgl3ApplicationConfiguration.getDisplayMode();
+        // Set the window size to 80% of the screen width and height
+        config.setWindowedMode(
+                Math.round(0.8f * displayMode.width),
+                Math.round(0.8f * displayMode.height)
+        );
+        config.useVsync(true); // Enable vertical sync
+        config.setForegroundFPS(60); // Set the foreground frames per second
+        // Launch the game
+        new Lwjgl3Application(new MazeRunnerGame(new DesktopFileChooser()), config);
+    }
 }

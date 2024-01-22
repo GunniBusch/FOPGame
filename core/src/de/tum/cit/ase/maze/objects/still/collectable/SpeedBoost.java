@@ -1,9 +1,8 @@
 package de.tum.cit.ase.maze.objects.still.collectable;
 
 import box2dLight.RayHandler;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
@@ -16,13 +15,11 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 public class SpeedBoost extends TimedCollectable {
     private final float speedBoost = 1.4f;
     private float originalSpeed;
-    private TextureRegion textureRegion;
 
-    public SpeedBoost(Vector2 position, World world, RayHandler rayHandler) {
-        super(position, world, rayHandler);
+    public SpeedBoost(Vector2 position, World world, RayHandler rayHandler, TextureAtlas textureAtlas) {
+        super(position, world, rayHandler, textureAtlas);
         this.duration = 30;
-        texture = new Texture("objects.png");
-        textureRegion = new TextureRegion(this.texture, 0, 4 * 16, 16, 16);
+        textureRegion = textureAtlas.findRegion("powerup-speed");
     }
 
 

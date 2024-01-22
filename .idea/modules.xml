@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/FOPGame.iml" filepath="$PROJECT_DIR$/.idea/modules/FOPGame.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/FOPGame.core.main.iml" filepath="$PROJECT_DIR$/.idea/modules/core/FOPGame.core.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/desktop/FOPGame.desktop.main.iml" filepath="$PROJECT_DIR$/.idea/modules/desktop/FOPGame.desktop.main.iml" />
     </modules>

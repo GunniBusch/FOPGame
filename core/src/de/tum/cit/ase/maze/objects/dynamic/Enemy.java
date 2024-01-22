@@ -34,7 +34,7 @@ public class Enemy extends Character {
     private final float nodeDistanceThreshold = 15f * PPM;
     private Player player = null;
     public boolean isFollowing;
-    private final float DETECTION_RADIUS = 10;
+    private final float DETECTION_RADIUS = 5;
     private final Grid grid;
     private List<Vector2> path;
     private int currentPathIndex;

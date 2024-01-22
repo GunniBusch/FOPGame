@@ -4,6 +4,8 @@ import box2dLight.PointLight;
 import box2dLight.PositionalLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -24,17 +26,20 @@ public abstract class Collectable extends GameElement {
     protected float frameWidth, frameHeight;
     protected boolean active = true;
     protected boolean removable = false;
+    protected TextureAtlas textureAtlas;
+    protected TextureRegion textureRegion;
 
-    public Collectable(Vector2 position, World world, RayHandler rayHandler) {
-        this(position, world, rayHandler, 16, 16);
+    public Collectable(Vector2 position, World world, RayHandler rayHandler, TextureAtlas textureAtlas) {
+        this(position, world, rayHandler, textureAtlas, 16, 16);
 
     }
 
-    protected Collectable(Vector2 position, World world, RayHandler rayHandler, float frameWidth, float frameHeight) {
+    protected Collectable(Vector2 position, World world, RayHandler rayHandler, TextureAtlas textureAtlas, float frameWidth, float frameHeight) {
         this.world = world;
         this.rayHandler = rayHandler;
         this.frameHeight = frameHeight;
         this.frameWidth = frameWidth;
+        this.textureAtlas = textureAtlas;
         this.createBoy(position);
         this.light = new PointLight(rayHandler, 5);
         this.light.setColor(new Color(.8f, .8f, .8f, 1f));
@@ -100,15 +105,6 @@ public abstract class Collectable extends GameElement {
         this.dispose();
     }
 
-    @Override
-    public void dispose() {
-        if (removable) {
-
-        }
-        texture.dispose();
-
-    }
-
     /**
      * Tells if it is removable
      */
@@ -124,5 +120,11 @@ public abstract class Collectable extends GameElement {
      */
     public boolean isActive() {
         return active;
+    }
+
+    @Override
+    public void dispose() {
+        //texture.dispose();
+
     }
 }
