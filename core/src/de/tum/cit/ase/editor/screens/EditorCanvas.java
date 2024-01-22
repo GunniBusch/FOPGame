@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -81,27 +80,49 @@ public class EditorCanvas implements Disposable {
     }
 
     public void move(float x, float y, float z) {
+
+        OrthographicCamera camera = (OrthographicCamera) viewport.getCamera();
         this.viewport.getCamera().translate(x, y, 0);
-        var zoomBef = ((OrthographicCamera) this.viewport.getCamera()).zoom;
+        float oldZ = camera.zoom;
+        float amount = z * 0.1f;
+        float halfScreenWidth = viewport.getScreenWidth() / 2f;
+        float halfScreenHeight = viewport.getScreenHeight() / 2f;
+        var mousePosition = getMousePosition();
 
-        ((OrthographicCamera) this.viewport.getCamera()).zoom = MathUtils.clamp(zoomBef + z * 0.1f, 0.1f, 2f);
-        zoomBef = ((OrthographicCamera) this.viewport.getCamera()).zoom;
-        if (z < 0 && zoomBef <= 2f) {
+        // Zoom
+        camera.zoom += amount;
 
-            var mp = getMousePosition();
+        // Zoom Boundaries
+        float minZoom = .1f;
+        float maxZoom = 2f;
+        camera.zoom = MathUtils.clamp(camera.zoom + z * 0.1f, minZoom, maxZoom);
 
-            mp.y = Gdx.graphics.getHeight() - mp.y;  // flip the y-coordinate
-            Gdx.app.debug("NewPos", mp + " : " + new Vector2(Gdx.input.getX(), Gdx.input.getY()) + " : " + getCameraPosition());
+        // Move to cursor position
+        Vector3 target = new Vector3((mousePosition.x - halfScreenWidth), (-mousePosition.y + halfScreenHeight), 0).add(camera.position);
+        var alpha = (oldZ - camera.zoom);
+        camera.position.lerp(target, alpha);
 
-            this.viewport.getCamera().position.interpolate(new Vector3(mp, 0), zoomBef / 2, Interpolation.exp10In);
-        }
-        this.viewport.apply();
+
+        // Bound camera
+        float viewHalfWidth = camera.zoom * (camera.viewportWidth / 2); // half viewport width
+        float viewHalfHeight = camera.zoom * (camera.viewportHeight / 2); // half viewport height
+
+        float gridWidth = tileSize * width;
+        float gridHeight = tileSize * height;
+
+// Clamping x-position
+        float minX = grid.getX() - viewHalfWidth / viewHalfWidth / gridWidth; // let the left edge of the grid/canvas move toward the center of viewport
+        float maxX = grid.getX() + gridWidth + viewHalfWidth / viewHalfWidth / gridWidth; // let the right edge of the grid/canvas move toward the center of viewport
+        camera.position.x = MathUtils.clamp(camera.position.x, minX, maxX);
+
+// clamping y-position
+        float minY = grid.getY() - viewHalfHeight / viewHalfHeight / gridHeight; // let the bottom edge of the grid/canvas move toward the center of viewport
+        float maxY = grid.getY() + gridHeight + viewHalfHeight / viewHalfHeight / gridHeight; // let the top edge of the grid/canvas move toward the center of viewport
+        camera.position.y = MathUtils.clamp(camera.position.y, minY, maxY);
+
     }
 
     public Vector2 getMousePosition() {
-//        var mp = this.viewport.getCamera().project(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-//        Gdx.app.debug("Scrolled", mp + " : " + new Vector2(Gdx.input.getX(), Gdx.input.getY()));
-
         return new Vector2(Gdx.input.getX(), Gdx.input.getY());
     }
 
