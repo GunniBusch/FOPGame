@@ -1,6 +1,6 @@
 package de.tum.cit.ase.editor.utlis.exceptions;
 
-public class InvalidGridCellException extends RuntimeException {
+public class InvalidGridCellException extends MazeGameEditorException {
     public InvalidGridCellException() {
     }
 

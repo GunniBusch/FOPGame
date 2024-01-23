@@ -1,6 +1,6 @@
 package de.tum.cit.ase.maze.utils.exceptions;
 
-public class MapLoadingException extends RuntimeException {
+public class MapLoadingException extends MazeGameException {
     public MapLoadingException() {
         super();
     }

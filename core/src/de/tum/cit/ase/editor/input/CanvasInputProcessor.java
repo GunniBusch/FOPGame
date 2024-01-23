@@ -20,7 +20,7 @@ public class CanvasInputProcessor extends InputAdapter {
     private final Bresenham2 bresenham2 = new Bresenham2();
     private int activeButton = -1;
     private int numEvents = 0;
-    private final GridPoint2 lastDragEvent = new GridPoint2();
+    private GridPoint2 lastDragEvent = new GridPoint2();
 
     public CanvasInputProcessor(EditorCanvas editorCanvas) {
         super();
@@ -57,10 +57,16 @@ public class CanvasInputProcessor extends InputAdapter {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         //Gdx.app.debug("touchDown", String.format("screenX: %s, screenY: %s, pointer: %s", screenX, screenY, pointer));
 
-        var current = calculateGridPoint(screenX, screenY);
-        if (Math.abs(current.dst(lastDragEvent)) >= 1) {
-            lastDragEvent.set(current);
+        var current = calculateGridPoint(screenX, screenY, false);
+        if (current != null) {
+            if (lastDragEvent == null) {
+                lastDragEvent = current;
+            }
+            if (Math.abs(current.dst(lastDragEvent)) >= 1) {
+                lastDragEvent.set(current);
+            }
         }
+
         this.activeButton = button;
         this.editorCanvas.getEditor().handleLostUiFocus();
 
@@ -72,6 +78,7 @@ public class CanvasInputProcessor extends InputAdapter {
         // Gdx.app.debug("touchUp", String.format("screenX: %s, screenY: %s, pointer: %s", screenX, screenY, pointer));
         Gdx.app.debug("TouchesReg", numEvents + "");
         editorCanvas.registerEndOfTouch();
+        this.lastDragEvent = null;
 
         this.numEvents = 0;
         activeButton = -1;
@@ -84,18 +91,37 @@ public class CanvasInputProcessor extends InputAdapter {
 
 
         this.numEvents++;
-        var currPos = calculateGridPoint(screenX, screenY);
+        var currPos = calculateGridPoint(screenX, screenY, false);
 
+        var savePos = true;
 
-        if (Math.abs(currPos.dst(lastDragEvent)) >= 1) {
-            var l = bresenham2.line(lastDragEvent, currPos);
-            for (GridPoint2 gridPoint2 : l) {
-                System.out.println(gridPoint2);
-                editorCanvas.makeInput(gridPoint2.x, gridPoint2.y);
-            }
-            lastDragEvent.set(currPos);
+        if (currPos == null && lastDragEvent != null) {
+            currPos = calculateGridPoint(screenX, screenY, true);
+            savePos = false;
         }
-        return true; //editorCanvas.processMouseInput(screenX, screenY, activeButton);
+        if (currPos != null && lastDragEvent != null) {
+
+            if (Math.abs(currPos.dst(lastDragEvent)) >= 1) {
+                var l = bresenham2.line(lastDragEvent, currPos);
+                for (GridPoint2 gridPoint2 : l) {
+                    System.out.println(gridPoint2);
+                    editorCanvas.makeInput(gridPoint2.x, gridPoint2.y);
+                }
+                if (savePos) {
+                    lastDragEvent.set(currPos);
+                } else {
+                    lastDragEvent = null;
+                }
+            }
+            return true; //editorCanvas.processMouseInput(screenX, screenY, activeButton);
+
+        } else {
+            if (lastDragEvent == null) {
+                lastDragEvent = currPos;
+            }
+            return false;
+        }
+
     }
 
     @Override
@@ -125,11 +151,8 @@ public class CanvasInputProcessor extends InputAdapter {
         return this.pressedKeys.equals(keyCombination.requiredKeys);
     }
 
-    private GridPoint2 calculateGridPoint(float x, float y) {
-
-        var point = editorCanvas.getViewport().unproject(new Vector2(x, y));
-        point = editorCanvas.getMouseGridPosition(point, true);
-        return new GridPoint2((int) point.x, (int) point.y);
+    private GridPoint2 calculateGridPoint(float x, float y, boolean clampToGrid) {
+        return editorCanvas.getMouseGridPosition(editorCanvas.getViewport().unproject(new Vector2(x, y)), clampToGrid);
     }
 
     protected enum KeyCombination {
