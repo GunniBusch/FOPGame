@@ -9,6 +9,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import de.tum.cit.ase.editor.data.EditorConfig;
+import de.tum.cit.ase.editor.tools.Eraser;
+import de.tum.cit.ase.editor.tools.Pen;
+import de.tum.cit.ase.editor.tools.Tool;
 import de.tum.cit.ase.editor.utlis.TileTypes;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -79,39 +83,8 @@ public class EditorUi extends Stage {
         addMenuItem(skin, null, "file", "File", taskBar, menuPopups, filePopUpMap);
         addMenuItem(skin, null, "file", "Info", taskBar, menuPopups, new HashMap<>());
 
-
-        // Tools
-        var tileTypeGroup = new ButtonGroup<>();
-        var hTBar = new HorizontalGroup();
-        hTBar.setFillParent(true);
-        hTBar.setOrigin(Align.bottom);
-        hTBar.align(Align.bottom);
-        for (TileTypes tileType : TileTypes.values()) {
-            var but = new TextButton(tileType.getDisplayName(), skin, "file");
-            but.setUserObject(tileType);
-            but.setColor(tileType.canvasColor);
-            but.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    if (event.getListenerActor() instanceof TextButton button1) {
-                        editor.reportActiveTool(((TileTypes) button1.getUserObject()));
-                    }
-                }
-            });
-            tileTypeGroup.add(but);
-            hTBar.addActor(but);
-        }
-
-        tileTypeGroup.setMinCheckCount(1);
-        tileTypeGroup.setMaxCheckCount(1);
-
-
-        tileTypeGroup.setChecked(TileTypes.Wall.getDisplayName());
-        this.editor.reportActiveTool(TileTypes.Wall);
-
-
-        this.addActor(hTBar);
-
+        this.createToolBar();
+        this.createTileBar();
         this.setDebugInvisible(true);
 
     }
@@ -121,6 +94,11 @@ public class EditorUi extends Stage {
         Gdx.app.error("Save file", "Could not save file");
     }
 
+    protected void open() {
+        Gdx.app.error("Open file", "Could not open file");
+
+
+    }
 
     @Override
     public void draw() {
@@ -128,14 +106,82 @@ public class EditorUi extends Stage {
         super.draw();
     }
 
-    protected void open() {
-        Gdx.app.error("Open file", "Could not open file");
+    public void resize(int width, int height) {
+        this.getViewport().update(width, height, true);
+    }
+
+    protected void createTileBar() {
+        // Tools
+        var tileTypeGroup = new ButtonGroup<>();
+        var tileBar = new HorizontalGroup();
+        tileBar.setFillParent(true);
+        tileBar.setOrigin(Align.bottom);
+        tileBar.align(Align.bottom);
+        for (TileTypes tileType : TileTypes.values()) {
+            var but = new TextButton(tileType.getDisplayName(), skin, "file");
+            but.setUserObject(tileType);
+            but.setColor(tileType.canvasColor);
+            but.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (event.getListenerActor() instanceof TextButton button1) {
+                        EditorConfig.selectedTile = (TileTypes) button1.getUserObject();
+                    }
+                }
+            });
+            tileTypeGroup.add(but);
+            tileBar.addActor(but);
+        }
+
+        tileTypeGroup.setMinCheckCount(1);
+        tileTypeGroup.setMaxCheckCount(1);
+
+
+        tileTypeGroup.setChecked(TileTypes.Wall.getDisplayName());
+        EditorConfig.selectedTile = TileTypes.Wall;
+
+
+        this.addActor(tileBar);
 
 
     }
 
-    public void resize(int width, int height) {
-        this.getViewport().update(width, height, true);
+    protected void createToolBar() {
+
+        VerticalGroup toolGroup = new VerticalGroup();
+        toolGroup.align(Align.left);
+        toolGroup.setFillParent(true);
+        ButtonGroup<ImageButton> toolButtonGroup = new ButtonGroup<>();
+        toolButtonGroup.setMaxCheckCount(1);
+        toolButtonGroup.setMinCheckCount(1);
+        var button = new ImageButton(skin, "pen");
+        button.setUserObject(Pen.class);
+        ClickListener clickListener = new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (event.getListenerActor() instanceof ImageButton button1) {
+                    EditorConfig.selectedTool = (Class<? extends Tool>) button1.getUserObject();
+                }
+            }
+        };
+        button.addListener(clickListener);
+
+        toolButtonGroup.add(button);
+        toolGroup.addActor(button);
+
+        button = new ImageButton(skin, "eraser");
+
+        EditorConfig.selectedTool = Pen.class;
+
+        button.setUserObject(Eraser.class);
+
+
+        button.addListener(clickListener);
+
+        toolButtonGroup.add(button);
+        toolGroup.addActor(button);
+        this.addActor(toolGroup);
+
     }
 
     protected void addMenuItem(Skin skin,

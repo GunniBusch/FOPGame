@@ -10,7 +10,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import de.tum.cit.ase.editor.input.CanvasGestureListener;
 import de.tum.cit.ase.editor.input.CanvasInputProcessor;
-import de.tum.cit.ase.editor.utlis.TileTypes;
 import de.tum.cit.ase.maze.MazeRunnerGame;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
 
@@ -20,7 +19,6 @@ public class Editor extends InputAdapter implements Screen {
     private final EditorCanvas editorCanvas;
     private final InputMultiplexer inputMultiplexer;
     public ShapeRenderer shapeRenderer;
-    private TileTypes activeTool;
 
     public Editor(MazeRunnerGame game) {
         this.game = game;
@@ -86,14 +84,6 @@ public class Editor extends InputAdapter implements Screen {
     @Override
     public void hide() {
 
-    }
-
-    public void reportActiveTool(TileTypes activeTool) {
-        this.activeTool = activeTool;
-    }
-
-    public TileTypes getActiveTool() {
-        return activeTool;
     }
 
     public void moveCanvas(float x, float y, float z) {

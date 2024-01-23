@@ -18,9 +18,15 @@ import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import de.tum.cit.ase.editor.data.EditorConfig;
+import de.tum.cit.ase.editor.tools.Tool;
+import de.tum.cit.ase.editor.tools.ToolManager;
 import de.tum.cit.ase.editor.utlis.TileTypes;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.lang.ref.SoftReference;
+import java.util.Objects;
 
 public class EditorCanvas implements Disposable {
     private final Editor editor;
@@ -33,6 +39,8 @@ public class EditorCanvas implements Disposable {
     private float width = 16f, height = 16f;
     private TileTypes[][] virtualGrid;
     private @Nullable Vector2 mouseGridPos;
+    private boolean isTouched = false;
+    private int lastActiveButton = -1;
 
 
     public EditorCanvas(Editor editor) {
@@ -81,7 +89,9 @@ public class EditorCanvas implements Disposable {
         editor.shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
 
         var c1 = new Color(.5f, .5f, .5f, 1f);
-        var c2 = new Color(1f, 1f, 1f, .2f);
+//        var c2 = new Color(1f, 1f, 1f, .2f);
+        var c2 = new Color(0f, 0, 0, .9f);
+
 
         editor.shapeRenderer.setAutoShapeType(true);
         editor.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -121,6 +131,7 @@ public class EditorCanvas implements Disposable {
 
 
         this.updateMouseGridPosition(viewport.unproject(getMousePosition()));
+
         stage.act(dt);
     }
 
@@ -128,11 +139,19 @@ public class EditorCanvas implements Disposable {
         this.viewport.getCamera().update();
     }
 
+    private void updateMouseGridPosition(Vector2 position) {
+        this.mouseGridPos = getMouseGridPosition(position);
+    }
+
     public void resize(int width, int height) {
         this.viewport.update(width, height, true);
     }
 
-    private void updateMouseGridPosition(Vector2 position) {
+    private Vector2 getMouseGridPosition(Vector2 position) {
+        return getMouseGridPosition(position, false);
+    }
+
+    public Vector2 getMouseGridPosition(Vector2 position, boolean alwaysGrid) {
 
 
         var gridWidth = tileSize * width;
@@ -144,13 +163,18 @@ public class EditorCanvas implements Disposable {
         var minY = grid.getY();
         var maxY = minY + gridHeight;
 
-        if (position.x > maxX || position.x < minX) {
-            this.mouseGridPos = null;
-            return;
-        }
-        if (position.y > maxY || position.y < minY) {
-            this.mouseGridPos = null;
-            return;
+        if (!alwaysGrid) {
+            if (position.x > maxX || position.x < minX) {
+
+                return null;
+            }
+            if (position.y > maxY || position.y < minY) {
+
+                return null;
+            }
+        } else {
+            position.x = MathUtils.clamp(position.x, minX, maxX);
+            position.y = MathUtils.clamp(position.y, minY, maxY);
         }
 
 
@@ -159,29 +183,66 @@ public class EditorCanvas implements Disposable {
         vector.x = (float) Math.floor(vector.x);
         vector.y = (float) Math.floor(vector.y);
 
-        this.mouseGridPos = vector;
+        return vector;
 
 
+    }
+
+    public ScreenViewport getViewport() {
+        return viewport;
+    }
+
+    public boolean processMouseInput(float x, float y, int button) {
+        lastActiveButton = button;
+        isTouched = true;
+        switch (button) {
+            case Input.Buttons.LEFT -> {
+                var mousePos = viewport.unproject(new Vector2(x, y));
+                mousePos = this.getMouseGridPosition(mousePos);
+                if (mousePos != null) {
+                    manipulateGrid(mousePos, ToolManager.getTool(EditorConfig.selectedTool));
+                }
+            }
+            case Input.Buttons.RIGHT -> {
+            }
+        }
+        return true;
+    }
+
+    private void manipulateGrid(Vector2 position, SoftReference<? extends Tool> toolReference) {
+        try {
+            System.out.println(position);
+            Objects.requireNonNull(toolReference.get()).applyTool(this.virtualGrid, (int) position.x, (int) position.y);
+        } catch (NullPointerException e) {
+            Gdx.app.error("Drawing", "Could not draw", e);
+        } finally {
+            toolReference.enqueue();
+        }
+
+
+    }
+
+    public boolean makeInput(float x, float y) {
+
+
+        manipulateGrid(new Vector2(x, y), ToolManager.getTool(EditorConfig.selectedTool));
+
+
+        return true;
+    }
+
+    public float getScreenTileSize() {
+        return tileSize * ((OrthographicCamera) viewport.getCamera()).zoom;
+    }
+
+    public boolean registerEndOfTouch() {
+        var hasChanged = isTouched;
+        this.isTouched = false;
+        return hasChanged;
     }
 
     private void setGridTile(int x, int y, TileTypes tileType) {
         virtualGrid[x][y] = tileType;
-    }
-
-    public boolean processMouseInput(float x, float y, int button) {
-        switch (button) {
-            case Input.Buttons.LEFT -> {
-                var mousePos = viewport.unproject(new Vector2(x, y));
-                this.updateMouseGridPosition(mousePos);
-                if (mouseGridPos != null) {
-                    markDraw(mouseGridPos);
-                }
-            }
-            case Input.Buttons.RIGHT -> {
-                break;
-            }
-        }
-        return true;
     }
 
     public void move(float x, float y, float z) {
@@ -227,11 +288,6 @@ public class EditorCanvas implements Disposable {
 
     }
 
-    private void markDraw(Vector2 position) {
-
-        this.virtualGrid[(int) position.y][(int) position.x] = this.editor.getActiveTool();
-
-    }
 
     public Vector2 getMousePosition() {
         return new Vector2(Gdx.input.getX(), Gdx.input.getY());

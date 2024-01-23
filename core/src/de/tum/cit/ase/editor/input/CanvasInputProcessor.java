@@ -3,6 +3,9 @@ package de.tum.cit.ase.editor.input;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.math.Bresenham2;
+import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.Vector2;
 import de.tum.cit.ase.editor.screens.EditorCanvas;
 
 import java.util.Collections;
@@ -14,7 +17,10 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.DEBUG;
 public class CanvasInputProcessor extends InputAdapter {
     private final EditorCanvas editorCanvas;
     private final Set<Integer> pressedKeys = new HashSet<>(10);
-    private boolean isTouched;
+    private final Bresenham2 bresenham2 = new Bresenham2();
+    private int activeButton = -1;
+    private int numEvents = 0;
+    private final GridPoint2 lastDragEvent = new GridPoint2();
 
     public CanvasInputProcessor(EditorCanvas editorCanvas) {
         super();
@@ -24,7 +30,7 @@ public class CanvasInputProcessor extends InputAdapter {
     // Todo Shortcuts
     @Override
     public boolean keyDown(int keycode) {
-        Gdx.app.debug("keyDown", String.format("keycode: %s, keycode_str: %s", keycode, Input.Keys.toString(keycode)));
+        //Gdx.app.debug("keyDown", String.format("keycode: %s, keycode_str: %s", keycode, Input.Keys.toString(keycode)));
 
 
         if (keycode == Input.Keys.SPACE) {
@@ -37,6 +43,7 @@ public class CanvasInputProcessor extends InputAdapter {
 
     @Override
     public boolean keyUp(int keycode) {
+
         this.pressedKeys.remove(keycode);
         if (DEBUG && keycode == Input.Keys.SPACE) {
             editorCanvas.setSize(16, 16);
@@ -48,7 +55,13 @@ public class CanvasInputProcessor extends InputAdapter {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        Gdx.app.debug("touchDown", String.format("screenX: %s, screenY: %s, pointer: %s", screenX, screenY, pointer));
+        //Gdx.app.debug("touchDown", String.format("screenX: %s, screenY: %s, pointer: %s", screenX, screenY, pointer));
+
+        var current = calculateGridPoint(screenX, screenY);
+        if (Math.abs(current.dst(lastDragEvent)) >= 1) {
+            lastDragEvent.set(current);
+        }
+        this.activeButton = button;
         this.editorCanvas.getEditor().handleLostUiFocus();
 
         return editorCanvas.processMouseInput(screenX, screenY, button);
@@ -56,16 +69,40 @@ public class CanvasInputProcessor extends InputAdapter {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        Gdx.app.debug("touchUp", String.format("screenX: %s, screenY: %s, pointer: %s", screenX, screenY, pointer));
+        // Gdx.app.debug("touchUp", String.format("screenX: %s, screenY: %s, pointer: %s", screenX, screenY, pointer));
+        Gdx.app.debug("TouchesReg", numEvents + "");
+        editorCanvas.registerEndOfTouch();
 
+        this.numEvents = 0;
+        activeButton = -1;
         return super.touchUp(screenX, screenY, pointer, button);
     }
 
     @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
+    public synchronized boolean touchDragged(int screenX, int screenY, int pointer) {
         //Gdx.app.debug("Dragged", String.format("screenX: %s, screenY: %s, pointer: %s", screenX, screenY, pointer));
 
-        return super.touchDragged(screenX, screenY, pointer);
+
+        this.numEvents++;
+        var currPos = calculateGridPoint(screenX, screenY);
+
+
+        if (Math.abs(currPos.dst(lastDragEvent)) >= 1) {
+            var l = bresenham2.line(lastDragEvent, currPos);
+            for (GridPoint2 gridPoint2 : l) {
+                System.out.println(gridPoint2);
+                editorCanvas.makeInput(gridPoint2.x, gridPoint2.y);
+            }
+            lastDragEvent.set(currPos);
+        }
+        return true; //editorCanvas.processMouseInput(screenX, screenY, activeButton);
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        //Gdx.app.debug("Moved", String.format("screenX: %s, screenY: %s", screenX, screenY));
+
+        return super.mouseMoved(screenX, screenY);
     }
 
     @Override
@@ -77,17 +114,22 @@ public class CanvasInputProcessor extends InputAdapter {
 
             this.editorCanvas.move(0, 0, amountY);
 
-            return true;
-
         } else {
             this.editorCanvas.move(amountX, amountY, 0);
 
-            return true;
         }
+        return true;
     }
 
     private boolean isShortcut(KeyCombination keyCombination) {
         return this.pressedKeys.equals(keyCombination.requiredKeys);
+    }
+
+    private GridPoint2 calculateGridPoint(float x, float y) {
+
+        var point = editorCanvas.getViewport().unproject(new Vector2(x, y));
+        point = editorCanvas.getMouseGridPosition(point, true);
+        return new GridPoint2((int) point.x, (int) point.y);
     }
 
     protected enum KeyCombination {
