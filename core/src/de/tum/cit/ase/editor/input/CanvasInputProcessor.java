@@ -6,21 +6,22 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.math.Bresenham2;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.GdxRuntimeException;
+import de.tum.cit.ase.editor.data.EditorConfig;
 import de.tum.cit.ase.editor.screens.EditorCanvas;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.DEBUG;
 
-public class CanvasInputProcessor extends InputAdapter {
+public class CanvasInputProcessor extends InputAdapter implements Shortcut {
     private final EditorCanvas editorCanvas;
-    private final Set<Integer> pressedKeys = new HashSet<>(10);
     private final Bresenham2 bresenham2 = new Bresenham2();
     private int activeButton = -1;
     private int numEvents = 0;
-    private GridPoint2 lastDragEvent = new GridPoint2();
+    private GridPoint2 lastDragEvent = null;
+    private GridPoint2 lastPosition = new GridPoint2();
 
     public CanvasInputProcessor(EditorCanvas editorCanvas) {
         super();
@@ -36,41 +37,51 @@ public class CanvasInputProcessor extends InputAdapter {
         if (keycode == Input.Keys.SPACE) {
             editorCanvas.setSize(64, 64);
         }
-        this.pressedKeys.add(keycode);
+        this.addKey(keycode);
         this.editorCanvas.getEditor().handleLostUiFocus();
-        return true;
+        try {
+            return (boolean) this.relocateToTool(ToolInputAdapter.class.getDeclaredMethod("keyDown", int.class), keycode);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public boolean keyUp(int keycode) {
 
-        this.pressedKeys.remove(keycode);
+        this.removeKey(keycode);
         if (DEBUG && keycode == Input.Keys.SPACE) {
             editorCanvas.setSize(16, 16);
             return true;
 
         }
-        return false;
+        try {
+            return (boolean) this.relocateToTool(ToolInputAdapter.class.getDeclaredMethod("keyUp", int.class), keycode);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         //Gdx.app.debug("touchDown", String.format("screenX: %s, screenY: %s, pointer: %s", screenX, screenY, pointer));
 
+        lastPosition = calculateGridPoint(screenX, screenY, true);
         var current = calculateGridPoint(screenX, screenY, false);
         if (current != null) {
-            if (lastDragEvent == null) {
-                lastDragEvent = current;
-            }
-            if (Math.abs(current.dst(lastDragEvent)) >= 1) {
-                lastDragEvent.set(current);
-            }
+
+            lastDragEvent = current;
+
         }
 
         this.activeButton = button;
         this.editorCanvas.getEditor().handleLostUiFocus();
 
-        return editorCanvas.processMouseInput(screenX, screenY, button);
+        try {
+            return (boolean) this.relocateToTool(ToolInputAdapter.class.getDeclaredMethod("touchDown", int.class, int.class, int.class, int.class), screenX, screenY, pointer, button);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -82,7 +93,11 @@ public class CanvasInputProcessor extends InputAdapter {
 
         this.numEvents = 0;
         activeButton = -1;
-        return super.touchUp(screenX, screenY, pointer, button);
+        try {
+            return (boolean) this.relocateToTool(ToolInputAdapter.class.getDeclaredMethod("touchUp", int.class, int.class, int.class, int.class), screenX, screenY, pointer, button);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -94,33 +109,55 @@ public class CanvasInputProcessor extends InputAdapter {
         var currPos = calculateGridPoint(screenX, screenY, false);
 
         var savePos = true;
+        try {
+            return (boolean) this.relocateToTool(ToolInputAdapter.class.getDeclaredMethod("touchDragged", int.class, int.class, int.class), screenX, screenY, pointer);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
 
-        if (currPos == null && lastDragEvent != null) {
+/*
+        Gdx.app.debug("Pos", currPos + " : " + lastDragEvent);
+        if (currPos == null && lastDragEvent == null) {
+            lastPosition = calculateGridPoint(screenX, screenY, true);
+            return false;
+        } else if (currPos == null && lastDragEvent != null) {
             currPos = calculateGridPoint(screenX, screenY, true);
             savePos = false;
+
+        } else if (currPos != null && lastDragEvent == null) {
+            lastDragEvent = lastPosition;
+            savePos = true;
         }
         if (currPos != null && lastDragEvent != null) {
 
-            if (Math.abs(currPos.dst(lastDragEvent)) >= 1) {
-                var l = bresenham2.line(lastDragEvent, currPos);
-                for (GridPoint2 gridPoint2 : l) {
-                    System.out.println(gridPoint2);
-                    editorCanvas.makeInput(gridPoint2.x, gridPoint2.y);
-                }
-                if (savePos) {
-                    lastDragEvent.set(currPos);
-                } else {
-                    lastDragEvent = null;
-                }
+
+            var l = bresenham2.line(lastDragEvent, currPos);
+            for (GridPoint2 gridPoint2 : l) {
+                System.out.println(gridPoint2);
+                editorCanvas.makeInput(gridPoint2.x, gridPoint2.y);
             }
+
+
+            if (savePos) {
+                lastDragEvent.set(currPos);
+            } else {
+                lastDragEvent = null;
+            }
+            lastPosition = calculateGridPoint(screenX, screenY, true);
+
             return true; //editorCanvas.processMouseInput(screenX, screenY, activeButton);
 
         } else {
-            if (lastDragEvent == null) {
+            if (savePos) {
                 lastDragEvent = currPos;
+            } else {
+                lastDragEvent = null;
             }
+            lastPosition = calculateGridPoint(screenX, screenY, true);
+
             return false;
         }
+*/
 
     }
 
@@ -135,7 +172,7 @@ public class CanvasInputProcessor extends InputAdapter {
     public boolean scrolled(float amountX, float amountY) {
         amountX *= 1.5f;
         amountY *= 1.5f * -1;
-        if (isShortcut(KeyCombination.ZOOM)) {
+        if (this.isShortcut(KeyCombination.ZOOM.requiredKeys)) {
             Gdx.app.debug("Scrolled", "Zoomed");
 
             this.editorCanvas.move(0, 0, amountY);
@@ -147,21 +184,25 @@ public class CanvasInputProcessor extends InputAdapter {
         return true;
     }
 
-    private boolean isShortcut(KeyCombination keyCombination) {
-        return this.pressedKeys.equals(keyCombination.requiredKeys);
-    }
 
     private GridPoint2 calculateGridPoint(float x, float y, boolean clampToGrid) {
         return editorCanvas.getMouseGridPosition(editorCanvas.getViewport().unproject(new Vector2(x, y)), clampToGrid);
     }
 
+    private Object relocateToTool(Method method, Object... args) {
+        try {
+            return method.invoke(EditorConfig.selectedTool, args);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new GdxRuntimeException(e);
+        }
+    }
+
     protected enum KeyCombination {
         ZOOM(Input.Keys.SHIFT_LEFT);
-        public final Set<Integer> requiredKeys;
+        public final Integer[] requiredKeys;
 
         KeyCombination(Integer... keys) {
-            requiredKeys = new HashSet<>(keys.length);
-            Collections.addAll(requiredKeys, keys);
+            requiredKeys = keys;
         }
     }
 }

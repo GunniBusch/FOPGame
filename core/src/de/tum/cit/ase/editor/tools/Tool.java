@@ -1,10 +1,21 @@
 package de.tum.cit.ase.editor.tools;
 
-import de.tum.cit.ase.editor.utlis.TileTypes;
-import de.tum.cit.ase.editor.utlis.exceptions.InvalidGridCellException;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import de.tum.cit.ase.editor.drawing.Canvas;
+
+import javax.annotation.WillNotClose;
 
 public sealed interface Tool permits EditorTool {
 
-    void applyTool(TileTypes[][] grid, int x, int y) throws InvalidGridCellException;
+
+    Tool getInstance(Canvas canvas);
+
+
+    void draw(@WillNotClose ShapeRenderer shapeRenderer);
+
+    /**
+     * Validate after big changes
+     */
+    void validate();
 
 }

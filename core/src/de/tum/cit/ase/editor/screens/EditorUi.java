@@ -10,9 +10,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import de.tum.cit.ase.editor.data.EditorConfig;
+import de.tum.cit.ase.editor.tools.EditorTool;
 import de.tum.cit.ase.editor.tools.Eraser;
 import de.tum.cit.ase.editor.tools.Pen;
-import de.tum.cit.ase.editor.tools.Tool;
+import de.tum.cit.ase.editor.tools.ToolManager;
 import de.tum.cit.ase.editor.utlis.TileTypes;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -159,8 +160,9 @@ public class EditorUi extends Stage {
         ClickListener clickListener = new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (event.getListenerActor() instanceof ImageButton button1) {
-                    EditorConfig.selectedTool = (Class<? extends Tool>) button1.getUserObject();
+                if (event.getListenerActor() instanceof ImageButton button1 && button1.getUserObject() instanceof Class<?> oClass) {
+                    ToolManager.freeTool(EditorConfig.selectedTool);
+                    EditorConfig.selectedTool = ToolManager.getTool((Class<? extends EditorTool>) oClass, editor.getEditorCanvas().getCanvas().virtualGrid, editor.getEditorCanvas().getCanvas());
                 }
             }
         };
@@ -171,7 +173,7 @@ public class EditorUi extends Stage {
 
         button = new ImageButton(skin, "eraser");
 
-        EditorConfig.selectedTool = Pen.class;
+        EditorConfig.selectedTool = ToolManager.getTool(Pen.class, editor.getEditorCanvas().getCanvas().virtualGrid, editor.getEditorCanvas().getCanvas());
 
         button.setUserObject(Eraser.class);
 

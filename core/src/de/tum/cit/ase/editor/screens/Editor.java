@@ -23,8 +23,8 @@ public class Editor extends InputAdapter implements Screen {
     public Editor(MazeRunnerGame game) {
         this.game = game;
         this.shapeRenderer = new ShapeRenderer();
-        this.editorUi = new EditorUi(this);
         this.editorCanvas = new EditorCanvas(this);
+        this.editorUi = new EditorUi(this);
         var canvasInputProcessor = new CanvasInputProcessor(editorCanvas);
         this.inputMultiplexer = new InputMultiplexer(editorUi, new GestureDetector(new CanvasGestureListener(editorCanvas, canvasInputProcessor)), canvasInputProcessor, this);
         this.editorUi.setDebugAll(CONSTANTS.DEBUG);

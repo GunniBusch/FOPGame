@@ -1,7 +1,6 @@
 package de.tum.cit.ase.editor.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -19,15 +18,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import de.tum.cit.ase.editor.data.EditorConfig;
 import de.tum.cit.ase.editor.drawing.Canvas;
-import de.tum.cit.ase.editor.tools.Tool;
-import de.tum.cit.ase.editor.tools.ToolManager;
 import de.tum.cit.ase.editor.utlis.Helper;
 import de.tum.cit.ase.editor.utlis.TileTypes;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
-
-import java.lang.ref.SoftReference;
 
 public class EditorCanvas implements Disposable {
     private final Editor editor;
@@ -41,7 +35,7 @@ public class EditorCanvas implements Disposable {
     private float width = 16f, height = 16f;
     private GridPoint2 mouseGridPos;
     private boolean isTouched = false;
-    private int lastActiveButton = -1;
+    private final int lastActiveButton = -1;
 
 
     public EditorCanvas(Editor editor) {
@@ -96,7 +90,7 @@ public class EditorCanvas implements Disposable {
 
         editor.shapeRenderer.setAutoShapeType(true);
         editor.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        renderGrid();
+        this.canvas.draw(editor.shapeRenderer);
         if (mouseGridPos != null) {
             editor.shapeRenderer.setColor(c2);
 
@@ -113,18 +107,9 @@ public class EditorCanvas implements Disposable {
 
     }
 
-    private void renderGrid() {
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
 
-                if (canvas.virtualGrid[y][x] != null) {
-                    editor.shapeRenderer.setColor(canvas.virtualGrid[y][x].canvasColor);
-                    editor.shapeRenderer.rect(x * tileSize + 1 + grid.getX(), y * tileSize + 1 + grid.getY(), tileSize - 2, tileSize - 2);
-                }
-
-            }
-        }
-
+    public Image getGrid() {
+        return grid;
     }
 
     public void update(float dt) {
@@ -149,20 +134,9 @@ public class EditorCanvas implements Disposable {
         this.viewport.update(width, height, true);
     }
 
+    @Deprecated
     public boolean processMouseInput(float x, float y, int button) {
-        lastActiveButton = button;
-        isTouched = true;
-        switch (button) {
-            case Input.Buttons.LEFT -> {
 
-                var mousePos = this.getMouseGridPosition(viewport.unproject(new Vector2(x, y)));
-                if (mousePos != null) {
-                    canvas.manipulateGrid(mousePos, ToolManager.getTool(EditorConfig.selectedTool));
-                }
-            }
-            case Input.Buttons.RIGHT -> {
-            }
-        }
         return true;
     }
 
@@ -211,22 +185,12 @@ public class EditorCanvas implements Disposable {
         return viewport;
     }
 
-    private void manipulateGrid(GridPoint2 position, SoftReference<? extends Tool> toolReference) {
-
-
-        canvas.manipulateGrid(position, toolReference);
-    }
-
-    public boolean makeInput(int x, int y) {
-
-
-        return canvas.makeInput(x, y);
-    }
 
     public float getScreenTileSize() {
         return tileSize * ((OrthographicCamera) viewport.getCamera()).zoom;
     }
 
+    @Deprecated
     public boolean registerEndOfTouch() {
         var hasChanged = isTouched;
         this.isTouched = false;
@@ -288,6 +252,22 @@ public class EditorCanvas implements Disposable {
     public Vector2 getCameraPosition() {
         return new Vector2(this.viewport.getCamera().position.x, this.viewport.getCamera().position.y);
 
+    }
+
+    public float getTileSize() {
+        return tileSize;
+    }
+
+    public Canvas getCanvas() {
+        return canvas;
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public float getHeight() {
+        return height;
     }
 
     public Editor getEditor() {

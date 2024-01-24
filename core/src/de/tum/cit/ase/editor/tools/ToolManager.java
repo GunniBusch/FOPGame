@@ -2,14 +2,14 @@ package de.tum.cit.ase.editor.tools;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Pools;
-
-import java.lang.ref.SoftReference;
+import de.tum.cit.ase.editor.drawing.Canvas;
+import de.tum.cit.ase.editor.utlis.TileTypes;
 
 public class ToolManager {
 
 
-    public static <T extends Tool> SoftReference<T> getTool(Class<T> toolClass) {
-        return new SoftReference<>(Pools.obtain(toolClass));
+    public static <T extends EditorTool> T getTool(Class<T> toolClass, TileTypes[][] grid, Canvas canvas) {
+        return toolClass.cast(Pools.obtain(toolClass).getInstance(canvas));
     }
 
     public static <T extends Tool> void freeTool(T toolObject) {
