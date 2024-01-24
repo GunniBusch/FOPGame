@@ -3,7 +3,7 @@ package de.tum.cit.ase.editor.input;
 import java.util.HashSet;
 import java.util.Set;
 
-public interface Shortcut {
+public interface ShortcutAdapter {
     Set<Integer> pressedKeys = new HashSet<>(10);
 
     default boolean isShortcut(Integer... keys) {
@@ -17,4 +17,6 @@ public interface Shortcut {
     default void removeKey(int key) {
         pressedKeys.remove(key);
     }
+
+
 }

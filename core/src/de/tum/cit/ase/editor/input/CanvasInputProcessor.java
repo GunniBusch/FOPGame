@@ -15,7 +15,7 @@ import java.lang.reflect.Method;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.DEBUG;
 
-public class CanvasInputProcessor extends InputAdapter implements Shortcut {
+public class CanvasInputProcessor extends InputAdapter implements ShortcutAdapter {
     private final EditorCanvas editorCanvas;
     private final Bresenham2 bresenham2 = new Bresenham2();
     private int activeButton = -1;
@@ -26,6 +26,7 @@ public class CanvasInputProcessor extends InputAdapter implements Shortcut {
     public CanvasInputProcessor(EditorCanvas editorCanvas) {
         super();
         this.editorCanvas = editorCanvas;
+        System.out.println(Shortcuts.UI.ZOOM.toString());
     }
 
     // Todo Shortcuts
@@ -172,7 +173,7 @@ public class CanvasInputProcessor extends InputAdapter implements Shortcut {
     public boolean scrolled(float amountX, float amountY) {
         amountX *= 1.5f;
         amountY *= 1.5f * -1;
-        if (this.isShortcut(KeyCombination.ZOOM.requiredKeys)) {
+        if (this.isShortcut(Shortcuts.UI.ZOOM.keys())) {
             Gdx.app.debug("Scrolled", "Zoomed");
 
             this.editorCanvas.move(0, 0, amountY);
@@ -197,12 +198,4 @@ public class CanvasInputProcessor extends InputAdapter implements Shortcut {
         }
     }
 
-    protected enum KeyCombination {
-        ZOOM(Input.Keys.SHIFT_LEFT);
-        public final Integer[] requiredKeys;
-
-        KeyCombination(Integer... keys) {
-            requiredKeys = keys;
-        }
-    }
 }

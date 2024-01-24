@@ -2,7 +2,7 @@ package de.tum.cit.ase.editor.input;
 
 import com.badlogic.gdx.InputProcessor;
 
-public abstract class ToolInputAdapter implements InputProcessor, Shortcut {
+public abstract class ToolInputAdapter implements InputProcessor, ShortcutAdapter {
     @Override
     public boolean keyDown(int keycode) {
         return false;
