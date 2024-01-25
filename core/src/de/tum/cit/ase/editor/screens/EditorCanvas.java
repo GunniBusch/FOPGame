@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import de.tum.cit.ase.editor.data.Map;
 import de.tum.cit.ase.editor.drawing.Canvas;
 import de.tum.cit.ase.editor.utlis.Helper;
 import de.tum.cit.ase.editor.utlis.TileTypes;
@@ -59,19 +60,18 @@ public class EditorCanvas implements Disposable {
 
     }
 
-    public void setSize(float size) {
-        this.setSize(size, size);
+    public void resizeCanvas(float size) {
+        this.resizeCanvas(size, size);
 
     }
 
-    public void setSize(float width, float height) {
+    public void resizeCanvas(float width, float height) {
         this.width = width;
         this.height = height;
-        //this.grid.setSize(tileSize * width, tileSize * height);
+        //this.grid.resizeCanvas(tileSize * width, tileSize * height);
         this.gridContainer.size(tileSize * width, tileSize * height);
         gridContainer.layout();
         this.canvas.createNewGrid((int) width, (int) height);
-
     }
 
     public void render(float dt) {
@@ -120,6 +120,13 @@ public class EditorCanvas implements Disposable {
 
         this.canvas.update(dt);
         stage.act(dt);
+    }
+
+    public void loadMap(Map map) {
+        var grid = map.map();
+        height = grid.length;
+        width = grid[0].length;
+        this.canvas.createNewGrid(grid);
     }
 
     private void updateCamera(float dt) {

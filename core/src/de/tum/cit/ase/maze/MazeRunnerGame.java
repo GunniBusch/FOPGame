@@ -27,6 +27,7 @@ public class MazeRunnerGame extends Game {
     private SpriteBatch spriteBatch;
     private SpriteCache spriteCache;
     Music backgroundMusic;
+    private final NativeFileChooser fileChooser;
 
 
     // UI Skin
@@ -39,6 +40,7 @@ public class MazeRunnerGame extends Game {
      */
     public MazeRunnerGame(NativeFileChooser fileChooser) {
         super();
+        this.fileChooser = fileChooser;
     }
 
     /**
@@ -137,5 +139,9 @@ public class MazeRunnerGame extends Game {
 
     public SpriteCache getSpriteCache() {
         return spriteCache;
+    }
+
+    public NativeFileChooser getFileChooser() {
+        return fileChooser;
     }
 }

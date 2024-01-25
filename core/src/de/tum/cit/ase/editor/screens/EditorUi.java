@@ -1,6 +1,7 @@
 package de.tum.cit.ase.editor.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -8,12 +9,19 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import de.tum.cit.ase.editor.data.EditorConfig;
 import de.tum.cit.ase.editor.tools.*;
+import de.tum.cit.ase.editor.utlis.MapGenerator;
 import de.tum.cit.ase.editor.utlis.TileTypes;
+import games.spooky.gdx.nativefilechooser.NativeFileChooserCallback;
+import games.spooky.gdx.nativefilechooser.NativeFileChooserConfiguration;
+import games.spooky.gdx.nativefilechooser.NativeFileChooserIntent;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,9 +29,11 @@ public class EditorUi extends Stage {
     private final Editor editor;
     private final Skin skin;
     private final HorizontalGroup menuPopups;
+    private final Json json;
 
     public EditorUi(Editor editor) {
         super(new ScreenViewport(), editor.getGame().getSpriteBatch());
+        json = new Json();
         this.editor = editor;
         this.skin = new Skin(Gdx.files.internal("Editor/skincomposerui/skin-composer-ui.json"));
         var vGroup = new VerticalGroup();
@@ -66,6 +76,28 @@ public class EditorUi extends Stage {
             }
 
         });
+        filePopUpMap.put("Import", new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (event.getListenerActor() instanceof TextButton textButton) {
+                    textButton.getButtonGroup().uncheckAll();
+                    textButton.getParent().setVisible(false);
+                    EditorUi.this.importMap();
+                }
+            }
+
+        });
+        filePopUpMap.put("Export", new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (event.getListenerActor() instanceof TextButton textButton) {
+                    textButton.getButtonGroup().uncheckAll();
+                    textButton.getParent().setVisible(false);
+                    EditorUi.this.exportMap();
+                }
+            }
+
+        });
         filePopUpMap.put("Exit", new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -88,15 +120,83 @@ public class EditorUi extends Stage {
     }
 
     protected void save() {
+        var config = new NativeFileChooserConfiguration();
 
-        Gdx.app.error("Save file", "Could not save file");
+
+        var fileFilter = new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".mapproj");
+            }
+        };
+        config.directory = Gdx.files.absolute(System.getProperty("user.home"));
+        config.intent = NativeFileChooserIntent.SAVE;
+        config.nameFilter = fileFilter;
+
+// Add a nice title
+        config.title = "Save map project";
+        var fileCallback = new NativeFileChooserCallback() {
+
+            @Override
+            public void onFileChosen(FileHandle file) {
+                MapGenerator.saveMapProject(file, new de.tum.cit.ase.editor.data.Map(file.name(), editor.getEditorCanvas().getCanvas().virtualGrid));
+            }
+
+            @Override
+            public void onCancellation() {
+
+            }
+
+            @Override
+            public void onError(Exception exception) {
+                Gdx.app.error("Save map project", "Could not save project", exception);
+            }
+        };
+        this.editor.chooseFile(config, fileCallback);
     }
 
     protected void open() {
-        Gdx.app.error("Open file", "Could not open file");
+
+        var fileFilter = new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith("mapproj");
+            }
+        };
+        var callback = new NativeFileChooserCallback() {
+
+            @Override
+            public void onFileChosen(FileHandle file) {
+                var map = MapGenerator.readMapProject(file);
+                editor.getEditorCanvas().loadMap(map);
+
+            }
+
+            @Override
+            public void onCancellation() {
+
+            }
+
+            @Override
+            public void onError(Exception exception) {
+                Gdx.app.error("Load map project", "Error loading project", exception);
+            }
+        };
+        this.editor.chooseFile(fileFilter, "Choose map project", callback);
+
+    }
+
+    protected void importMap() {
+        Gdx.app.error("Import file", "Could not open file");
 
 
     }
+
+    protected void exportMap() {
+
+        Gdx.app.error("Export file", "Could not save file");
+    }
+
 
     @Override
     public void draw() {

@@ -36,7 +36,7 @@ public class CanvasInputProcessor extends InputAdapter implements ShortcutAdapte
 
 
         if (keycode == Input.Keys.SPACE) {
-            editorCanvas.setSize(64, 64);
+            editorCanvas.resizeCanvas(64, 64);
         }
         this.addKey(keycode);
         this.editorCanvas.getEditor().handleLostUiFocus();
@@ -52,7 +52,7 @@ public class CanvasInputProcessor extends InputAdapter implements ShortcutAdapte
 
         this.removeKey(keycode);
         if (DEBUG && keycode == Input.Keys.SPACE) {
-            editorCanvas.setSize(16, 16);
+            editorCanvas.resizeCanvas(16, 16);
             return true;
 
         }

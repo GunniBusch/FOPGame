@@ -19,6 +19,16 @@ public class Canvas {
 
     }
 
+    public void createNewGrid(int width, int height) {
+        this.createNewGrid(new TileTypes[height][width]);
+
+    }
+
+    public void createNewGrid(TileTypes[][] grid) {
+        this.virtualGrid = grid;
+        EditorConfig.selectedTool.validate();
+    }
+
     public void draw(ShapeRenderer shapeRenderer) {
 
         renderGrid(shapeRenderer);
@@ -78,9 +88,9 @@ public class Canvas {
 
     }
 
-    public void createNewGrid(int width, int height) {
-        this.virtualGrid = new TileTypes[height][width];
-        EditorConfig.selectedTool.validate();
+    public void loadMap(TileTypes[][] grid, int width, int height) {
+
+
     }
 
     public Vector2 getGridStartPoint() {
