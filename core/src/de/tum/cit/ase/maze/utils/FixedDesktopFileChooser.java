@@ -27,16 +27,18 @@ public class FixedDesktopFileChooser implements NativeFileChooser {
         PointerBuffer path = memAllocPointer(1);
 
 
-        var filter = configuration.mimeFilter.split("[;]");
         try (MemoryStack stack = stackPush()) {
-            NFDFilterItem.Buffer filterList;
-            filterList = NFDFilterItem.malloc(filter.length);
-            for (int i = 0; i < filter.length; i++) {
-                var s = filter[i].split("/");
-                filterList.get(i)
-                        .name(stack.UTF8(s[0]))
-                        .spec(stack.UTF8(s[1]));
+            NFDFilterItem.Buffer filterList = null;
+            if (configuration.mimeFilter != null && !configuration.mimeFilter.isEmpty()) {
+                var filter = configuration.mimeFilter.split("[;]");
+                filterList = NFDFilterItem.malloc(filter.length);
+                for (int i = 0; i < filter.length; i++) {
+                    var s = filter[i].split("/");
+                    filterList.get(i)
+                            .name(stack.UTF8(s[0]))
+                            .spec(stack.UTF8(s[1]));
 
+                }
             }
             int result = configuration.intent == NativeFileChooserIntent.SAVE ?
                     NativeFileDialog.NFD_SaveDialog(path, filterList, configuration.directory.file().getPath(), configuration.title) :
