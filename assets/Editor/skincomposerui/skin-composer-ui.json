@@ -51,6 +51,18 @@
     "button-color": {
       "name": "white",
       "color": "button"
+    },
+    "square-black": {
+      "name": "8726372_vector_square_icon",
+      "color": "black"
+    }
+  },
+  "com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable": {
+    "Square": {
+      "region": "8726372_vector_square_icon",
+      "color": "black",
+      "minWidth": 48,
+      "minHeight": 48
     }
   },
   "com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle": {
@@ -195,6 +207,13 @@
     },
     "eraser": {
       "imageUp": "1608679_eraser_icon",
+      "up": "button",
+      "down": "button-pressed",
+      "over": "button-over",
+      "checked": "button-pressed"
+    },
+    "square": {
+      "imageUp": "square-black",
       "up": "button",
       "down": "button-pressed",
       "over": "button-over",

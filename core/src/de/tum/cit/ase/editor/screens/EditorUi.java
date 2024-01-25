@@ -10,10 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import de.tum.cit.ase.editor.data.EditorConfig;
-import de.tum.cit.ase.editor.tools.EditorTool;
-import de.tum.cit.ase.editor.tools.Eraser;
-import de.tum.cit.ase.editor.tools.Pen;
-import de.tum.cit.ase.editor.tools.ToolManager;
+import de.tum.cit.ase.editor.tools.*;
 import de.tum.cit.ase.editor.utlis.TileTypes;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -173,7 +170,6 @@ public class EditorUi extends Stage {
 
         button = new ImageButton(skin, "eraser");
 
-        EditorConfig.selectedTool = ToolManager.getTool(Pen.class, editor.getEditorCanvas().getCanvas().virtualGrid, editor.getEditorCanvas().getCanvas());
 
         button.setUserObject(Eraser.class);
 
@@ -182,7 +178,19 @@ public class EditorUi extends Stage {
 
         toolButtonGroup.add(button);
         toolGroup.addActor(button);
+        button = new ImageButton(skin, "square");
+
+        button.setUserObject(Square.class);
+
+
+        button.addListener(clickListener);
+
+        toolButtonGroup.add(button);
+        toolGroup.addActor(button);
         this.addActor(toolGroup);
+
+        EditorConfig.selectedTool = ToolManager.getTool(Pen.class, editor.getEditorCanvas().getCanvas().virtualGrid, editor.getEditorCanvas().getCanvas());
+
 
     }
 

@@ -25,8 +25,43 @@ public class Canvas {
         EditorConfig.selectedTool.draw(shapeRenderer);
     }
 
+    /**
+     * Converts screen Coordinates to the Position relative to the grid
+     *
+     * @param clampToGrid if true value will be clamped to grid else value can be null
+     * @return Grid Point
+     */
     public GridPoint2 calculateGridPoint(float x, float y, boolean clampToGrid) {
         return editorCanvas.getMouseGridPosition(editorCanvas.getViewport().unproject(new Vector2(x, y)), clampToGrid);
+    }
+
+    /**
+     * Converts screen Coordinates to the Position relative to the grid
+     *
+     * @param clampToGrid if true value will be clamped to grid else value can be null
+     * @return Grid Point
+     */
+    public GridPoint2 calculateGridPoint(Vector2 position, boolean clampToGrid) {
+        return editorCanvas.getMouseGridPosition(editorCanvas.getViewport().unproject(position), clampToGrid);
+    }
+
+    /**
+     * Converts <b>WORLD</b> Coordinates to the Position relative to the grid
+     *
+     * @param clampToGrid if true value will be clamped to grid else value can be null
+     * @return Grid Point
+     */
+    public GridPoint2 convertWorldPositionToGrid(Vector2 position, boolean clampToGrid) {
+        return editorCanvas.getMouseGridPosition(position, clampToGrid);
+
+    }
+
+    public GridPoint2 getMouseGridPosition(boolean alwaysGrid) {
+        return this.editorCanvas.getMouseGridPosition(getUnprotectedMousePosition(), alwaysGrid);
+    }
+
+    public Vector2 getUnprotectedMousePosition() {
+        return this.editorCanvas.getViewport().unproject(editorCanvas.getMousePosition());
     }
 
     private void renderGrid(ShapeRenderer shapeRenderer) {
@@ -46,6 +81,10 @@ public class Canvas {
     public void createNewGrid(int width, int height) {
         this.virtualGrid = new TileTypes[height][width];
         EditorConfig.selectedTool.validate();
+    }
+
+    public Vector2 getGridStartPoint() {
+        return new Vector2(editorCanvas.getGrid().getX(), editorCanvas.getGrid().getY());
     }
 
     public float getHeight() {
