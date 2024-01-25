@@ -20,8 +20,6 @@ import games.spooky.gdx.nativefilechooser.NativeFileChooserConfiguration;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserIntent;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -123,18 +121,8 @@ public class EditorUi extends Stage {
         var config = new NativeFileChooserConfiguration();
 
 
-        var fileFilter = new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".mapproj");
-            }
-        };
-        config.directory = Gdx.files.absolute(System.getProperty("user.home"));
-        config.intent = NativeFileChooserIntent.SAVE;
-        config.nameFilter = fileFilter;
+        var fileFilter = "MapProject/mapproj";
 
-// Add a nice title
-        config.title = "Save map project";
         var fileCallback = new NativeFileChooserCallback() {
 
             @Override
@@ -152,17 +140,12 @@ public class EditorUi extends Stage {
                 Gdx.app.error("Save map project", "Could not save project", exception);
             }
         };
-        this.editor.chooseFile(config, fileCallback);
+        this.editor.chooseFile(fileFilter, "Choose map project", NativeFileChooserIntent.SAVE, fileCallback);
     }
 
     protected void open() {
 
-        var fileFilter = new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith("mapproj");
-            }
-        };
+        var fileFilter = "MapProject/mapproj";
         var callback = new NativeFileChooserCallback() {
 
             @Override
@@ -182,7 +165,7 @@ public class EditorUi extends Stage {
                 Gdx.app.error("Load map project", "Error loading project", exception);
             }
         };
-        this.editor.chooseFile(fileFilter, "Choose map project", callback);
+        this.editor.chooseFile(fileFilter, "Choose map project", NativeFileChooserIntent.OPEN, callback);
 
     }
 

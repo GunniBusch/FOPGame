@@ -10,13 +10,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import de.tum.cit.ase.editor.input.CanvasGestureListener;
 import de.tum.cit.ase.editor.input.CanvasInputProcessor;
+import de.tum.cit.ase.editor.utlis.FixedDesktopFileChooser;
 import de.tum.cit.ase.maze.MazeRunnerGame;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
 import games.spooky.gdx.nativefilechooser.NativeFileChooser;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserCallback;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserConfiguration;
-
-import java.io.FilenameFilter;
+import games.spooky.gdx.nativefilechooser.NativeFileChooserIntent;
 
 public class Editor extends InputAdapter implements Screen {
     private final MazeRunnerGame game;
@@ -28,7 +28,7 @@ public class Editor extends InputAdapter implements Screen {
 
     public Editor(MazeRunnerGame game) {
         this.game = game;
-        this.fileChooser = game.getFileChooser();
+        this.fileChooser = new FixedDesktopFileChooser();
         this.shapeRenderer = new ShapeRenderer();
         this.editorCanvas = new EditorCanvas(this);
         this.editorUi = new EditorUi(this);
@@ -39,7 +39,7 @@ public class Editor extends InputAdapter implements Screen {
 
     }
 
-    public void chooseFile(FilenameFilter filter, String title, NativeFileChooserCallback callback) {
+    public void chooseFile(String filter, String title, NativeFileChooserIntent dialogType, NativeFileChooserCallback callback) {
 
 
         NativeFileChooserConfiguration conf = new NativeFileChooserConfiguration();
@@ -47,10 +47,11 @@ public class Editor extends InputAdapter implements Screen {
 // Starting from user's dir
         conf.directory = Gdx.files.absolute(System.getProperty("user.home"));
 
-        conf.nameFilter = filter;
+        conf.mimeFilter = filter;
 
 // Add a nice title
         conf.title = title;
+        conf.intent = dialogType;
 
         this.chooseFile(conf, callback);
 
