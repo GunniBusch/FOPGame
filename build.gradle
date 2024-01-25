@@ -32,6 +32,7 @@ allprojects {
         aiVersion = '1.8.2'
         gdxControllersVersion = '2.2.1'
         gdxNativefilechooserVersion = '2.3.0'
+        lwjglVersion = "3.3.3"
     }
 
     repositories {
@@ -65,6 +66,7 @@ project(":desktop") {
 
         api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
 
+
     }
 }
 
@@ -81,6 +83,15 @@ project(":core") {
         api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
         implementation 'org.reflections:reflections:0.10.2'
 
+        api "org.lwjgl:lwjgl-nfd:${lwjglVersion}"
+        api "org.lwjgl:lwjgl-nfd:${lwjglVersion}:natives-linux"
+        api "org.lwjgl:lwjgl-nfd:${lwjglVersion}:natives-linux-arm32"
+        api "org.lwjgl:lwjgl-nfd:${lwjglVersion}:natives-linux-arm64"
+        api "org.lwjgl:lwjgl-nfd:${lwjglVersion}:natives-macos"
+        api "org.lwjgl:lwjgl-nfd:${lwjglVersion}:natives-macos-arm64"
+        api "org.lwjgl:lwjgl-nfd:${lwjglVersion}:natives-windows"
+        api "org.lwjgl:lwjgl-nfd:${lwjglVersion}:natives-windows-arm64"
+        api "org.lwjgl:lwjgl-nfd:${lwjglVersion}:natives-windows-x86"
 
     }
 }
