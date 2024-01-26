@@ -240,7 +240,7 @@ public class GameScreen implements Screen {
 
 
         this.renderHud(delta);
-        if (end) {
+        if (victory) {
             /*if (victory) {
                 this.game.goToVictoryScreen();
             } else {
@@ -248,7 +248,11 @@ public class GameScreen implements Screen {
             }
 
              */
-            this.game.goToMenu();
+            this.game.goToVictoryScreen();
+
+            //this.game.goToMenu();
+        } else {
+            this.game.goToDefeatScreen();
         }
     }
 
