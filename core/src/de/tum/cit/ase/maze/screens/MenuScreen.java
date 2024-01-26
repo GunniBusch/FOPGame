@@ -64,6 +64,7 @@ public class MenuScreen implements Screen {
                 int response = fileChooser.showOpenDialog(null);
 
                 if (response == JFileChooser.APPROVE_OPTION) {
+                    playedMapPath = fileChooser.getSelectedFile().getAbsolutePath();
                     MapLoader.loadMapFile(Gdx.files.internal(fileChooser.getSelectedFile().getAbsolutePath()));
                     game.goToGame(false);
 
