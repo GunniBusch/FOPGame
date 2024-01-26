@@ -7,10 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteCache;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Logger;
-import de.tum.cit.ase.maze.screens.GameScreen;
-import de.tum.cit.ase.maze.screens.MenuScreen;
-import de.tum.cit.ase.maze.screens.PauseScreen;
-import de.tum.cit.ase.maze.screens.VictoryScreen;
+import de.tum.cit.ase.maze.screens.*;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
 import games.spooky.gdx.nativefilechooser.NativeFileChooser;
 
@@ -87,6 +84,19 @@ public class MazeRunnerGame extends Game {
         backgroundMusic.setLooping(true);
         //backgroundMusic.play();
         this.setScreen(new VictoryScreen(this)); // Set the current screen to VictoryScreen
+        if (gameScreen != null) {
+            gameScreen.dispose(); // Dispose the game screen if it exists
+            gameScreen = null;
+        }
+    }
+
+    public void goToDefeatScreen() {
+        spriteCache.clear();
+        this.backgroundMusic.stop();
+        this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Treasures of Ancient Dungeon.mp3"));
+        backgroundMusic.setLooping(true);
+        //backgroundMusic.play();
+        this.setScreen(new DefeatScreen(this)); // Set the current screen to VictoryScreen
         if (gameScreen != null) {
             gameScreen.dispose(); // Dispose the game screen if it exists
             gameScreen = null;

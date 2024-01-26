@@ -148,7 +148,7 @@ public class Exit extends GameElement {
      * @return true if opening was granted
      */
     public boolean requestOpening(Player player) {
-        if (player.numberOfKeys == 0) {
+        if (!player.getKeyList().isEmpty()) {
             this.open = true;
             player.markAsFinished();
             doorOpenSound.loop();
