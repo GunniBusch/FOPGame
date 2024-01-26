@@ -1,7 +1,7 @@
 package de.tum.cit.ase.maze.objects.still;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -26,7 +26,7 @@ public class Exit extends GameElement {
     private final Vector2 closedPosition;
     private final GameScreen game;
     private final TextureRegion textureRegion;
-    private final Music doorOpenSound;
+    private final Sound doorOpenSound;
     public boolean open = false;
     private Vector2 openPosition = new Vector2();
     private Vector2 position;
@@ -43,8 +43,7 @@ public class Exit extends GameElement {
         body = world.createBody(def);
         body.setAwake(false);
         createBody(position);
-        this.doorOpenSound = Gdx.audio.newMusic(Gdx.files.internal("Door Scrape Heavy Stone Loop 5 - QuickSounds.com.mp3"));
-        this.doorOpenSound.setLooping(true);
+        this.doorOpenSound = Gdx.audio.newSound(Gdx.files.internal("Door Scrape Heavy Stone Loop 5 - QuickSounds.com.mp3"));
         texture = new Texture("basictiles.png");
         textureRegion = new TextureRegion(texture, 16 * 5, 0, 16, 16);
     }
@@ -131,9 +130,7 @@ public class Exit extends GameElement {
      */
     private void open() {
 
-        if (!this.doorOpenSound.isPlaying()) {
-            this.doorOpenSound.play();
-        }
+
         this.body.setTransform(this.body.getPosition().cpy().lerp(openPosition, 0.09f), 0f);
 
 
@@ -154,6 +151,8 @@ public class Exit extends GameElement {
         if (player.numberOfKeys != 0) {
             this.open = true;
             player.markAsFinished();
+            doorOpenSound.loop();
+            this.doorOpenSound.play();
             return true;
         }
         this.open = false;
@@ -173,6 +172,5 @@ public class Exit extends GameElement {
     @Override
     public void dispose() {
         this.texture.dispose();
-        this.doorOpenSound.dispose();
     }
 }
