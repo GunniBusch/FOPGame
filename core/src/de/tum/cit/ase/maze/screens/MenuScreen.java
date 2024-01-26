@@ -14,10 +14,10 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import de.tum.cit.ase.maze.MazeRunnerGame;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
+import de.tum.cit.ase.maze.utils.MapLoader;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.io.File;
 
 
 /**
@@ -91,9 +91,10 @@ public class MenuScreen implements Screen {
                 int response = fileChooser.showOpenDialog(null);
 
                 if (response == JFileChooser.APPROVE_OPTION) {
-                    //MapLoader.loadMapFile(Gdx.files.internal(fileChooser.getSelectedFile().getPath()));
-                    File file = new File(fileChooser.getSelectedFile().getAbsolutePath());
-                    System.out.println(file);
+                    MapLoader.loadMapFile(Gdx.files.internal(fileChooser.getSelectedFile().getAbsolutePath()));
+
+                    //File file = new File(fileChooser.getSelectedFile().getAbsolutePath());
+                    //System.out.println(file);
                 }
             }
         });
