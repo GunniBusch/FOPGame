@@ -77,8 +77,8 @@ public class EditorUi extends Stage {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (event.getListenerActor() instanceof TextButton textButton) {
-                    textButton.getButtonGroup().uncheckAll();
                     textButton.getParent().setVisible(false);
+                    EditorConfig.saveSettings();
                     editor.handleLostUiFocus();
                 }
             }
