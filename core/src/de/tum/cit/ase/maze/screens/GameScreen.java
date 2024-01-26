@@ -28,7 +28,10 @@ import de.tum.cit.ase.maze.objects.GameElement;
 import de.tum.cit.ase.maze.objects.ObjectType;
 import de.tum.cit.ase.maze.objects.dynamic.Enemy;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
-import de.tum.cit.ase.maze.objects.still.*;
+import de.tum.cit.ase.maze.objects.still.Entry;
+import de.tum.cit.ase.maze.objects.still.Exit;
+import de.tum.cit.ase.maze.objects.still.Key;
+import de.tum.cit.ase.maze.objects.still.Wall;
 import de.tum.cit.ase.maze.objects.still.collectable.DamageDeflect;
 import de.tum.cit.ase.maze.objects.still.collectable.HealthCollectable;
 import de.tum.cit.ase.maze.objects.still.collectable.SpeedBoost;
@@ -65,9 +68,9 @@ public class GameScreen implements Screen {
     private final Wall wall;
     private final CollectableManager collectableManager;
     private final RayHandler rayHandler;
+    private final Vector3 target;
     private boolean victory = false;
     private boolean end = false;
-    private final Vector3 target;
     //added boolean pause, for pause functionality
     private float stateTime = 0f;
 
@@ -98,7 +101,7 @@ public class GameScreen implements Screen {
 
         //Gdx.gl.glEnable(GL20.GL_BLEND);
         this.b2DDr = new Box2DDebugRenderer(true, true, false, true, true, true);
-        MapLoader.loadMapFile(Gdx.files.internal("level-4.properties"));
+        MapLoader.loadMapFile(Gdx.files.internal("level-1.properties"));
         wall = new Wall(MapLoader.getMapCoordinates(ObjectType.Wall), game.getSpriteCache(), world);
 
         var playerCord = MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0).cpy();
@@ -159,9 +162,36 @@ public class GameScreen implements Screen {
         collectableManager.spawn(HealthCollectable.class, 0.01f);
         collectableManager.spawn(SpeedBoost.class, 0.01f);
         collectableManager.spawn(DamageDeflect.class, 0.008f);
+        collectableManager.spawn(Key.class, MapLoader.getMapCoordinates(ObjectType.Key));
 
     }
 
+    private void spawnEntities() {
+
+
+        for (Vector2 enemyCord : MapLoader.getMapCoordinates(ObjectType.Enemy)) {
+            var scaledEnemyCord = enemyCord.cpy().scl(PPM).scl(2f);
+            this.entities.add(new Enemy(world, deathListener, player, scaledEnemyCord));
+        }
+        this.entities.add(new Exit(world, MapLoader.getMapCoordinates(ObjectType.Exit).get(0), this));
+        new Entry(world, MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0), this);
+
+        for (Vector2 exitCord : MapLoader.getMapCoordinates(ObjectType.Exit)) {
+            this.entities.add(new Exit(world, exitCord, this));
+        }
+
+    }
+
+    public void handleEndOfGame(boolean victory) {
+        this.end = true;
+        this.victory = victory;
+    }
+
+    @Override
+    public void show() {
+        Gdx.input.setInputProcessor(this.inputMultiplexer);
+        this.collectableManager.getTimer().start();
+    }
 
     // Screen interface methods with necessary functionality
     @Override
@@ -306,24 +336,6 @@ public class GameScreen implements Screen {
 
     }
 
-    public void handleEndOfGame(boolean victory) {
-        this.end = true;
-        this.victory = victory;
-    }
-
-    private void spawnEntities() {
-
-
-        for (Vector2 enemyCord : MapLoader.getMapCoordinates(ObjectType.Enemy)) {
-            var scaledEnemyCord = enemyCord.cpy().scl(PPM).scl(2f);
-            this.entities.add(new Enemy(world, deathListener, player, scaledEnemyCord));
-        }
-        this.entities.add(new Exit(world, MapLoader.getMapCoordinates(ObjectType.Exit).get(0), this));
-        new Entry(world, MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0), this);
-
-
-    }
-
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
@@ -336,12 +348,6 @@ public class GameScreen implements Screen {
 
     @Override
     public void resume() {
-    }
-
-    @Override
-    public void show() {
-        Gdx.input.setInputProcessor(this.inputMultiplexer);
-        this.collectableManager.getTimer().start();
     }
 
     @Override

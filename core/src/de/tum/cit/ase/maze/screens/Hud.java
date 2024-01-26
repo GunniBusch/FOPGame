@@ -43,10 +43,10 @@ public class Hud implements Disposable {
     private final GameScreen gameScreen;
     private final Map<Class<? extends TimedCollectable>, List<Widget>> labelMap;
     private final MiniMap miniMap;
-    private ProgressBar respawnBarDebug;
     private final Image minimapBorder;
-    private boolean minimapEnabled;
     private ProgressBar respawnBarDebug;
+    private boolean minimapEnabled;
+    //private ProgressBar respawnBarDebug;
 
     /**
      * Creates a new HUD
