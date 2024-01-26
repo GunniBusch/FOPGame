@@ -169,6 +169,7 @@ public class Player extends Character implements Movable {
 
     public void collectKey(Key key) {
         keyList.add(key);
+        soundEffects = Gdx.audio.newMusic(Gdx.files.internal("key-get-39925.mp3"));
     }
 
     public Set<TimedCollectable> getTimedCollectables() {
