@@ -103,6 +103,8 @@ public class Player extends Character implements Movable {
 
 
     public boolean addCollectable(TimedCollectable collectable) {
+        soundEffects = Gdx.audio.newMusic(Gdx.files.internal("fantasy_ui_button_6-102219.mp3"));
+        soundEffects.play();
         return timedCollectables.add(collectable);
     }
 
