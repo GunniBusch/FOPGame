@@ -82,7 +82,7 @@ public class MazeRunnerGame extends Game {
         this.backgroundMusic.stop();
         this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Victory(chosic.com).mp3"));
         backgroundMusic.setLooping(true);
-        //backgroundMusic.play();
+        backgroundMusic.play();
         this.setScreen(new VictoryScreen(this)); // Set the current screen to VictoryScreen
         if (gameScreen != null) {
             gameScreen.dispose(); // Dispose the game screen if it exists
@@ -95,7 +95,7 @@ public class MazeRunnerGame extends Game {
         this.backgroundMusic.stop();
         this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Treasures of Ancient Dungeon.mp3"));
         backgroundMusic.setLooping(true);
-        //backgroundMusic.play();
+        backgroundMusic.play();
         this.setScreen(new DefeatScreen(this)); // Set the current screen to VictoryScreen
         if (gameScreen != null) {
             gameScreen.dispose(); // Dispose the game screen if it exists
