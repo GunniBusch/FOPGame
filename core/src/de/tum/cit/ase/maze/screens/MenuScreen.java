@@ -27,7 +27,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class MenuScreen implements Screen {
 
     private final Stage stage;
-
+    private String playedMapPath;
 
     /**
      * Constructor for MenuScreen. Sets up the camera, viewport, stage, and UI elements.

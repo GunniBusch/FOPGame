@@ -23,6 +23,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class PauseScreen implements Screen {
     private final MazeRunnerGame game;
     private final Stage stage;
+    private String playedMapPath;
 
 
     /**
@@ -85,12 +86,23 @@ public class PauseScreen implements Screen {
                 int response = fileChooser.showOpenDialog(null);
 
                 if (response == JFileChooser.APPROVE_OPTION) {
+                    playedMapPath = fileChooser.getSelectedFile().getAbsolutePath();
                     MapLoader.loadMapFile(Gdx.files.internal(fileChooser.getSelectedFile().getAbsolutePath()));
                     game.goToGame(false);
 
                 }
             }
         });
+
+        TextButton playAgainButton = new TextButton("Restart", game.getSkin());
+        table.add(playAgainButton).width(400).row();
+        chooseMapButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                MapLoader.loadMapFile(Gdx.files.internal(playedMapPath));
+            }
+        });
+
 
         stage.setDebugAll(CONSTANTS.DEBUG);
     }
