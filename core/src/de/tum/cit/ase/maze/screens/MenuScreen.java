@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import de.tum.cit.ase.maze.MazeRunnerGame;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
+import de.tum.cit.ase.maze.utils.MapLoader;
 
 import javax.swing.*;
 
@@ -84,7 +85,11 @@ public class MenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 JFileChooser fileChooser = new JFileChooser();
-                fileChooser.showOpenDialog(null);
+                int response = fileChooser.showOpenDialog(null);
+
+                if (response == JFileChooser.APPROVE_OPTION) {
+                    MapLoader.loadMapFile(Gdx.files.internal(fileChooser.getSelectedFile().getAbsolutePath()));
+                }
             }
         });
 
