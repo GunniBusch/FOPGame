@@ -4,15 +4,16 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import de.tum.cit.ase.editor.input.CanvasGestureListener;
 import de.tum.cit.ase.editor.input.CanvasInputProcessor;
-import de.tum.cit.ase.editor.utlis.FixedDesktopFileChooser;
 import de.tum.cit.ase.maze.MazeRunnerGame;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
+import de.tum.cit.ase.maze.utils.FixedDesktopFileChooser;
 import games.spooky.gdx.nativefilechooser.NativeFileChooser;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserCallback;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserConfiguration;
@@ -39,13 +40,13 @@ public class Editor extends InputAdapter implements Screen {
 
     }
 
-    public void chooseFile(String filter, String title, NativeFileChooserIntent dialogType, NativeFileChooserCallback callback) {
+    public void chooseFile(String filter, String title, NativeFileChooserIntent dialogType, FileHandle dir, NativeFileChooserCallback callback) {
 
 
         NativeFileChooserConfiguration conf = new NativeFileChooserConfiguration();
 
 // Starting from user's dir
-        conf.directory = Gdx.files.absolute(System.getProperty("user.home"));
+        conf.directory = dir == null ? Gdx.files.absolute(System.getProperty("user.home")) : dir;
 
         conf.mimeFilter = filter;
 

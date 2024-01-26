@@ -1,12 +1,15 @@
 package de.tum.cit.ase.editor.utlis;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import de.tum.cit.ase.editor.data.Map;
 import de.tum.cit.ase.editor.utlis.exceptions.InvalidMapFile;
 import de.tum.cit.ase.maze.objects.ObjectType;
 import de.tum.cit.ase.maze.utils.MapLoader;
+
+import java.util.Arrays;
 
 public class MapGenerator {
     private static final Json json;
@@ -81,7 +84,7 @@ public class MapGenerator {
         json.toJson(mapToSave, mapFile);
     }
 
-    static boolean validate(final Map map) {
+    static void validate(final Map map) {
         var grid = map.map();
         if (grid != null) {
             if (grid.length == 0) {
@@ -90,8 +93,6 @@ public class MapGenerator {
             } else if (grid[0].length == 0) {
                 throw new InvalidMapFile("Grid of map has invalid width");
 
-            } else {
-                return true;
             }
         } else {
             throw new InvalidMapFile("Map does not have a grid");
@@ -99,22 +100,19 @@ public class MapGenerator {
         }
     }
 
-    public static Map exportMap(final FileHandle mapFile) {
-        MapLoader.loadMapFile(mapFile);
-        TileTypes[][] rawMap = new TileTypes[(int) (MapLoader.height + 1)][(int) (MapLoader.width + 1)];
-        for (ObjectType value : ObjectType.values()) {
-            MapLoader.getMapCoordinates(value);
-        }
-        return null;
+    public static void exportMap(Map map, final FileHandle exportFile) {
     }
 
     public static Map importMap(final FileHandle mapFile) {
         MapLoader.loadMapFile(mapFile);
         TileTypes[][] rawMap = new TileTypes[(int) (MapLoader.height + 1)][(int) (MapLoader.width + 1)];
         for (ObjectType value : ObjectType.values()) {
-            MapLoader.getMapCoordinates(value);
+            var mCor = MapLoader.getMapCoordinates(value);
+            for (Vector2 vector2 : mCor) {
+                rawMap[(int) vector2.y][(int) vector2.x] = TileTypes.convertFromObjectType(value);
+            }
         }
-        return null;
+        return new Map(mapFile.nameWithoutExtension(), rawMap);
     }
 
 
@@ -122,6 +120,20 @@ public class MapGenerator {
         var map = json.fromJson(Map.class, mapFile);
         validate(map);
         return map;
+    }
+
+    static void validateExport(Map map) {
+        var grid = map.map();
+
+        if (grid == null) {
+            throw new InvalidMapFile("Map grid does not exist", new NullPointerException());
+        } else {
+            // Check if grid has an exit and entry.
+            if (Arrays.stream(grid).noneMatch(tileTypes -> Arrays.asList(tileTypes).contains(TileTypes.Entry) && Arrays.asList(tileTypes).contains(TileTypes.Exit))) {
+                throw new InvalidMapFile("Map does not have an exit and/or an entry");
+            }
+
+        }
     }
 
 

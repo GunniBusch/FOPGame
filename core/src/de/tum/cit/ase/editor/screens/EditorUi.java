@@ -7,9 +7,12 @@ import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import de.tum.cit.ase.editor.data.EditorConfig;
 import de.tum.cit.ase.editor.tools.*;
@@ -20,8 +23,7 @@ import games.spooky.gdx.nativefilechooser.NativeFileChooserConfiguration;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserIntent;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.Field;
 
 public class EditorUi extends Stage {
     private final Editor editor;
@@ -48,9 +50,46 @@ public class EditorUi extends Stage {
 
         menuPopups = new HorizontalGroup();
 
+        var settingsWindow = new Window("Settings", skin);
+        settingsWindow.setVisible(false);
+        settingsWindow.setPosition(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
+        settingsWindow.setKeepWithinStage(true);
+
+        //settingsWindow.setColor(0, 0, 0, .7f);
+        settingsWindow.setLayoutEnabled(true);
+        settingsWindow.setResizable(true);
+        settingsWindow.setSize(400, 300);
+        try {
+            this.addCheckBoxSetting("Check if exit can be reached", EditorConfig.class.getDeclaredField("exportCheckCanReachExit"), settingsWindow);
+            settingsWindow.row();
+            this.addCheckBoxSetting("Check if exit exists", EditorConfig.class.getDeclaredField("exportCheckHasExit"), settingsWindow);
+            settingsWindow.row();
+            this.addCheckBoxSetting("Check if key exists", EditorConfig.class.getDeclaredField("exportCheckHasKey"), settingsWindow);
+            settingsWindow.row();
+            this.addCheckBoxSetting("Check if key can be reached", EditorConfig.class.getDeclaredField("exportCheckCanReachKey"), settingsWindow);
+
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+        settingsWindow.row().fillY();
+        var closeButton = new TextButton("Close", skin);
+        closeButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (event.getListenerActor() instanceof TextButton textButton) {
+                    textButton.getButtonGroup().uncheckAll();
+                    textButton.getParent().setVisible(false);
+                    editor.handleLostUiFocus();
+                }
+            }
+        });
+        settingsWindow.add(closeButton).align(Align.bottom);
+        settingsWindow.validate();
+        this.addActor(settingsWindow);
 
         vGroup.addActor(menuPopups);
-        var filePopUpMap = new HashMap<String, EventListener>();
+        var filePopUpMap = new OrderedMap<String, EventListener>();
+
         filePopUpMap.put("Save", new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -96,6 +135,17 @@ public class EditorUi extends Stage {
             }
 
         });
+        filePopUpMap.put("Settings", new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (event.getListenerActor() instanceof TextButton textButton) {
+                    textButton.getButtonGroup().uncheckAll();
+                    textButton.getParent().setVisible(false);
+                    settingsWindow.setVisible(true);
+                }
+            }
+
+        });
         filePopUpMap.put("Exit", new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -109,7 +159,7 @@ public class EditorUi extends Stage {
         });
 
         addMenuItem(skin, null, "file", "File", taskBar, menuPopups, filePopUpMap);
-        addMenuItem(skin, null, "file", "Info", taskBar, menuPopups, new HashMap<>());
+        addMenuItem(skin, null, "file", "Info", taskBar, menuPopups, new OrderedMap<>());
 
         this.createToolBar();
         this.createTileBar();
@@ -117,17 +167,43 @@ public class EditorUi extends Stage {
 
     }
 
+    public void addCheckBoxSetting(String text, Field EditorConfigFieldToChange, Window window) {
+        var settingsBox = new CheckBox(text, skin);
+        settingsBox.getLabel().setColor(0, 0, 0, 1);
+        try {
+            settingsBox.setChecked(EditorConfigFieldToChange.getBoolean(null));
+            settingsBox.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    if (event.getListenerActor() instanceof CheckBox checkBox) {
+                        try {
+                            EditorConfigFieldToChange.set(null, checkBox.isChecked());
+                        } catch (IllegalAccessException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            });
+        } catch (IllegalAccessException e) {
+            settingsBox.setChecked(true);
+        }
+        window.add(settingsBox).align(Align.left);
+
+
+    }
+
     protected void save() {
         var config = new NativeFileChooserConfiguration();
 
 
-        var fileFilter = "MapProject/mapproj";
+        String fileFilter = "MapProject/mapproj";
 
         var fileCallback = new NativeFileChooserCallback() {
 
             @Override
             public void onFileChosen(FileHandle file) {
                 MapGenerator.saveMapProject(file, new de.tum.cit.ase.editor.data.Map(file.name(), editor.getEditorCanvas().getCanvas().virtualGrid));
+                EditorConfig.loadedFileName = file;
             }
 
             @Override
@@ -140,7 +216,9 @@ public class EditorUi extends Stage {
                 Gdx.app.error("Save map project", "Could not save project", exception);
             }
         };
-        this.editor.chooseFile(fileFilter, "Choose map project", NativeFileChooserIntent.SAVE, fileCallback);
+        var defFileName = EditorConfig.loadedFileName == null ? "untitledMapProject" : EditorConfig.loadedFileName.nameWithoutExtension();
+
+        this.editor.chooseFile(fileFilter, defFileName, NativeFileChooserIntent.SAVE, EditorConfig.loadedFileName, fileCallback);
     }
 
     protected void open() {
@@ -152,6 +230,7 @@ public class EditorUi extends Stage {
             public void onFileChosen(FileHandle file) {
                 var map = MapGenerator.readMapProject(file);
                 editor.getEditorCanvas().loadMap(map);
+                EditorConfig.loadedFileName = file;
 
             }
 
@@ -165,17 +244,20 @@ public class EditorUi extends Stage {
                 Gdx.app.error("Load map project", "Error loading project", exception);
             }
         };
-        this.editor.chooseFile(fileFilter, "Choose map project", NativeFileChooserIntent.OPEN, callback);
+        var defFileName = EditorConfig.loadedFileName == null ? "untitledMapProject" : EditorConfig.loadedFileName.nameWithoutExtension();
+        this.editor.chooseFile(fileFilter, defFileName, NativeFileChooserIntent.OPEN, EditorConfig.loadedFileName, callback);
 
     }
 
     protected void importMap() {
+        var fileFilter = "Map/properties";
         Gdx.app.error("Import file", "Could not open file");
 
 
     }
 
     protected void exportMap() {
+        var fileFilter = "Map/properties";
 
         Gdx.app.error("Export file", "Could not save file");
     }
@@ -277,13 +359,7 @@ public class EditorUi extends Stage {
 
     }
 
-    protected void addMenuItem(Skin skin,
-                               @Nullable String styleNameMenuButton,
-                               @Nullable String styleNameExpandButtons,
-                               String menuButtonName,
-                               HorizontalGroup menuGroup,
-                               HorizontalGroup expandableGroup,
-                               Map<String, @Nullable EventListener> expandableButonNamesEventListenerMap) {
+    protected void addMenuItem(Skin skin, @Nullable String styleNameMenuButton, @Nullable String styleNameExpandButtons, String menuButtonName, HorizontalGroup menuGroup, HorizontalGroup expandableGroup, OrderedMap<String, @Nullable EventListener> expandableButonNamesEventListenerMap) {
 
 
         TextButton button;
@@ -318,18 +394,18 @@ public class EditorUi extends Stage {
             }
         });
 
-        for (Map.Entry<String, EventListener> menuItemEntry : expandableButonNamesEventListenerMap.entrySet()) {
+        for (ObjectMap.Entry<String, @Nullable EventListener> menuItemEntry : expandableButonNamesEventListenerMap.entries()) {
 
             TextButton menuItemButton;
             if (styleNameExpandButtons == null) {
-                menuItemButton = new TextButton(menuItemEntry.getKey(), skin);
+                menuItemButton = new TextButton(menuItemEntry.key, skin);
 
             } else {
-                menuItemButton = new TextButton(menuItemEntry.getKey(), skin, styleNameExpandButtons);
+                menuItemButton = new TextButton(menuItemEntry.key, skin, styleNameExpandButtons);
 
             }
-            if (menuItemEntry.getValue() != null) {
-                menuItemButton.addListener(menuItemEntry.getValue());
+            if (menuItemEntry.value != null) {
+                menuItemButton.addListener(menuItemEntry.value);
 
             }
 
