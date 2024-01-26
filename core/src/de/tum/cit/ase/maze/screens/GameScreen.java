@@ -241,11 +241,13 @@ public class GameScreen implements Screen {
 
         this.renderHud(delta);
         if (end) {
-            if (victory) {
+            /*if (victory) {
                 this.game.goToVictoryScreen();
             } else {
                 this.game.goToDefeatScreen();
             }
+
+             */
             this.game.goToMenu();
         }
     }
