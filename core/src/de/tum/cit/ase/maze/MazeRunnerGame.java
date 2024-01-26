@@ -86,7 +86,7 @@ public class MazeRunnerGame extends Game {
         this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Victory(chosic.com).mp3"));
         backgroundMusic.setLooping(true);
         //backgroundMusic.play();
-        this.setScreen(new VictoryScreen(this)); // Set the current screen to MenuScreen
+        this.setScreen(new VictoryScreen(this)); // Set the current screen to VictoryScreen
         if (gameScreen != null) {
             gameScreen.dispose(); // Dispose the game screen if it exists
             gameScreen = null;

@@ -243,6 +243,9 @@ public class GameScreen implements Screen {
         if (end) {
             this.game.goToMenu();
         }
+        if (victory) {
+            this.game.goToVictoryScreen();
+        }
 
 
     }
