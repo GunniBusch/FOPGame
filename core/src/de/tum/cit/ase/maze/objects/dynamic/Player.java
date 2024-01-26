@@ -3,6 +3,8 @@ package de.tum.cit.ase.maze.objects.dynamic;
 import box2dLight.PointLight;
 import box2dLight.PositionalLight;
 import box2dLight.RayHandler;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -37,6 +39,7 @@ public class Player extends Character implements Movable {
     private final RayHandler rayHandler;
     private final PositionalLight light;
     private final List<Key> keyList;
+    Music soundEffects;
     /**
      * Marks if game is finished
      */
@@ -119,7 +122,10 @@ public class Player extends Character implements Movable {
      */
     @Override
     public void makeDamage(int damage) {
-        if (!isFinished && isVulnerable) super.makeDamage(damage);
+        if (!isFinished && isVulnerable) {
+            super.makeDamage(damage);
+            soundEffects = Gdx.audio.newMusic(Gdx.files.internal("ough-47202.mp3"));
+        }
     }
 
     /**
