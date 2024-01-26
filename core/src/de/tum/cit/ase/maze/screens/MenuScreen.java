@@ -15,6 +15,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import de.tum.cit.ase.maze.MazeRunnerGame;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
 
+import javax.swing.*;
+
 
 /**
  * The MenuScreen class is responsible for displaying the main menu of the game.
@@ -78,12 +80,14 @@ public class MenuScreen implements Screen {
         // Create a button for file selection
         TextButton chooseMapButton = new TextButton("Choose map", game.getSkin());
         table.add(chooseMapButton).width(400).row();
-        continueGameButton.addListener(new ChangeListener() {
+        chooseMapButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.goToMenu(); // Change to the game screen when button is pressed
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.showOpenDialog(null);
             }
         });
+
 
         stage.setDebugAll(CONSTANTS.DEBUG);
     }
