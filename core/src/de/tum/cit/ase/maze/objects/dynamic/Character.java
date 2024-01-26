@@ -168,7 +168,7 @@ public abstract class Character extends GameElement {
     public boolean heal(int amountToHeal) {
         var healAmount = MathUtils.clamp(amountToHeal, 0, PLAYER_MAX_HEALTH - health);
         this.health += healAmount;
-        soundEffects = Gdx.audio.newMusic(Gdx.files.internal("ough-47202.mp3"));
+        soundEffects = Gdx.audio.newMusic(Gdx.files.internal("short-choir-6116.mp3"));
         soundEffects.play();
         return healAmount > 0;
     }
