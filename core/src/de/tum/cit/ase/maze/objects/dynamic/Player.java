@@ -125,6 +125,7 @@ public class Player extends Character implements Movable {
         if (!isFinished && isVulnerable) {
             super.makeDamage(damage);
             soundEffects = Gdx.audio.newMusic(Gdx.files.internal("ough-47202.mp3"));
+            soundEffects.play();
         }
     }
 
