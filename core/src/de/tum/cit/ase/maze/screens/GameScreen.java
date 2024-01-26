@@ -28,10 +28,7 @@ import de.tum.cit.ase.maze.objects.GameElement;
 import de.tum.cit.ase.maze.objects.ObjectType;
 import de.tum.cit.ase.maze.objects.dynamic.Enemy;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
-import de.tum.cit.ase.maze.objects.still.Entry;
-import de.tum.cit.ase.maze.objects.still.Exit;
-import de.tum.cit.ase.maze.objects.still.Key;
-import de.tum.cit.ase.maze.objects.still.Wall;
+import de.tum.cit.ase.maze.objects.still.*;
 import de.tum.cit.ase.maze.objects.still.collectable.DamageDeflect;
 import de.tum.cit.ase.maze.objects.still.collectable.HealthCollectable;
 import de.tum.cit.ase.maze.objects.still.collectable.SpeedBoost;
@@ -163,7 +160,7 @@ public class GameScreen implements Screen {
         collectableManager.spawn(SpeedBoost.class, 0.01f);
         collectableManager.spawn(DamageDeflect.class, 0.008f);
         collectableManager.spawn(Key.class, MapLoader.getMapCoordinates(ObjectType.Key));
-        //collectableManager.spawn(Traps.class, MapLoader.getMapCoordinates(Obj));
+        collectableManager.spawn(Traps.class, MapLoader.getMapCoordinates(ObjectType.Trap));
 
     }
 
