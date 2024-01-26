@@ -241,11 +241,13 @@ public class GameScreen implements Screen {
 
         this.renderHud(delta);
         // switch screens after game is finished
-        if (victory) {
-            this.game.goToVictoryScreen();
-        }
         if (end) {
-            this.game.goToDefeatScreen();
+            if (victory) {
+                this.game.goToVictoryScreen();
+            } else {
+                this.game.goToDefeatScreen();
+            }
+
         }
     }
 
