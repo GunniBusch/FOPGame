@@ -16,6 +16,7 @@ import de.tum.cit.ase.maze.MazeRunnerGame;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 
 
@@ -85,6 +86,8 @@ public class MenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 JFileChooser fileChooser = new JFileChooser();
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("properties");
+
                 fileChooser.setCurrentDirectory(new File(""));
                 int response = fileChooser.showOpenDialog(null);
                 System.out.println("Test!!!!!!!!!");
