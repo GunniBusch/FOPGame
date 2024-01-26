@@ -41,7 +41,7 @@ public class Exit extends GameElement {
         def.type = BodyDef.BodyType.KinematicBody;
         def.fixedRotation = true;
         body = world.createBody(def);
-        body.setAwake(false);
+        body.setAwake(true);
         createBody(position);
         this.doorOpenSound = Gdx.audio.newSound(Gdx.files.internal("Door Scrape Heavy Stone Loop 5 - QuickSounds.com.mp3"));
         texture = new Texture("basictiles.png");
@@ -55,10 +55,10 @@ public class Exit extends GameElement {
      */
     private void createBody(Vector2 position) {
         float x, y;
-        var halfSize = 1f * Wall.width / PPM / SCALE;
+        var halfSize = 0.5f * (Wall.width / PPM) * SCALE;
         ChainShape shape = new ChainShape();
-        x = position.x * Wall.width / PPM / SCALE;
-        y = position.y * Wall.width / PPM / SCALE;
+        x = position.x * (Wall.width / PPM) * SCALE;
+        y = position.y * (Wall.width / PPM) * SCALE;
 
 
         var p = position.cpy().sub(new Vector2(MapLoader.width, MapLoader.height).scl(1 / SCALE));
@@ -148,7 +148,7 @@ public class Exit extends GameElement {
      * @return true if opening was granted
      */
     public boolean requestOpening(Player player) {
-        if (player.numberOfKeys != 0) {
+        if (player.numberOfKeys == 0) {
             this.open = true;
             player.markAsFinished();
             doorOpenSound.loop();
