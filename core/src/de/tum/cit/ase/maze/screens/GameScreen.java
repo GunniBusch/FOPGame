@@ -247,7 +247,6 @@ public class GameScreen implements Screen {
             } else {
                 this.game.goToDefeatScreen();
             }
-
         }
     }
 
