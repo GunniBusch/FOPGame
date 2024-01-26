@@ -17,6 +17,7 @@ import games.spooky.gdx.nativefilechooser.NativeFileChooser;
  */
 public class MazeRunnerGame extends Game {
     Music backgroundMusic;
+    Music soundEffect;
     // Screens
     private MenuScreen menuScreen;
     private GameScreen gameScreen;
@@ -96,7 +97,7 @@ public class MazeRunnerGame extends Game {
         this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Treasures of Ancient Dungeon.mp3"));
         backgroundMusic.setLooping(true);
         backgroundMusic.play();
-        this.setScreen(new DefeatScreen(this)); // Set the current screen to VictoryScreen
+        this.setScreen(new DefeatScreen(this)); // Set the current screen to DefeatScreen
         if (gameScreen != null) {
             gameScreen.dispose(); // Dispose the game screen if it exists
             gameScreen = null;
