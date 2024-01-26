@@ -49,7 +49,14 @@ public class MenuScreen implements Screen {
         table.add(new Label("Welcome to [Gamename]!", game.getSkin(), "title")).padBottom(80).row();
 
         // Create and add a button to go to the game screen
-
+        TextButton quickStart = new TextButton("QuickStart", game.getSkin());
+        table.add(quickStart).width(400).row();
+        quickStart.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.goToGame(false);
+            }
+        });
 
         //TODO fileChooser function
         // Create a button for file selection
