@@ -89,9 +89,8 @@ public class MenuScreen implements Screen {
                 FileNameExtensionFilter filter = new FileNameExtensionFilter("properties");
                 fileChooser.setFileFilter(filter);
                 fileChooser.addChoosableFileFilter(filter);
-                fileChooser.setCurrentDirectory(new File(""));
                 int response = fileChooser.showOpenDialog(null);
-                System.out.println("Test!!!!!!!!!");
+
                 if (response == JFileChooser.APPROVE_OPTION) {
                     //MapLoader.loadMapFile(Gdx.files.internal(fileChooser.getSelectedFile().getPath()));
                     File file = new File(fileChooser.getSelectedFile().getAbsolutePath());
