@@ -57,26 +57,6 @@ public class MenuScreen implements Screen {
                 game.goToGame(false); // Change to the game screen when button is pressed
             }
         });
-        // additional buttons and functionality for menu
-        //TODO: pausing game when pressing esc
-        TextButton continueGameButton = new TextButton("Continue journey", game.getSkin());
-        table.add(continueGameButton).width(400).row();
-        continueGameButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                game.resume(); // Change to the game screen when button is pressed
-            }
-        });
-        /*TextButton exitGameButton = new TextButton("Leave journey", game.getSkin());
-        table.add(exitGameButton).width(400).row();
-        continueGameButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                game.goToMenu(); // Change to the game screen when button is pressed
-            }
-        });
-
-         */
 
         //TODO fileChooser function
         // Create a button for file selection
@@ -93,8 +73,7 @@ public class MenuScreen implements Screen {
                 if (response == JFileChooser.APPROVE_OPTION) {
                     MapLoader.loadMapFile(Gdx.files.internal(fileChooser.getSelectedFile().getAbsolutePath()));
                     game.goToGame(false);
-                    //File file = new File(fileChooser.getSelectedFile().getAbsolutePath());
-                    //System.out.println(file);
+
                 }
             }
         });
