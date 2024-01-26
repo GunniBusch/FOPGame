@@ -169,7 +169,7 @@ public class Player extends Character implements Movable {
 
     public void collectKey(Key key) {
         keyList.add(key);
-        soundEffects = Gdx.audio.newMusic(Gdx.files.internal("key-get-39925.mp3"));
+        soundEffects = Gdx.audio.newMusic(Gdx.files.internal("fantasy_ui_button_6-102219.mp3"));
         soundEffects.play();
     }
 
