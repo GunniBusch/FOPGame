@@ -93,6 +93,7 @@ public class PauseScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 MapLoader.loadMapFile(Gdx.files.internal(playedMapPath));
+                game.goToGame(false);
             }
         });
 
