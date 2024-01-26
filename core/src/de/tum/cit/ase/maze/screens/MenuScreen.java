@@ -63,7 +63,7 @@ public class MenuScreen implements Screen {
                 game.resume(); // Change to the game screen when button is pressed
             }
         });
-        TextButton exitGameButton = new TextButton("Leave journey", game.getSkin());
+        /*TextButton exitGameButton = new TextButton("Leave journey", game.getSkin());
         table.add(exitGameButton).width(400).row();
         continueGameButton.addListener(new ChangeListener() {
             @Override
@@ -72,9 +72,22 @@ public class MenuScreen implements Screen {
             }
         });
 
+         */
+
+        //TODO fileChooser function
+        // Create a button for file selection
+        TextButton chooseMapButton = new TextButton("Choose map", game.getSkin());
+        table.add(chooseMapButton).width(400).row();
+        continueGameButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.goToMenu(); // Change to the game screen when button is pressed
+            }
+        });
 
         stage.setDebugAll(CONSTANTS.DEBUG);
     }
+
 
     @Override
     public void show() {
