@@ -163,6 +163,7 @@ public class GameScreen implements Screen {
         collectableManager.spawn(SpeedBoost.class, 0.01f);
         collectableManager.spawn(DamageDeflect.class, 0.008f);
         collectableManager.spawn(Key.class, MapLoader.getMapCoordinates(ObjectType.Key));
+        //collectableManager.spawn(Traps.class, MapLoader.getMapCoordinates(Obj));
 
     }
 

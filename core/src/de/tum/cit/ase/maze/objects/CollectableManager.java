@@ -31,12 +31,12 @@ public class CollectableManager implements Disposable {
     private final Array<Vector2> spawnablePoints;
     private final Map<Class<? extends Collectable>, Integer> spawnMap;
     private final List<Collectable> collectableList;
+    private final TextureAtlas textureAtlas;
     public boolean canRespawn = false;
     private float time;
     private boolean scheduledRespawn = false;
     private Timer timer;
     private RespawnTask respawnTask;
-    private final TextureAtlas textureAtlas;
 
     public CollectableManager(World world, RayHandler rayHandler, boolean canRespawn) {
         this.textureAtlas = new TextureAtlas("Powerup Assets/output/Collectables.atlas");
@@ -138,7 +138,7 @@ public class CollectableManager implements Disposable {
 
         try {
             for (Vector2 spawnPoint : positionList) {
-                collectableList.add(collectableClass.getConstructor(Vector2.class, World.class, RayHandler.class).newInstance(spawnPoint.cpy(), world, rayHandler));
+                collectableList.add(collectableClass.getConstructor(Vector2.class, World.class, RayHandler.class, TextureAtlas.class).newInstance(spawnPoint.cpy(), world, rayHandler, textureAtlas));
             }
         } catch (ReflectiveOperationException e) {
             Gdx.app.error("Collectable Manager", "Could not load collectable " + collectableClass.getTypeName(), e);

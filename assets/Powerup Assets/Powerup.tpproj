@@ -34,7 +34,7 @@ prettyPrint=false
 legacyOutput=false
 
 scaleFactors=[{suffix:"",factor:1,resampling:bicubic}]
-inputFiles=[{path:powerup-shield.png,type:Input,regionName:null},{path:powerup-speed.png,type:Input,regionName:null},{path:heart_1.png,type:Input,regionName:null},{path:heart_2.png,type:Input,regionName:null},{path:heart_3.png,type:Input,regionName:null},{path:heart_4.png,type:Input,regionName:null},{path:../key.png,type:Input,regionName:null}]
+inputFiles=[{path:powerup-shield.png,type:Input,regionName:null},{path:powerup-speed.png,type:Input,regionName:null},{path:heart_1.png,type:Input,regionName:null},{path:heart_2.png,type:Input,regionName:null},{path:heart_3.png,type:Input,regionName:null},{path:heart_4.png,type:Input,regionName:null},{path:../key.png,type:Input,regionName:null},{path:../traps.png,type:Input,regionName:null}]
 keepInputFileExtensions=false
 
 

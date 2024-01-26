@@ -18,7 +18,8 @@ public class Key extends Collectable {
         super(position, world, rayHandler, textureAtlas, 16, 29);
         //texture = new Texture("gameKey.png");
         textureRegion = textureAtlas.findRegion("key");
-
+        active = false;
+        ZOOM = 0.75f;
 
     }
 
