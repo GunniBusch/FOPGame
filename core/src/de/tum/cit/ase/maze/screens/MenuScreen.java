@@ -85,6 +85,7 @@ public class MenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setCurrentDirectory(new File(""));
                 int response = fileChooser.showOpenDialog(null);
                 System.out.println("Test!!!!!!!!!");
                 if (response == JFileChooser.APPROVE_OPTION) {
