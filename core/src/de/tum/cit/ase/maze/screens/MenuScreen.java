@@ -92,7 +92,7 @@ public class MenuScreen implements Screen {
 
                 if (response == JFileChooser.APPROVE_OPTION) {
                     MapLoader.loadMapFile(Gdx.files.internal(fileChooser.getSelectedFile().getAbsolutePath()));
-
+                    game.goToGame(false);
                     //File file = new File(fileChooser.getSelectedFile().getAbsolutePath());
                     //System.out.println(file);
                 }
