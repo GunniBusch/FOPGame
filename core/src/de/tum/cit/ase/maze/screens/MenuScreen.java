@@ -86,7 +86,7 @@ public class MenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 JFileChooser fileChooser = new JFileChooser();
-                FileNameExtensionFilter filter = new FileNameExtensionFilter("Maps", ".properties");
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("Maps", "properties");
                 fileChooser.setFileFilter(filter);
                 int response = fileChooser.showOpenDialog(null);
 
