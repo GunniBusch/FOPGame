@@ -14,6 +14,10 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import de.tum.cit.ase.maze.MazeRunnerGame;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
+import de.tum.cit.ase.maze.utils.MapLoader;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 
 public class PauseScreen implements Screen {
@@ -57,7 +61,8 @@ public class PauseScreen implements Screen {
         continueGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.goToGame(true);; // Change to the game screen when button is pressed
+                game.goToGame(true);
+                // Change to the game screen when button is pressed
             }
         });
         TextButton exitGameButton = new TextButton("Leave journey", game.getSkin());
@@ -69,26 +74,25 @@ public class PauseScreen implements Screen {
             }
         });
 
+        TextButton chooseMapButton = new TextButton("Choose map", game.getSkin());
+        table.add(chooseMapButton).width(400).row();
+        chooseMapButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                JFileChooser fileChooser = new JFileChooser();
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("Maps", "properties");
+                fileChooser.setFileFilter(filter);
+                int response = fileChooser.showOpenDialog(null);
+
+                if (response == JFileChooser.APPROVE_OPTION) {
+                    MapLoader.loadMapFile(Gdx.files.internal(fileChooser.getSelectedFile().getAbsolutePath()));
+                    game.goToGame(false);
+
+                }
+            }
+        });
+
         stage.setDebugAll(CONSTANTS.DEBUG);
-    }
-
-    @Override
-    public void render(float delta) {
-        ScreenUtils.clear(0,0,0,1); // Clear the screen
-        stage.getViewport().apply(true);
-        stage.act(delta); // Update the stage
-        stage.draw(); // Draw the stage
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        stage.getViewport().update(width, height, true); // Update the stage viewport on resize
-    }
-
-    @Override
-    public void dispose() {
-        // Dispose of the stage when screen is disposed
-        stage.dispose();
     }
 
     @Override
@@ -97,6 +101,19 @@ public class PauseScreen implements Screen {
 
         Gdx.input.setInputProcessor(stage);
 
+    }
+
+    @Override
+    public void render(float delta) {
+        ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
+        stage.getViewport().apply(true);
+        stage.act(delta); // Update the stage
+        stage.draw(); // Draw the stage
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        stage.getViewport().update(width, height, true); // Update the stage viewport on resize
     }
 
     // The following methods are part of the Screen interface but are not used in this screen.
@@ -110,5 +127,11 @@ public class PauseScreen implements Screen {
 
     @Override
     public void hide() {
+    }
+
+    @Override
+    public void dispose() {
+        // Dispose of the stage when screen is disposed
+        stage.dispose();
     }
 }
