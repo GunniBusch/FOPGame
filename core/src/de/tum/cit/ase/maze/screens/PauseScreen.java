@@ -54,8 +54,8 @@ public class PauseScreen implements Screen {
         // additional buttons and functionality for menu
         //TODO: pausing game when pressing esc
         TextButton continueGameButton = new TextButton("Continue journey", game.getSkin());
-        table.add(continueGameButton).width(400).row();
-        table.row().fillY();
+        table.add(continueGameButton).width(400);
+        table.row().height(100).row();
         continueGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
