@@ -50,7 +50,7 @@ public class MazeRunnerGame extends Game {
             Gdx.app.setLogLevel(Logger.INFO);
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         spriteCache = new SpriteCache(8191, false);
-        skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
+        skin = new Skin(Gdx.files.internal("Exported/skin.json")); // Load UI skin
         //this.loadCharacterAnimation(); // Load character animation
 
         // Play some background music

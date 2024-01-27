@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -54,8 +55,9 @@ public class PauseScreen implements Screen {
         // additional buttons and functionality for menu
         //TODO: pausing game when pressing esc
         TextButton continueGameButton = new TextButton("Continue journey", game.getSkin());
-        table.add(continueGameButton).width(400);
-        table.row().height(100).row();
+        table.add(continueGameButton).width(400).spaceBottom(20).row();
+        table.add(new Image(game.getSkin(), "divider-fade-000")).width(500).spaceBottom(20);
+        table.row();
         continueGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {

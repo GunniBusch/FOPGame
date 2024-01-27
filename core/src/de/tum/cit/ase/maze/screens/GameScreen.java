@@ -8,7 +8,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
@@ -50,7 +49,6 @@ public class GameScreen implements Screen {
     private final OrthographicCamera camera;
     private final OrthographicCamera hudCamera;
     private final Viewport viewport;
-    private final BitmapFont font;
     private final Player player;
     private final InputMultiplexer inputMultiplexer;
     private final InputAdapter inputAdapter;
@@ -135,9 +133,6 @@ public class GameScreen implements Screen {
         wall.render();
         mapCacheID = game.getSpriteCache().endCache();
 
-
-        // Get the font from the game's skin
-        font = game.getSkin().getFont("font");
 
         var numW = Math.ceil((double) MapLoader.width * PPM * SCALE / background.getWidth());
         var numH = Math.ceil((double) MapLoader.height * PPM * SCALE / background.getHeight());
