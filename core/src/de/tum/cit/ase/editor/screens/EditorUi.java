@@ -10,45 +10,42 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.ray3k.stripe.FreeTypeSkin;
+import com.ray3k.stripe.StripeMenuBar;
 import de.tum.cit.ase.editor.data.EditorConfig;
+import de.tum.cit.ase.editor.data.Map;
+import de.tum.cit.ase.editor.input.Shortcuts;
 import de.tum.cit.ase.editor.tools.*;
 import de.tum.cit.ase.editor.utlis.MapGenerator;
 import de.tum.cit.ase.editor.utlis.TileTypes;
+import de.tum.cit.ase.maze.utils.CONSTANTS;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserCallback;
-import games.spooky.gdx.nativefilechooser.NativeFileChooserConfiguration;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserIntent;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.Field;
+import java.util.Objects;
 
 public class EditorUi extends Stage {
     private final Editor editor;
     private final Skin skin;
-    private final HorizontalGroup menuPopups;
-    private final Json json;
 
     public EditorUi(Editor editor) {
         super(new ScreenViewport(), editor.getGame().getSpriteBatch());
-        json = new Json();
         this.editor = editor;
         this.skin = new Skin(Gdx.files.internal("Editor/skincomposerui/skin-composer-ui.json"));
-        var vGroup = new VerticalGroup();
-        vGroup.setFillParent(true);
-        vGroup.setOrigin(Align.topLeft);
-        vGroup.columnAlign(Align.topLeft);
-        vGroup.align(Align.topLeft);
 
         // Menu
-        var taskBar = new HorizontalGroup();
-        vGroup.addActor(taskBar);
+        var taskBar = new Container<>();
+        taskBar.setFillParent(true);
+        taskBar.align(Align.topLeft);
 
-        this.addActor(vGroup);
-
-        menuPopups = new HorizontalGroup();
+        var mBar = new StripeMenuBar(this, new FreeTypeSkin(Gdx.files.internal("skin-composer-ui/skin-composer-ui.json")));
+        mBar.setDebug(CONSTANTS.DEBUG, true);
+        taskBar.setActor(mBar);
 
         var settingsWindow = new Window("Settings", skin);
         settingsWindow.setVisible(false);
@@ -67,11 +64,14 @@ public class EditorUi extends Stage {
             this.addCheckBoxSetting("Check if key exists", EditorConfig.class.getDeclaredField("exportCheckHasKey"), settingsWindow);
             settingsWindow.row();
             this.addCheckBoxSetting("Check if key can be reached", EditorConfig.class.getDeclaredField("exportCheckCanReachKey"), settingsWindow);
+            settingsWindow.row();
+            this.addCheckBoxSetting("Load previous project", EditorConfig.class.getDeclaredField("loadPreviousProject"), settingsWindow);
 
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
         settingsWindow.row().fillY();
+
         var closeButton = new TextButton("Close", skin);
         closeButton.addListener(new ClickListener() {
             @Override
@@ -87,82 +87,83 @@ public class EditorUi extends Stage {
         settingsWindow.validate();
         this.addActor(settingsWindow);
 
-        vGroup.addActor(menuPopups);
-        var filePopUpMap = new OrderedMap<String, EventListener>();
+        var barMenu = mBar.menu("File");
 
-        filePopUpMap.put("Save", new ClickListener() {
+        mBar.addListener(new ChangeListener() {
             @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (event.getListenerActor() instanceof TextButton textButton) {
-                    save();
-                    textButton.getButtonGroup().uncheckAll();
-                    textButton.getParent().setVisible(false);
-                }
+            public void changed(ChangeEvent event, Actor actor) {
+                mBar.findMenu("File").findButton("Save As").setDisabled(EditorConfig.loadedMapProject == null);
+            }
+        });
+        barMenu.item("New", new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                mBar.findMenu("File").findButton("Save As").setDisabled(true);
+                EditorConfig.loadedMapProject = null;
+            }
+        });
+        barMenu.item("Save", new StripeMenuBar.KeyboardShortcut(Shortcuts.UI.SAVE.toString(), Shortcuts.UI.SAVE.key(), Objects.requireNonNull(Shortcuts.UI.SAVE.modKeys())), new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                save();
+            }
+        });
+        barMenu.item("Save As", new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                save(true);
+            }
+        });
+        barMenu.item("Open", new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                open();
+            }
+        });
+        barMenu.item("Import", new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                EditorUi.this.importMap();
+            }
+        });
+        barMenu.item("Export", new StripeMenuBar.KeyboardShortcut(Shortcuts.UI.EXPORT.toString(), Shortcuts.UI.EXPORT.key(), Objects.requireNonNull(Shortcuts.UI.EXPORT.modKeys())), new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                EditorUi.this.exportMap();
             }
 
         });
-        filePopUpMap.put("Open", new ClickListener() {
+        barMenu.item("Settings", new ChangeListener() {
             @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (event.getListenerActor() instanceof TextButton textButton) {
-                    open();
-                    textButton.getButtonGroup().uncheckAll();
-                    textButton.getParent().setVisible(false);
-
-                }
+            public void changed(ChangeEvent event, Actor actor) {
+                settingsWindow.setVisible(true);
             }
-
         });
-        filePopUpMap.put("Import", new ClickListener() {
+        barMenu.item("Exit", new ChangeListener() {
             @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (event.getListenerActor() instanceof TextButton textButton) {
-                    textButton.getButtonGroup().uncheckAll();
-                    textButton.getParent().setVisible(false);
-                    EditorUi.this.importMap();
-                }
+            public void changed(ChangeEvent event, Actor actor) {
+                EditorConfig.loadedMapProject = null;
+                EditorUi.this.exit();
             }
-
-        });
-        filePopUpMap.put("Export", new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (event.getListenerActor() instanceof TextButton textButton) {
-                    textButton.getButtonGroup().uncheckAll();
-                    textButton.getParent().setVisible(false);
-                    EditorUi.this.exportMap();
-                }
-            }
-
-        });
-        filePopUpMap.put("Settings", new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (event.getListenerActor() instanceof TextButton textButton) {
-                    textButton.getButtonGroup().uncheckAll();
-                    textButton.getParent().setVisible(false);
-                    settingsWindow.setVisible(true);
-                }
-            }
-
-        });
-        filePopUpMap.put("Exit", new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (event.getListenerActor() instanceof TextButton textButton) {
-                    textButton.getButtonGroup().uncheckAll();
-                    textButton.getParent().setVisible(false);
-                    EditorUi.this.exit();
-                }
-            }
-
         });
 
-        addMenuItem(skin, null, "file", "File", taskBar, menuPopups, filePopUpMap);
-        addMenuItem(skin, null, "file", "Info", taskBar, menuPopups, new OrderedMap<>());
+
+        barMenu.findButton("Save As").setDisabled(true);
+        barMenu = mBar.menu("Project");
+        barMenu.item("Test map", new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                editor.testGame(new Map("test", editor.getEditorCanvas().getCanvas().virtualGrid));
+            }
+        });
+
+        barMenu = mBar.menu("Info");
+        barMenu.item("About", new ClickListener());
+
 
         this.createToolBar();
         this.createTileBar();
+        this.addActor(taskBar);
         this.setDebugInvisible(true);
 
     }
@@ -193,32 +194,40 @@ public class EditorUi extends Stage {
     }
 
     protected void save() {
-        var config = new NativeFileChooserConfiguration();
+        this.save(false);
+    }
 
+    protected void save(boolean saveAs) {
 
-        String fileFilter = "MapProject/mapproj";
+        if (saveAs || EditorConfig.loadedMapProject == null) {
+            String fileFilter = "MapProject/mapproj";
 
-        var fileCallback = new NativeFileChooserCallback() {
+            var fileCallback = new NativeFileChooserCallback() {
 
-            @Override
-            public void onFileChosen(FileHandle file) {
-                MapGenerator.saveMapProject(file, new de.tum.cit.ase.editor.data.Map(file.name(), editor.getEditorCanvas().getCanvas().virtualGrid));
-                EditorConfig.loadedFileName = file;
-            }
+                @Override
+                public void onFileChosen(FileHandle file) {
+                    MapGenerator.saveMapProject(file, new de.tum.cit.ase.editor.data.Map(file.nameWithoutExtension(), editor.getEditorCanvas().getCanvas().virtualGrid));
+                    EditorConfig.loadedMapProject = file;
+                }
 
-            @Override
-            public void onCancellation() {
+                @Override
+                public void onCancellation() {
 
-            }
+                }
 
-            @Override
-            public void onError(Exception exception) {
-                Gdx.app.error("Save map project", "Could not save project", exception);
-            }
-        };
-        var defFileName = EditorConfig.loadedFileName == null ? "untitledMapProject" : EditorConfig.loadedFileName.nameWithoutExtension();
+                @Override
+                public void onError(Exception exception) {
+                    Gdx.app.error("Save map project", "Could not save project", exception);
+                }
+            };
+            var defFileName = EditorConfig.loadedMapProject == null ? "untitledMapProject" : EditorConfig.loadedMapProject.nameWithoutExtension();
 
-        this.editor.chooseFile(fileFilter, defFileName, NativeFileChooserIntent.SAVE, EditorConfig.loadedFileName, fileCallback);
+            this.editor.chooseFile(fileFilter, defFileName, NativeFileChooserIntent.SAVE, EditorConfig.loadedMapProject, fileCallback);
+        } else {
+            MapGenerator.saveMapProject(EditorConfig.loadedMapProject, new Map(EditorConfig.loadedMapProject.nameWithoutExtension(), editor.getEditorCanvas().getCanvas().virtualGrid));
+        }
+        EditorConfig.saveSettings();
+
     }
 
     protected void open() {
@@ -230,7 +239,7 @@ public class EditorUi extends Stage {
             public void onFileChosen(FileHandle file) {
                 var map = MapGenerator.readMapProject(file);
                 editor.getEditorCanvas().loadMap(map);
-                EditorConfig.loadedFileName = file;
+                EditorConfig.loadedMapProject = file;
 
             }
 
@@ -244,22 +253,63 @@ public class EditorUi extends Stage {
                 Gdx.app.error("Load map project", "Error loading project", exception);
             }
         };
-        var defFileName = EditorConfig.loadedFileName == null ? "untitledMapProject" : EditorConfig.loadedFileName.nameWithoutExtension();
-        this.editor.chooseFile(fileFilter, defFileName, NativeFileChooserIntent.OPEN, EditorConfig.loadedFileName, callback);
+        var defFileName = EditorConfig.loadedMapProject == null ? "untitledMapProject" : EditorConfig.loadedMapProject.nameWithoutExtension();
+        this.editor.chooseFile(fileFilter, defFileName, NativeFileChooserIntent.OPEN, EditorConfig.loadedMapProject, callback);
 
+        EditorConfig.saveSettings();
     }
 
     protected void importMap() {
         var fileFilter = "Map/properties";
-        Gdx.app.error("Import file", "Could not open file");
+        var callback = new NativeFileChooserCallback() {
+
+            @Override
+            public void onFileChosen(FileHandle file) {
+                var map = MapGenerator.importMap(file);
+                editor.getEditorCanvas().loadMap(map);
+                EditorConfig.loadedMapProject = null;
+
+            }
+
+            @Override
+            public void onCancellation() {
+
+            }
+
+            @Override
+            public void onError(Exception exception) {
+                Gdx.app.error("Import map", "Error importing map", exception);
+            }
+        };
+        var defFileName = EditorConfig.loadedMapProject == null ? "untitledMapProject" : EditorConfig.loadedMapProject.nameWithoutExtension();
+        this.editor.chooseFile(fileFilter, defFileName, NativeFileChooserIntent.OPEN, EditorConfig.loadedMapProject, callback);
 
 
     }
 
     protected void exportMap() {
         var fileFilter = "Map/properties";
+        var callback = new NativeFileChooserCallback() {
 
-        Gdx.app.error("Export file", "Could not save file");
+            @Override
+            public void onFileChosen(FileHandle file) {
+                MapGenerator.exportMap(new Map(file.nameWithoutExtension(), editor.getEditorCanvas().getCanvas().virtualGrid), file);
+            }
+
+            @Override
+            public void onCancellation() {
+
+            }
+
+            @Override
+            public void onError(Exception exception) {
+                Gdx.app.error("Export map", "Error exporting map", exception);
+
+            }
+        };
+
+        var defName = EditorConfig.loadedMapProject == null ? "untitledMap" : EditorConfig.loadedMapProject.nameWithoutExtension();
+        this.editor.chooseFile(fileFilter, defName, NativeFileChooserIntent.SAVE, EditorConfig.loadedMapProject, callback);
     }
 
 
@@ -425,9 +475,7 @@ public class EditorUi extends Stage {
     }
 
     public void hideAllPopups() {
-        for (Actor child : this.menuPopups.getChildren()) {
-            child.setVisible(false);
-        }
+
     }
 
     @Override

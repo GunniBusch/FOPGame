@@ -28,8 +28,9 @@ public abstract sealed class EditorTool extends ToolInputAdapter implements Tool
         if (isStraightLine()) {
             var start = new Vector2();
             var end = new Vector2();
+            shapeRenderer.setColor(0, 0, 0, 0.7f);
             getStraightLineCoordinates(lastPosition, start, end);
-            shapeRenderer.line(start, end);
+            shapeRenderer.rectLine(start, end, 10);
 
         }
 

@@ -11,6 +11,7 @@
     <file url="file://$PROJECT_DIR$/assets/Editor/skincomposerui/skin-composer-ui.json" />
     <file url="file://$PROJECT_DIR$/assets/Exported/skin.json" />
     <file url="file://$PROJECT_DIR$/assets/craft/craftacular-ui.json" />
+    <file url="file://$PROJECT_DIR$/assets/skin-composer-ui/skin-composer-ui.json" />
   </component>
   <component name="NullableNotNullManager">
     <option name="myDefaultNullable" value="org.checkerframework.checker.nullness.qual.Nullable" />

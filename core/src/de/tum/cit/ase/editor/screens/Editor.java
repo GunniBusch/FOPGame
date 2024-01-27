@@ -1,17 +1,20 @@
 package de.tum.cit.ase.editor.screens;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.*;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
+import de.tum.cit.ase.editor.data.Map;
 import de.tum.cit.ase.editor.input.CanvasGestureListener;
 import de.tum.cit.ase.editor.input.CanvasInputProcessor;
+import de.tum.cit.ase.editor.utlis.MapGenerator;
 import de.tum.cit.ase.maze.MazeRunnerGame;
+import de.tum.cit.ase.maze.screens.GameScreen;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
 import de.tum.cit.ase.maze.utils.FixedDesktopFileChooser;
 import games.spooky.gdx.nativefilechooser.NativeFileChooser;
@@ -147,5 +150,42 @@ public class Editor extends InputAdapter implements Screen {
 
     public final void exit() {
         Gdx.app.postRunnable(game::goToMenu);
+    }
+
+    public final void testGame(Map map) {
+
+        Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+        config.setTitle("Map test"); // Set the window title
+
+        // Get the display mode of the current monitor
+        Graphics.DisplayMode displayMode = Lwjgl3ApplicationConfiguration.getDisplayMode();
+        // Set the window size to 80% of the screen width and height
+        config.setWindowedMode(Math.round(0.8f * displayMode.width), Math.round(0.8f * displayMode.height));
+        config.useVsync(true); // Enable vertical sync
+        config.setForegroundFPS(60); // Set the foreground frames per second
+
+
+        new MazeRunnerGame(fileChooser) {
+            public final Lwjgl3Window window = ((Lwjgl3Application) Gdx.app).newWindow(this, config);
+
+            @Override
+            public void create() {
+                super.create();
+                MapGenerator.loadMapIntoGame(map);
+                var s = new GameScreen(this, false);
+
+                this.setScreen(s);
+            }
+
+            @Override
+            public void goToMenu() {
+                window.closeWindow();
+            }
+
+            @Override
+            public void goToPause() {
+                window.closeWindow();
+            }
+        };
     }
 }

@@ -1,13 +1,15 @@
 package de.tum.cit.ase.editor.input;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public interface ShortcutAdapter {
     Set<Integer> pressedKeys = new HashSet<>(10);
 
-    default boolean isShortcut(Integer... keys) {
-        return pressedKeys.equals(Set.of(keys));
+    default boolean isShortcut(int... keys) {
+        return pressedKeys.equals(Arrays.stream(keys).boxed().collect(Collectors.toSet()));
     }
 
     default void addKey(int key) {

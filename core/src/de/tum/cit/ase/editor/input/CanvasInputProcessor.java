@@ -36,7 +36,10 @@ public class CanvasInputProcessor extends InputAdapter implements ShortcutAdapte
 
 
         if (keycode == Input.Keys.SPACE) {
-            editorCanvas.resizeCanvas(64, 64);
+            editorCanvas.resizeCanvas(640, 640);
+        }
+        if (keycode == Input.Keys.N) {
+            editorCanvas.resizeCanvas(16, 16);
         }
         this.addKey(keycode);
         this.editorCanvas.getEditor().handleLostUiFocus();
@@ -52,7 +55,6 @@ public class CanvasInputProcessor extends InputAdapter implements ShortcutAdapte
 
         this.removeKey(keycode);
         if (DEBUG && keycode == Input.Keys.SPACE) {
-            editorCanvas.resizeCanvas(16, 16);
             return true;
 
         }
@@ -89,7 +91,6 @@ public class CanvasInputProcessor extends InputAdapter implements ShortcutAdapte
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         // Gdx.app.debug("touchUp", String.format("screenX: %s, screenY: %s, pointer: %s", screenX, screenY, pointer));
         Gdx.app.debug("TouchesReg", numEvents + "");
-        editorCanvas.registerEndOfTouch();
         this.lastDragEvent = null;
 
         this.numEvents = 0;

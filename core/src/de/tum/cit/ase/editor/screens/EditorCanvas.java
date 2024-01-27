@@ -14,13 +14,16 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import de.tum.cit.ase.editor.data.EditorConfig;
 import de.tum.cit.ase.editor.data.Map;
 import de.tum.cit.ase.editor.drawing.Canvas;
 import de.tum.cit.ase.editor.utlis.Helper;
+import de.tum.cit.ase.editor.utlis.MapGenerator;
 import de.tum.cit.ase.editor.utlis.TileTypes;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
 
@@ -35,8 +38,9 @@ public class EditorCanvas implements Disposable {
     private final Canvas canvas;
     private float width = 16f, height = 16f;
     private GridPoint2 mouseGridPos;
-    private boolean isTouched = false;
+    private final boolean isTouched = false;
     private final int lastActiveButton = -1;
+    public boolean isBigZoom = false;
 
 
     public EditorCanvas(Editor editor) {
@@ -55,8 +59,13 @@ public class EditorCanvas implements Disposable {
         gridContainer.setFillParent(true);
         gridContainer.fill(true);
         this.stage.addActor(gridContainer);
-        this.canvas.virtualGrid = new TileTypes[(int) (width) + 1][(int) (height) + 1];
+        this.canvas.virtualGrid = new TileTypes[(int) (width)][(int) (height)];
 
+        if (EditorConfig.loadPreviousProject) {
+            if (EditorConfig.loadedMapProject != null) {
+                this.loadMap(MapGenerator.readMapProject(EditorConfig.loadedMapProject));
+            }
+        }
 
     }
 
@@ -127,6 +136,10 @@ public class EditorCanvas implements Disposable {
         height = grid.length;
         width = grid[0].length;
         this.canvas.createNewGrid(grid);
+        this.gridContainer.size(tileSize * width, tileSize * height);
+        gridContainer.layout();
+
+
     }
 
     private void updateCamera(float dt) {
@@ -197,12 +210,6 @@ public class EditorCanvas implements Disposable {
         return tileSize * ((OrthographicCamera) viewport.getCamera()).zoom;
     }
 
-    @Deprecated
-    public boolean registerEndOfTouch() {
-        var hasChanged = isTouched;
-        this.isTouched = false;
-        return hasChanged;
-    }
 
     private void setGridTile(int x, int y, TileTypes tileType) {
         canvas.setGridTile(x, y, tileType);
@@ -223,8 +230,17 @@ public class EditorCanvas implements Disposable {
 
         // Zoom Boundaries
         float minZoom = .1f;
-        float maxZoom = 2f;
+        float calcZoom = (Math.max(width * tileSize, height * tileSize) * 2f) / Math.max(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        float maxZoom = Math.max(calcZoom, 2);
         camera.zoom = MathUtils.clamp(camera.zoom + z * 0.1f, minZoom, maxZoom);
+
+        if (camera.zoom > 3) {
+            this.grid.setDrawable(new TextureRegionDrawable(new Texture("Editor/backGrid.png")));
+            isBigZoom = true;
+        } else {
+            this.grid.setDrawable(gridDrawable);
+            isBigZoom = false;
+        }
 
         // Move to cursor position
         Vector3 target = new Vector3((mousePosition.x - halfScreenWidth), (-mousePosition.y + halfScreenHeight), 0).add(camera.position);

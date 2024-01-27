@@ -5,9 +5,12 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.SharedLibraryLoader;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class Shortcuts {
     public static void load(Class<?> initClass) {
@@ -24,11 +27,11 @@ public class Shortcuts {
 
             @Override
             public Shortcut read(Json json, JsonValue jsonData, Class type) {
-                return new Shortcut(json.readValue(Integer[].class, jsonData.child));
+                return new Shortcut(json.readValue(int[].class, jsonData.child));
             }
         });
 
-        Preferences prefs = Gdx.app.getPreferences("maze-editor-shortcuts");
+        Preferences prefs = Gdx.app.getPreferences("maze-editor-shortcuts-" + System.getProperty("os.name"));
 
         for (Field declaredField : initClass.getDeclaredFields()) {
             try {
@@ -57,7 +60,9 @@ public class Shortcuts {
     public static class UI {
 
 
-        public static Shortcut ZOOM = new Shortcut(Input.Keys.SHIFT_LEFT);
+        public static Shortcut ZOOM = SharedLibraryLoader.isMac ? new Shortcut(Input.Keys.SYM) : new Shortcut(Input.Keys.SHIFT_LEFT);
+        public static Shortcut SAVE = SharedLibraryLoader.isMac ? new Shortcut(Input.Keys.SYM, Input.Keys.S) : new Shortcut(Input.Keys.CONTROL_LEFT, Input.Keys.S);
+        public static Shortcut EXPORT = SharedLibraryLoader.isMac ? new Shortcut(Input.Keys.SYM, Input.Keys.E) : new Shortcut(Input.Keys.CONTROL_LEFT, Input.Keys.E);
 
         static {
             Shortcuts.load(UI.class);
@@ -76,7 +81,35 @@ public class Shortcuts {
 
     }
 
-    public record Shortcut(Integer... keys) {
+    public record Shortcut(int... keys) {
+        public int key() {
+            return keys[keys.length - 1];
+        }
 
+        public int[] modKeys() {
+            if (keys.length > 1) {
+                int[] is = new int[keys.length - 1];
+                List<Integer> integers = Arrays.stream(keys).boxed().toList().subList(0, keys.length - 1);
+                for (int i = 0; i < integers.size(); i++) {
+                    is[i] = integers.get(i);
+                }
+                return is;
+            } else return null;
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder s = new StringBuilder();
+            for (int i = 0; i < keys.length; i++) {
+                var key = "";
+                switch (keys[i]) {
+                    case Input.Keys.SYM -> key = (SharedLibraryLoader.isMac ? "CMD" : "WIN");
+                    default -> key = Input.Keys.toString(keys[i]);
+                }
+                s.append(key).append(i < keys.length - 1 ? "+" : "");
+            }
+
+            return s.toString();
+        }
     }
 }

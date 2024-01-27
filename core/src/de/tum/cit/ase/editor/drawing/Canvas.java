@@ -26,7 +26,9 @@ public class Canvas {
 
     public void createNewGrid(TileTypes[][] grid) {
         this.virtualGrid = grid;
-        EditorConfig.selectedTool.validate();
+        if (EditorConfig.selectedTool != null) {
+            EditorConfig.selectedTool.validate();
+        }
     }
 
     public void draw(ShapeRenderer shapeRenderer) {
@@ -80,7 +82,12 @@ public class Canvas {
 
                 if (virtualGrid[y][x] != null) {
                     shapeRenderer.setColor(virtualGrid[y][x].canvasColor);
-                    shapeRenderer.rect(x * getTileSize() + 1 + editorCanvas.getGrid().getX(), y * getTileSize() + 1 + editorCanvas.getGrid().getY(), getTileSize() - 2, getTileSize() - 2);
+                    if (!editorCanvas.isBigZoom) {
+                        shapeRenderer.rect(x * getTileSize() + 1 + editorCanvas.getGrid().getX(), y * getTileSize() + 1 + editorCanvas.getGrid().getY(), getTileSize() - 2, getTileSize() - 2);
+                    } else {
+                        shapeRenderer.rect(x * getTileSize() + editorCanvas.getGrid().getX(), y * getTileSize() + editorCanvas.getGrid().getY(), getTileSize(), getTileSize());
+
+                    }
                 }
 
             }

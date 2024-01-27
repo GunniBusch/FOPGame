@@ -101,6 +101,20 @@ public class MapGenerator {
     }
 
     public static void exportMap(Map map, final FileHandle exportFile) {
+
+    }
+
+    public static void loadMapIntoGame(Map map) {
+
+        var fh = FileHandle.tempFile("maploader-x");
+        for (int y = 0; y < map.map().length; y++) {
+            for (int x = 0; x < map.map()[0].length; x++) {
+                if (map.map()[y][x] != null) {
+                    fh.writeString(x + "," + y + "=" + TileTypes.convertToObjectType(map.map()[y][x]).ordinal() + "\n", true);
+                }
+            }
+        }
+        MapLoader.loadMapFile(fh);
     }
 
     public static Map importMap(final FileHandle mapFile) {
