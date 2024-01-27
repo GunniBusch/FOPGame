@@ -98,7 +98,7 @@ public class GameScreen implements Screen {
 
         //Gdx.gl.glEnable(GL20.GL_BLEND);
         this.b2DDr = new Box2DDebugRenderer(true, true, false, true, true, true);
-        MapLoader.loadMapFile(Gdx.files.internal("level-1.properties"));
+        // MapLoader.loadMapFile(Gdx.files.internal("level-1.properties"));
         wall = new Wall(MapLoader.getMapCoordinates(ObjectType.Wall), game.getSpriteCache(), world);
 
         var playerCord = MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0).cpy();
@@ -161,7 +161,7 @@ public class GameScreen implements Screen {
         collectableManager.spawn(DamageDeflect.class, 0.008f);
         collectableManager.spawn(Key.class, MapLoader.getMapCoordinates(ObjectType.Key));
         collectableManager.spawn(Traps.class, MapLoader.getMapCoordinates(ObjectType.Trap));
-        collectableManager.spawn(Trap2.class, 0.01f);
+        // collectableManager.spawn(Trap2.class, 0.01f);
 
     }
 

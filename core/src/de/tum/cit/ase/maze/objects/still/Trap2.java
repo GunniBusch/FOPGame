@@ -1,4 +1,4 @@
-package de.tum.cit.ase.maze.objects.still;
+/*package de.tum.cit.ase.maze.objects.still;
 
 import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -43,3 +43,5 @@ public class Trap2 extends TimedCollectable {
 
 
 }
+
+ */

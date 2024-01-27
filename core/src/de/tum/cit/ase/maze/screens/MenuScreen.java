@@ -2,22 +2,25 @@ package de.tum.cit.ase.maze.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import de.tum.cit.ase.maze.MazeRunnerGame;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
 import de.tum.cit.ase.maze.utils.MapLoader;
-
-import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
+import games.spooky.gdx.nativefilechooser.NativeFileChooserCallback;
+import games.spooky.gdx.nativefilechooser.NativeFileChooserConfiguration;
+import games.spooky.gdx.nativefilechooser.NativeFileChooserIntent;
 
 
 /**
@@ -54,6 +57,7 @@ public class MenuScreen implements Screen {
         quickStart.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                MapLoader.loadMapFile(Gdx.files.internal("level-1.properties"));
                 game.goToGame(false);
             }
         });
@@ -62,20 +66,33 @@ public class MenuScreen implements Screen {
         // Create a button for file selection
         TextButton chooseMapButton = new TextButton("Choose map", game.getSkin());
         table.add(chooseMapButton).width(400).row();
-        chooseMapButton.addListener(new ChangeListener() {
+        chooseMapButton.addListener(new ClickListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                JFileChooser fileChooser = new JFileChooser();
-                FileNameExtensionFilter filter = new FileNameExtensionFilter("Maps", "properties");
-                fileChooser.setFileFilter(filter);
-                int response = fileChooser.showOpenDialog(null);
+            public void clicked(InputEvent event, float x, float y) {
+                var config = new NativeFileChooserConfiguration();
+                config.directory = Gdx.files.absolute(System.getProperty("user.home"));
+                config.mimeFilter = "Maps/properties";
+                config.intent = NativeFileChooserIntent.OPEN;
+                var callBack = new NativeFileChooserCallback() {
+                    @Override
+                    public void onFileChosen(FileHandle file) {
+                        MapLoader.loadMapFile(file);
+                        game.goToGame(false);
 
-                if (response == JFileChooser.APPROVE_OPTION) {
-                    playedMapPath = fileChooser.getSelectedFile().getAbsolutePath();
-                    MapLoader.loadMapFile(Gdx.files.internal(fileChooser.getSelectedFile().getAbsolutePath()));
-                    game.goToGame(false);
+                    }
 
-                }
+                    @Override
+                    public void onCancellation() {
+
+                    }
+
+                    @Override
+                    public void onError(Exception exception) {
+                        Gdx.app.error("load map", "Error loading map", exception);
+
+                    }
+                };
+                game.getFileChooser().chooseFile(config, callBack);
             }
         });
 

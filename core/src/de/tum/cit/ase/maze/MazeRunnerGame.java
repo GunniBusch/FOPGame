@@ -16,6 +16,7 @@ import games.spooky.gdx.nativefilechooser.NativeFileChooser;
  * It manages the screens and global resources like SpriteBatch and Skin.
  */
 public class MazeRunnerGame extends Game {
+    private final NativeFileChooser fileChooser;
     Music backgroundMusic;
     Music soundEffect;
     // Screens
@@ -28,6 +29,7 @@ public class MazeRunnerGame extends Game {
     // UI Skin
     private Skin skin;
 
+
     /**
      * Constructor for MazeRunnerGame.
      *
@@ -35,6 +37,7 @@ public class MazeRunnerGame extends Game {
      */
     public MazeRunnerGame(NativeFileChooser fileChooser) {
         super();
+        this.fileChooser = fileChooser;
     }
 
     /**
@@ -161,5 +164,9 @@ public class MazeRunnerGame extends Game {
 
     public SpriteCache getSpriteCache() {
         return spriteCache;
+    }
+
+    public NativeFileChooser getFileChooser() {
+        return fileChooser;
     }
 }
