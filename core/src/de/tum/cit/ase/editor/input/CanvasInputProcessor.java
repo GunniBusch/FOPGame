@@ -3,7 +3,6 @@ package de.tum.cit.ase.editor.input;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.math.Bresenham2;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.GdxRuntimeException;
@@ -15,14 +14,19 @@ import java.lang.reflect.Method;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.DEBUG;
 
+/**
+ * This class is responsible for processing input events on the canvas.
+ * It extends the {@link InputAdapter} class and implements the {@link ShortcutAdapter} interface.
+ */
 public class CanvasInputProcessor extends InputAdapter implements ShortcutAdapter {
     private final EditorCanvas editorCanvas;
-    private final Bresenham2 bresenham2 = new Bresenham2();
-    private int activeButton = -1;
     private int numEvents = 0;
-    private GridPoint2 lastDragEvent = null;
-    private GridPoint2 lastPosition = new GridPoint2();
 
+    /**
+     * Constructs a CanvasInputProcessor object.
+     *
+     * @param editorCanvas the canvas to associate with the input processor
+     */
     public CanvasInputProcessor(EditorCanvas editorCanvas) {
         super();
         this.editorCanvas = editorCanvas;
@@ -69,15 +73,11 @@ public class CanvasInputProcessor extends InputAdapter implements ShortcutAdapte
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         //Gdx.app.debug("touchDown", String.format("screenX: %s, screenY: %s, pointer: %s", screenX, screenY, pointer));
 
-        lastPosition = calculateGridPoint(screenX, screenY, true);
         var current = calculateGridPoint(screenX, screenY, false);
         if (current != null) {
 
-            lastDragEvent = current;
-
         }
 
-        this.activeButton = button;
         this.editorCanvas.getEditor().handleLostUiFocus();
 
         try {
@@ -91,10 +91,8 @@ public class CanvasInputProcessor extends InputAdapter implements ShortcutAdapte
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         // Gdx.app.debug("touchUp", String.format("screenX: %s, screenY: %s, pointer: %s", screenX, screenY, pointer));
         Gdx.app.debug("TouchesReg", numEvents + "");
-        this.lastDragEvent = null;
 
         this.numEvents = 0;
-        activeButton = -1;
         try {
             return (boolean) this.relocateToTool(ToolInputAdapter.class.getDeclaredMethod("touchUp", int.class, int.class, int.class, int.class), screenX, screenY, pointer, button);
         } catch (NoSuchMethodException e) {
@@ -116,50 +114,6 @@ public class CanvasInputProcessor extends InputAdapter implements ShortcutAdapte
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
-
-/*
-        Gdx.app.debug("Pos", currPos + " : " + lastDragEvent);
-        if (currPos == null && lastDragEvent == null) {
-            lastPosition = calculateGridPoint(screenX, screenY, true);
-            return false;
-        } else if (currPos == null && lastDragEvent != null) {
-            currPos = calculateGridPoint(screenX, screenY, true);
-            savePos = false;
-
-        } else if (currPos != null && lastDragEvent == null) {
-            lastDragEvent = lastPosition;
-            savePos = true;
-        }
-        if (currPos != null && lastDragEvent != null) {
-
-
-            var l = bresenham2.line(lastDragEvent, currPos);
-            for (GridPoint2 gridPoint2 : l) {
-                System.out.println(gridPoint2);
-                editorCanvas.makeInput(gridPoint2.x, gridPoint2.y);
-            }
-
-
-            if (savePos) {
-                lastDragEvent.set(currPos);
-            } else {
-                lastDragEvent = null;
-            }
-            lastPosition = calculateGridPoint(screenX, screenY, true);
-
-            return true; //editorCanvas.processMouseInput(screenX, screenY, activeButton);
-
-        } else {
-            if (savePos) {
-                lastDragEvent = currPos;
-            } else {
-                lastDragEvent = null;
-            }
-            lastPosition = calculateGridPoint(screenX, screenY, true);
-
-            return false;
-        }
-*/
 
     }
 

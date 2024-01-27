@@ -2,6 +2,10 @@ package de.tum.cit.ase.editor.utlis.exceptions;
 
 import de.tum.cit.ase.maze.utils.exceptions.MazeGameException;
 
+/**
+ * The MazeGameEditorException class represents an exception that occurs in the Maze Game Editor.
+ * It is an abstract class that extends MazeGameException.
+ */
 public abstract class MazeGameEditorException extends MazeGameException {
     public MazeGameEditorException() {
     }

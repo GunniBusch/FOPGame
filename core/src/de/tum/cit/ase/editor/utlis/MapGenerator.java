@@ -8,11 +8,16 @@ import de.tum.cit.ase.editor.data.Map;
 import de.tum.cit.ase.editor.utlis.exceptions.InvalidMapFile;
 import de.tum.cit.ase.maze.objects.ObjectType;
 import de.tum.cit.ase.maze.utils.MapLoader;
+import de.tum.cit.ase.maze.utils.exceptions.MapLoadingException;
 
 import java.util.Arrays;
 
+/**
+ * The MapGenerator class is responsible for generating, saving, importing, and validating maps.
+ */
 public class MapGenerator {
     private static final Json json;
+
 
     static {
         json = new Json();
@@ -79,11 +84,24 @@ public class MapGenerator {
 
     }
 
+    /**
+     * Saves a map project to a specified file.
+     *
+     * @param mapFile   The {@code FileHandle} representing the file to save the map project to.
+     * @param mapToSave The {@code Map} object to save.
+     * @throws InvalidMapFile if the map is invalid.
+     */
     public static void saveMapProject(final FileHandle mapFile, Map mapToSave) {
         validate(mapToSave);
         json.toJson(mapToSave, mapFile);
     }
 
+    /**
+     * Validates a map by checking if it has a grid and if the grid has valid dimensions.
+     *
+     * @param map The {@code Map} object to validate.
+     * @throws InvalidMapFile if the map is invalid.
+     */
     static void validate(final Map map) {
         var grid = map.map();
         if (grid != null) {
@@ -100,11 +118,23 @@ public class MapGenerator {
         }
     }
 
+    /**
+     * Exports a Map object to a specified file.
+     *
+     * @param map        The Map object to export.
+     * @param exportFile The FileHandle representing the file to export the Map object to.
+     */
     public static void exportMap(Map map, final FileHandle exportFile) {
 
     }
 
-    public static void loadMapIntoGame(Map map) {
+    /**
+     * Loads a map into the game.
+     *
+     * @param map The {@code Map} object representing the map to be loaded.
+     * @throws MapLoadingException if an error occurs while loading the map.
+     */
+    public static void loadMapIntoGame(Map map) throws MapLoadingException {
 
         var fh = FileHandle.tempFile("maploader-x");
         for (int y = 0; y < map.map().length; y++) {
@@ -117,6 +147,12 @@ public class MapGenerator {
         MapLoader.loadMapFile(fh);
     }
 
+    /**
+     * Imports a map from a file and converts it into a Map object.
+     *
+     * @param mapFile The {@code FileHandle} representing the file to import the map from.
+     * @return The imported Map object.
+     */
     public static Map importMap(final FileHandle mapFile) {
         MapLoader.loadMapFile(mapFile);
         TileTypes[][] rawMap = new TileTypes[(int) (MapLoader.height + 1)][(int) (MapLoader.width + 1)];
@@ -130,12 +166,24 @@ public class MapGenerator {
     }
 
 
+    /**
+     * Reads a map project file and converts it into a Map object.
+     *
+     * @param mapFile The {@code FileHandle} representing the file to read the map project from.
+     * @return The {@code Map} object representing the map project.
+     */
     public static Map readMapProject(final FileHandle mapFile) {
         var map = json.fromJson(Map.class, mapFile);
         validate(map);
         return map;
     }
 
+    /**
+     * Validates an exported map by checking for check specified in {@link de.tum.cit.ase.editor.data.EditorConfig}.
+     *
+     * @param map The {@code Map} object to validate.
+     * @throws InvalidMapFile If the map is invalid.
+     */
     static void validateExport(Map map) {
         var grid = map.map();
 

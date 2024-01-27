@@ -7,23 +7,45 @@ import de.tum.cit.ase.editor.data.EditorConfig;
 import de.tum.cit.ase.editor.screens.EditorCanvas;
 import de.tum.cit.ase.editor.utlis.TileTypes;
 
+/**
+ * Represents a canvas that allows drawing and manipulation of a virtual grid.
+ */
 public class Canvas {
     private final EditorCanvas editorCanvas;
     public TileTypes[][] virtualGrid;
 
+    /**
+     * Represents a canvas for an editor.
+     */
     public Canvas(EditorCanvas editorCanvas) {
         this.editorCanvas = editorCanvas;
     }
 
+    /**
+     * Updates the canvas.
+     *
+     * @param dt the time difference between the current frame and the previous frame
+     */
     public void update(float dt) {
 
     }
 
+    /**
+     * Creates a new grid with the specified width and height.
+     *
+     * @param width  the width of the grid
+     * @param height the height of the grid
+     */
     public void createNewGrid(int width, int height) {
         this.createNewGrid(new TileTypes[height][width]);
 
     }
 
+    /**
+     * Creates a new grid with the given TileTypes array.
+     *
+     * @param grid the TileTypes array representing the new grid
+     */
     public void createNewGrid(TileTypes[][] grid) {
         this.virtualGrid = grid;
         if (EditorConfig.selectedTool != null) {
@@ -31,6 +53,12 @@ public class Canvas {
         }
     }
 
+    /**
+     * Draws the canvas using the specified ShapeRenderer.
+     * This method renders the grid and the selected tool on the canvas.
+     *
+     * @param shapeRenderer the ShapeRenderer used to draw the canvas
+     */
     public void draw(ShapeRenderer shapeRenderer) {
 
         renderGrid(shapeRenderer);
@@ -68,14 +96,31 @@ public class Canvas {
 
     }
 
+    /**
+     * Retrieves the grid position of the mouse.
+     *
+     * @param alwaysGrid specifies whether the mouse position should always be restricted to the grid
+     * @return the grid position of the mouse as a GridPoint2 object, or null if the mouse position is outside the grid
+     */
     public GridPoint2 getMouseGridPosition(boolean alwaysGrid) {
         return this.editorCanvas.getMouseGridPosition(getUnprotectedMousePosition(), alwaysGrid);
     }
 
+    /**
+     * Retrieves the unprotected mouse position on the canvas.
+     * This method returns the mouse position on the canvas without any restrictions or clamping to the grid.
+     *
+     * @return the mouse position as a {@link Vector2} object on the canvas
+     */
     public Vector2 getUnprotectedMousePosition() {
         return this.editorCanvas.getViewport().unproject(editorCanvas.getMousePosition());
     }
 
+    /**
+     * Renders the grid on the canvas using the specified ShapeRenderer.
+     *
+     * @param shapeRenderer the ShapeRenderer used to draw the canvas
+     */
     private void renderGrid(ShapeRenderer shapeRenderer) {
         for (int y = 0; y < getHeight(); y++) {
             for (int x = 0; x < getWidth(); x++) {
@@ -95,11 +140,11 @@ public class Canvas {
 
     }
 
-    public void loadMap(TileTypes[][] grid, int width, int height) {
-
-
-    }
-
+    /**
+     * Returns the starting point of the grid.
+     *
+     * @return the starting point of the grid as a Vector2 object
+     */
     public Vector2 getGridStartPoint() {
         return new Vector2(editorCanvas.getGrid().getX(), editorCanvas.getGrid().getY());
     }

@@ -12,7 +12,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * The Shortcuts class is responsible for loading and managing keyboard shortcuts.
+ * It utilizes the Json library for serialization and the Preferences class for storing shortcut configurations.
+ */
 public class Shortcuts {
+    /**
+     * Loads and initializes shortcuts from the specified class.
+     *
+     * @param initClass The class containing the shortcut fields.
+     */
     public static void load(Class<?> initClass) {
         Json json = new Json();
         json.setElementType(Shortcut.class, "keys", Integer[].class);
@@ -57,6 +66,9 @@ public class Shortcuts {
 
     }
 
+    /**
+     * The UI class represents a collection of static shortcuts for various UI actions.
+     */
     public static class UI {
 
 
@@ -70,6 +82,9 @@ public class Shortcuts {
 
     }
 
+    /**
+     * The EDITOR class represents a collection of static shortcuts for editing actions.
+     */
     public static class EDITOR {
 
 
@@ -81,11 +96,19 @@ public class Shortcuts {
 
     }
 
+    /**
+     * The Shortcut class represents a shortcut with one or more keys.
+     */
     public record Shortcut(int... keys) {
         public int key() {
             return keys[keys.length - 1];
         }
 
+        /**
+         * Returns an array of modifier keys see {@link com.ray3k.stripe.StripeMenuBar.KeyboardShortcut KeyboardShortcut}.
+         *
+         * @return an array of modified keys, or null if there is only one key in the Shortcut.
+         */
         public int[] modKeys() {
             if (keys.length > 1) {
                 int[] is = new int[keys.length - 1];

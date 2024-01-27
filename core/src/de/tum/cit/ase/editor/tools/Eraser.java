@@ -2,14 +2,13 @@ package de.tum.cit.ase.editor.tools;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.GridPoint2;
-import de.tum.cit.ase.editor.utlis.TileTypes;
 import de.tum.cit.ase.editor.utlis.exceptions.InvalidGridCellException;
 
+/**
+ * A tool for erasing tiles in the editor.
+ * Extends the {@link EditorTool} class.
+ */
 public final class Eraser extends EditorTool {
-
-    public void applyTool(TileTypes[][] grid, int x, int y) {
-
-    }
 
     @Override
     public void draw(ShapeRenderer shapeRenderer) {

@@ -1,6 +1,5 @@
 package de.tum.cit.ase.editor.tools;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Bresenham2;
 import com.badlogic.gdx.math.GridPoint2;
@@ -13,6 +12,9 @@ import de.tum.cit.ase.editor.input.ToolInputAdapter;
 import de.tum.cit.ase.editor.utlis.TileTypes;
 import de.tum.cit.ase.editor.utlis.exceptions.InvalidGridCellException;
 
+/**
+ * The base class for all editor tools.
+ */
 public abstract sealed class EditorTool extends ToolInputAdapter implements Tool, Pool.Poolable permits Eraser, Pen, Square {
     protected Bresenham2 bresenham2 = new Bresenham2();
     protected Canvas canvas;
@@ -36,10 +38,22 @@ public abstract sealed class EditorTool extends ToolInputAdapter implements Tool
 
     }
 
+    /**
+     * Determines if the current tool is set to draw a straight line.
+     *
+     * @return {@code true} if the tool is set to draw a straight line, {@code false} otherwise
+     */
     protected boolean isStraightLine() {
         return this.isShortcut(Shortcuts.EDITOR.STRAIGHT_LINE.keys());
     }
 
+    /**
+     * Sets the start and end coordinates of a straight line based on the given start grid point.
+     *
+     * @param startGrid the starting grid point
+     * @param start     the starting point of the line
+     * @param end       the ending point of the line
+     */
     protected void getStraightLineCoordinates(GridPoint2 startGrid, Vector2 start, Vector2 end) {
         start.set(this.projectGridPointToWorld(startGrid));
         end.set(this.projectGridPointToWorld(this.canvas.getMouseGridPosition(true)));
@@ -56,10 +70,23 @@ public abstract sealed class EditorTool extends ToolInputAdapter implements Tool
         return this;
     }
 
+    /**
+     * Returns an array of GridPoint2 objects representing a line between the given start and end points.
+     *
+     * @param start the starting point of the line
+     * @param end   the ending point of the line
+     * @return an array of GridPoint2 objects representing the line
+     */
     protected Array<GridPoint2> getLine(GridPoint2 start, GridPoint2 end) {
         return bresenham2.line(start, end);
     }
 
+    /**
+     * Projects a grid point to world coordinates.
+     *
+     * @param gridPoint2 the grid point to project
+     * @return the projected world coordinates as a Vector2
+     */
     public Vector2 projectGridPointToWorld(GridPoint2 gridPoint2) {
 
         return projectGridPointToWorld(gridPoint2, false);
@@ -69,6 +96,13 @@ public abstract sealed class EditorTool extends ToolInputAdapter implements Tool
         return null;
     }
 
+    /**
+     * Projects a grid point to world coordinates.
+     *
+     * @param gridPoint2 the grid point to project
+     * @param edge       indicates whether to project the edge or center of the grid point
+     * @return the projected world coordinates as a Vector2
+     */
     public Vector2 projectGridPointToWorld(GridPoint2 gridPoint2, boolean edge) {
         var gridStart = canvas.getGridStartPoint();
         return new Vector2((gridPoint2.x * canvas.getTileSize()) + (edge ? 0 : (canvas.getTileSize() / 2)) + gridStart.x, (gridPoint2.y * canvas.getTileSize()) + (edge ? 0 : (canvas.getTileSize() / 2)) + gridStart.y);
@@ -80,6 +114,15 @@ public abstract sealed class EditorTool extends ToolInputAdapter implements Tool
         this.lastPosition = canvas.convertWorldPositionToGrid(new Vector2(), true);
     }
 
+    /**
+     * Handles the touch down event in the editor.
+     *
+     * @param screenX The x coordinate of the touch position
+     * @param screenY The y coordinate of the touch position
+     * @param pointer The pointer for the event
+     * @param button  The button that was pressed
+     * @return {@code true} if the touch event is handled, {@code false} otherwise
+     */
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (isStraightLine()) {
@@ -106,6 +149,12 @@ public abstract sealed class EditorTool extends ToolInputAdapter implements Tool
 
     }
 
+    /**
+     * Marks a tile on the grid based on the given grid point.
+     *
+     * @param gridPoint the grid point representing the tile to be marked
+     * @throws InvalidGridCellException if the grid point is invalid
+     */
     protected abstract void markTile(GridPoint2 gridPoint) throws InvalidGridCellException;
 
     @Override
@@ -117,6 +166,14 @@ public abstract sealed class EditorTool extends ToolInputAdapter implements Tool
         return super.touchUp(screenX, screenY, pointer, button);
     }
 
+    /**
+     * Handles the touch dragged event in the editor.
+     *
+     * @param screenX The x coordinate of the touch position
+     * @param screenY The y coordinate of the touch position
+     * @param pointer The pointer for the event
+     * @return {@code true} if the touch event is handled, {@code false} otherwise
+     */
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
         var currPos = canvas.calculateGridPoint(screenX, screenY, false);
@@ -161,6 +218,12 @@ public abstract sealed class EditorTool extends ToolInputAdapter implements Tool
 
     }
 
+    /**
+     * Resets the state of the tool.
+     * <p>
+     * This method is responsible for resetting the tool to its initial state by setting the {@code canvas} field to {@code null},
+     * and clearing the {@code lastPosition} and {@code lastGridPosition} fields.
+     */
     @Override
     public void reset() {
         this.lastPosition = canvas.convertWorldPositionToGrid(new Vector2(), true);

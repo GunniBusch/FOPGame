@@ -3,15 +3,12 @@ package de.tum.cit.ase.editor.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.ray3k.stripe.FreeTypeSkin;
 import com.ray3k.stripe.StripeMenuBar;
@@ -24,15 +21,23 @@ import de.tum.cit.ase.editor.utlis.TileTypes;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserCallback;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserIntent;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.Objects;
 
+/**
+ * The EditorUi class is responsible for managing the user interface of the editor screen in the Maze Runner game.
+ * It extends Stage.
+ */
 public class EditorUi extends Stage {
     private final Editor editor;
     private final Skin skin;
 
+    /**
+     * Initializes the EditorUi with the given Editor.
+     *
+     * @param editor the Editor instance to be used
+     */
     public EditorUi(Editor editor) {
         super(new ScreenViewport(), editor.getGame().getSpriteBatch());
         this.editor = editor;
@@ -153,7 +158,7 @@ public class EditorUi extends Stage {
         barMenu.item("Test map", new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                editor.testGame(new Map("test", editor.getEditorCanvas().getCanvas().virtualGrid));
+                editor.testMap(new Map("test", editor.getEditorCanvas().getCanvas().virtualGrid));
             }
         });
 
@@ -193,6 +198,11 @@ public class EditorUi extends Stage {
 
     }
 
+    /**
+     * Saves the current state. If saveAs is true or the loadedMapProject is null, a native file chooser dialog is shown
+     * to choose a file name and location to save the map project. If saveAs is false and loadedMapProject is not null,
+     * the map project is saved to the same location.
+     */
     protected void save() {
         this.save(false);
     }
@@ -230,6 +240,19 @@ public class EditorUi extends Stage {
 
     }
 
+    /**
+     * Opens a map project file and loads it into the editor canvas.
+     * If there is a loaded map project, it will be saved first before opening a new one.
+     * <p>
+     * File extension filter is set to "MapProject/mapproj".
+     *
+     * @see MapGenerator#readMapProject(FileHandle)
+     * @see Editor#getEditorCanvas()
+     * @see EditorCanvas#loadMap(Map)
+     * @see EditorConfig#loadedMapProject
+     * @see Editor#chooseFile(String, String, NativeFileChooserIntent, FileHandle, NativeFileChooserCallback)
+     * @see EditorConfig#saveSettings()
+     */
     protected void open() {
 
         var fileFilter = "MapProject/mapproj";
@@ -259,6 +282,9 @@ public class EditorUi extends Stage {
         EditorConfig.saveSettings();
     }
 
+    /**
+     * Imports a map from a file and loads it into the editor canvas.
+     */
     protected void importMap() {
         var fileFilter = "Map/properties";
         var callback = new NativeFileChooserCallback() {
@@ -287,6 +313,9 @@ public class EditorUi extends Stage {
 
     }
 
+    /**
+     * Export the given map to a file.
+     */
     protected void exportMap() {
         var fileFilter = "Map/properties";
         var callback = new NativeFileChooserCallback() {
@@ -323,42 +352,11 @@ public class EditorUi extends Stage {
         this.getViewport().update(width, height, true);
     }
 
-    protected void createTileBar() {
-        // Tools
-        var tileTypeGroup = new ButtonGroup<>();
-        var tileBar = new HorizontalGroup();
-        tileBar.setFillParent(true);
-        tileBar.setOrigin(Align.bottom);
-        tileBar.align(Align.bottom);
-        for (TileTypes tileType : TileTypes.values()) {
-            var but = new TextButton(tileType.getDisplayName(), skin, "file");
-            but.setUserObject(tileType);
-            but.setColor(tileType.canvasColor);
-            but.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    if (event.getListenerActor() instanceof TextButton button1) {
-                        EditorConfig.selectedTile = (TileTypes) button1.getUserObject();
-                    }
-                }
-            });
-            tileTypeGroup.add(but);
-            tileBar.addActor(but);
-        }
-
-        tileTypeGroup.setMinCheckCount(1);
-        tileTypeGroup.setMaxCheckCount(1);
-
-
-        tileTypeGroup.setChecked(TileTypes.Wall.getDisplayName());
-        EditorConfig.selectedTile = TileTypes.Wall;
-
-
-        this.addActor(tileBar);
-
-
-    }
-
+    /**
+     * Create the toolbar for the editor.
+     * The toolbar contains buttons representing different tools. When a tool button is clicked,
+     * the corresponding tool is activated and the current tool is updated accordingly.
+     */
     protected void createToolBar() {
 
         VerticalGroup toolGroup = new VerticalGroup();
@@ -409,66 +407,45 @@ public class EditorUi extends Stage {
 
     }
 
-    protected void addMenuItem(Skin skin, @Nullable String styleNameMenuButton, @Nullable String styleNameExpandButtons, String menuButtonName, HorizontalGroup menuGroup, HorizontalGroup expandableGroup, OrderedMap<String, @Nullable EventListener> expandableButonNamesEventListenerMap) {
-
-
-        TextButton button;
-        var buttonGroup = new ButtonGroup<TextButton>();
-        var popupGroup = new VerticalGroup();
-
-        popupGroup.fill();
-        popupGroup.setVisible(false);
-        buttonGroup.setMinCheckCount(0);
-        buttonGroup.setMaxCheckCount(1);
-
-        // Create Menu Button
-        if (styleNameMenuButton != null) {
-            button = new TextButton(menuButtonName, skin, styleNameMenuButton);
-
-        } else {
-            button = new TextButton(menuButtonName, skin);
-        }
-        button.setUserObject(popupGroup);
-        menuGroup.addActor(button);
-
-
-        button.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (event.getListenerActor().getUserObject() instanceof Actor popup) {
-                    var visPop = popup.isVisible();
-                    hideAllPopups();
-                    popup.setVisible(!visPop);
-
+    /**
+     * Creates a tile bar with buttons representing different tile types.
+     */
+    protected void createTileBar() {
+        // Tools
+        var tileTypeGroup = new ButtonGroup<>();
+        var tileBar = new HorizontalGroup();
+        tileBar.setFillParent(true);
+        tileBar.setOrigin(Align.bottom);
+        tileBar.align(Align.bottom);
+        for (TileTypes tileType : TileTypes.values()) {
+            var but = new TextButton(tileType.getDisplayName(), skin, "file");
+            but.setUserObject(tileType);
+            but.setColor(tileType.canvasColor);
+            but.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (event.getListenerActor() instanceof TextButton button1) {
+                        EditorConfig.selectedTile = (TileTypes) button1.getUserObject();
+                    }
                 }
-            }
-        });
-
-        for (ObjectMap.Entry<String, @Nullable EventListener> menuItemEntry : expandableButonNamesEventListenerMap.entries()) {
-
-            TextButton menuItemButton;
-            if (styleNameExpandButtons == null) {
-                menuItemButton = new TextButton(menuItemEntry.key, skin);
-
-            } else {
-                menuItemButton = new TextButton(menuItemEntry.key, skin, styleNameExpandButtons);
-
-            }
-            if (menuItemEntry.value != null) {
-                menuItemButton.addListener(menuItemEntry.value);
-
-            }
-
-
-            popupGroup.addActor(menuItemButton);
-            buttonGroup.add(menuItemButton);
-
+            });
+            tileTypeGroup.add(but);
+            tileBar.addActor(but);
         }
 
+        tileTypeGroup.setMinCheckCount(1);
+        tileTypeGroup.setMaxCheckCount(1);
 
-        expandableGroup.addActor(popupGroup);
+
+        tileTypeGroup.setChecked(TileTypes.Wall.getDisplayName());
+        EditorConfig.selectedTile = TileTypes.Wall;
+
+
+        this.addActor(tileBar);
+
 
     }
+
 
     protected void exit() {
         editor.exit();

@@ -16,12 +16,15 @@ import de.tum.cit.ase.editor.utlis.MapGenerator;
 import de.tum.cit.ase.maze.MazeRunnerGame;
 import de.tum.cit.ase.maze.screens.GameScreen;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
-import de.tum.cit.ase.maze.utils.FixedDesktopFileChooser;
 import games.spooky.gdx.nativefilechooser.NativeFileChooser;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserCallback;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserConfiguration;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserIntent;
 
+/**
+ * The Editor class is responsible for managing the editor screen of the Maze Runner game.
+ * It extends InputAdapter and implements Screen.
+ */
 public class Editor extends InputAdapter implements Screen {
     private final MazeRunnerGame game;
     private final EditorUi editorUi;
@@ -30,9 +33,12 @@ public class Editor extends InputAdapter implements Screen {
     public ShapeRenderer shapeRenderer;
     private final NativeFileChooser fileChooser;
 
+    /**
+     * Editor class is responsible for managing the editor functionality of the Maze Runner game.
+     */
     public Editor(MazeRunnerGame game) {
         this.game = game;
-        this.fileChooser = new FixedDesktopFileChooser();
+        this.fileChooser = game.getFileChooser();
         this.shapeRenderer = new ShapeRenderer();
         this.editorCanvas = new EditorCanvas(this);
         this.editorUi = new EditorUi(this);
@@ -43,6 +49,15 @@ public class Editor extends InputAdapter implements Screen {
 
     }
 
+    /**
+     * Chooses a file using a native file chooser dialog.
+     *
+     * @param filter     The MIME filter for the file chooser dialog.
+     * @param title      The title of the file chooser dialog.
+     * @param dialogType The type of file chooser dialog to show.
+     * @param dir        The initial directory of the file chooser dialog.
+     * @param callback   The callback to be called when a file is chosen or an error occurs.
+     */
     public void chooseFile(String filter, String title, NativeFileChooserIntent dialogType, FileHandle dir, NativeFileChooserCallback callback) {
 
 
@@ -61,6 +76,12 @@ public class Editor extends InputAdapter implements Screen {
 
     }
 
+    /**
+     * Chooses a file using a native file chooser dialog.
+     *
+     * @param configuration The configuration options for the file chooser dialog.
+     * @param callback      The callback to be called when a file is chosen or an error occurs.
+     */
     public void chooseFile(NativeFileChooserConfiguration configuration, NativeFileChooserCallback callback) {
         getFileChooser().chooseFile(configuration, callback);
     }
@@ -152,7 +173,12 @@ public class Editor extends InputAdapter implements Screen {
         Gdx.app.postRunnable(game::goToMenu);
     }
 
-    public final void testGame(Map map) {
+    /**
+     * Executes the test for a given map.
+     *
+     * @param map The map to be tested.
+     */
+    public final void testMap(Map map) {
 
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
         config.setTitle("Map test"); // Set the window title

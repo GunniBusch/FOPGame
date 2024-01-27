@@ -2,6 +2,10 @@ package de.tum.cit.ase.editor.input;
 
 import com.badlogic.gdx.InputProcessor;
 
+/**
+ * The ToolInputAdapter class is an abstract class that implements the InputProcessor and ShortcutAdapter interfaces.
+ * It provides default implementations for the methods defined in those interfaces.
+ */
 public abstract class ToolInputAdapter implements InputProcessor, ShortcutAdapter {
     @Override
     public boolean keyDown(int keycode) {

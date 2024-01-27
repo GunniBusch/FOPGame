@@ -7,6 +7,10 @@ import de.tum.cit.ase.editor.data.EditorConfig;
 import de.tum.cit.ase.editor.utlis.exceptions.InvalidGridCellException;
 
 // ToDo decide if hollow square.
+
+/**
+ * Represents a square tool for drawing squares on a canvas.
+ */
 public final class Square extends EditorTool {
 
     private GridPoint2 corner1, corner2;
@@ -89,6 +93,12 @@ public final class Square extends EditorTool {
         super.reset();
     }
 
+    /**
+     * Marks a square on the canvas starting from the given start point and ending at the given end point.
+     *
+     * @param start the start point of the square
+     * @param end   the end point of the square
+     */
     private void markSquare(GridPoint2 start, GridPoint2 end) {
 
         var width = Math.abs(end.x - start.x);

@@ -4,6 +4,9 @@ import com.badlogic.gdx.math.GridPoint2;
 import de.tum.cit.ase.editor.data.EditorConfig;
 import de.tum.cit.ase.editor.utlis.exceptions.InvalidGridCellException;
 
+/**
+ * The Pen class represents a pen tool used for drawing on a canvas. It extends the EditorTool class.
+ */
 public final class Pen extends EditorTool {
 
     @Override

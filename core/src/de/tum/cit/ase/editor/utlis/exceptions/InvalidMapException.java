@@ -1,5 +1,8 @@
 package de.tum.cit.ase.editor.utlis.exceptions;
 
+/**
+ * Exception thrown when an invalid map is encountered in the Maze Game Editor.
+ */
 public class InvalidMapException extends MazeGameEditorException {
     public InvalidMapException() {
     }

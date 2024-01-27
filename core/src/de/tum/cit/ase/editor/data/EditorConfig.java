@@ -6,6 +6,9 @@ import com.badlogic.gdx.files.FileHandle;
 import de.tum.cit.ase.editor.tools.EditorTool;
 import de.tum.cit.ase.editor.utlis.TileTypes;
 
+/**
+ * The EditorConfig class holds the configuration settings for the maze game editor.
+ */
 public final class EditorConfig {
     public static final String settings = "mazeGame-EditorSettings";
     public static FileHandle loadedMapProject;
@@ -65,6 +68,9 @@ public final class EditorConfig {
         prefs.flush();
     }
 
+    /**
+     * Saves the current settings to the preferences file.
+     */
     public static void saveSettings() {
         Preferences prefs = Gdx.app.getPreferences(settings);
         prefs.putBoolean("exportCheckHasExit", exportCheckHasExit);

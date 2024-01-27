@@ -3,10 +3,23 @@ package de.tum.cit.ase.editor.input;
 import com.badlogic.gdx.input.GestureDetector;
 import de.tum.cit.ase.editor.screens.EditorCanvas;
 
+/**
+ * The CanvasGestureListener class handles gesture events on a canvas.
+ * It extends the GestureDetector.GestureAdapter class.
+ *
+ * @see GestureDetector.GestureAdapter
+ */
 public class CanvasGestureListener extends GestureDetector.GestureAdapter {
     private final EditorCanvas editor;
     private final CanvasInputProcessor inputProcessor;
 
+    /**
+     * NOT IN USE!!
+     * The CanvasGestureListener class handles gesture events on a canvas.
+     * It extends the GestureDetector.GestureAdapter class.
+     *
+     * @see GestureDetector.GestureAdapter
+     */
     public CanvasGestureListener(EditorCanvas editor, CanvasInputProcessor inputProcessor) {
         this.editor = editor;
         this.inputProcessor = inputProcessor;

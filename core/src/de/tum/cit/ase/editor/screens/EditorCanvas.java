@@ -27,6 +27,14 @@ import de.tum.cit.ase.editor.utlis.MapGenerator;
 import de.tum.cit.ase.editor.utlis.TileTypes;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
 
+/**
+ * The EditorCanvas class represents a canvas for editing game maps.
+ * It provides methods for rendering and updating the canvas, as well as handling user input.
+ * The canvas is responsible for displaying the grid and tiles of the map.
+ * <p>
+ * The EditorCanvas class implements the Disposable interface, allowing it to be disposed
+ * when it is no longer needed.
+ */
 public class EditorCanvas implements Disposable {
     private final Editor editor;
     private final ScreenViewport viewport;
@@ -43,6 +51,11 @@ public class EditorCanvas implements Disposable {
     public boolean isBigZoom = false;
 
 
+    /**
+     * Creates an instance of EditorCanvas.
+     *
+     * @param editor The Editor instance.
+     */
     public EditorCanvas(Editor editor) {
         this.canvas = new Canvas(this);
         this.editor = editor;
@@ -74,6 +87,12 @@ public class EditorCanvas implements Disposable {
 
     }
 
+    /**
+     * Resizes the canvas to the specified width and height.
+     *
+     * @param width  the new width of the canvas
+     * @param height the new height of the canvas
+     */
     public void resizeCanvas(float width, float height) {
         this.width = width;
         this.height = height;
@@ -83,6 +102,12 @@ public class EditorCanvas implements Disposable {
         this.canvas.createNewGrid((int) width, (int) height);
     }
 
+    /**
+     * Renders the canvas by applying the viewport and drawing the stage.
+     * Also renders the grid and the selected tool on the canvas.
+     *
+     * @param dt the time elapsed since the last frame
+     */
     public void render(float dt) {
         viewport.apply();
         stage.draw();
@@ -121,6 +146,11 @@ public class EditorCanvas implements Disposable {
         return grid;
     }
 
+    /**
+     * Updates the canvas and stage.
+     *
+     * @param dt the time difference between the current frame and the previous frame
+     */
     public void update(float dt) {
         this.updateCamera(dt);
 
@@ -131,6 +161,11 @@ public class EditorCanvas implements Disposable {
         stage.act(dt);
     }
 
+    /**
+     * Loads a {@link Map} into the editor canvas.
+     *
+     * @param map the Map object representing the map to be loaded
+     */
     public void loadMap(Map map) {
         var grid = map.map();
         height = grid.length;
@@ -160,10 +195,23 @@ public class EditorCanvas implements Disposable {
         return true;
     }
 
+    /**
+     * Retrieves the grid position of the mouse.
+     *
+     * @param position the mouse position in world coordinates
+     * @return the grid position of the mouse as a GridPoint2 object, or null if the mouse position is outside the grid
+     */
     private GridPoint2 getMouseGridPosition(Vector2 position) {
         return getMouseGridPosition(position, false);
     }
 
+    /**
+     * Retrieves the grid position of the mouse.
+     *
+     * @param position   the mouse position in world coordinates
+     * @param alwaysGrid specifies whether the mouse position should always be restricted to the grid
+     * @return the grid position of the mouse as a GridPoint2 object, or null if the mouse position is outside the grid
+     */
     public GridPoint2 getMouseGridPosition(Vector2 position, boolean alwaysGrid) {
 
 
@@ -215,6 +263,13 @@ public class EditorCanvas implements Disposable {
         canvas.setGridTile(x, y, tileType);
     }
 
+    /**
+     * Moves the camera in the editor canvas.
+     *
+     * @param x the amount to move the camera in the x-axis
+     * @param y the amount to move the camera in the y-axis
+     * @param z the amount to zoom the camera
+     */
     public void move(float x, float y, float z) {
 
         OrthographicCamera camera = (OrthographicCamera) viewport.getCamera();
