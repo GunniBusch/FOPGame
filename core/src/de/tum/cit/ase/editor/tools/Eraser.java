@@ -23,6 +23,7 @@ public final class Eraser extends EditorTool {
     @Override
     protected void markTile(GridPoint2 gridPoint) throws InvalidGridCellException {
         try {
+            canvas.startNewGridEpoch();
             canvas.virtualGrid[gridPoint.y][gridPoint.x] = null;
         } catch (IndexOutOfBoundsException e) {
             throw new InvalidGridCellException(e.getCause());

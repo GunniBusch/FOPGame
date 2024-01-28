@@ -4,13 +4,17 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import de.tum.cit.ase.editor.data.EditorConfig;
 import de.tum.cit.ase.editor.data.Map;
 import de.tum.cit.ase.editor.utlis.exceptions.InvalidMapFile;
+import de.tum.cit.ase.maze.map.AStar;
 import de.tum.cit.ase.maze.objects.ObjectType;
 import de.tum.cit.ase.maze.utils.MapLoader;
 import de.tum.cit.ase.maze.utils.exceptions.MapLoadingException;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The MapGenerator class is responsible for generating, saving, importing, and validating maps.
@@ -119,13 +123,60 @@ public class MapGenerator {
     }
 
     /**
-     * Exports a Map object to a specified file.
+     * Validates an exported map by checking for check specified in {@link de.tum.cit.ase.editor.data.EditorConfig}.
      *
-     * @param map        The Map object to export.
-     * @param exportFile The FileHandle representing the file to export the Map object to.
+     * @param map The {@code Map} object to validate.
+     * @return List of error messages
+     * @throws InvalidMapFile If the map is invalid.
      */
-    public static void exportMap(Map map, final FileHandle exportFile) {
+    static void validateExport(Map map) {
+        var grid = map.map();
+        Set<String> errorList = new HashSet<>();
+        if (grid == null) {
+            throw new InvalidMapFile("Map grid does not exist");
+        } else {
+            loadMapIntoGame(map);
+            // Check if grid has an exit and entry.
 
+            if (Arrays.stream(grid).noneMatch(tileTypes -> Arrays.asList(tileTypes).contains(TileTypes.Exit))) {
+                throw new InvalidMapFile("Map does not have an entry");
+            }
+
+            if (EditorConfig.exportCheckHasExit) {
+                if (Arrays.stream(grid).noneMatch(tileTypes -> Arrays.asList(tileTypes).contains(TileTypes.Exit))) {
+                    throw new InvalidMapFile("Check exit is on. Map does not have an exit");
+                }
+
+                if (EditorConfig.exportCheckCanReachExit) {
+                    var exits = MapLoader.getMapCoordinates(ObjectType.Exit);
+                    var entry = MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0);
+                    for (Vector2 exit : exits) {
+                        var path = AStar.findPath(MapLoader.getGameGrid(), entry, exit);
+                        if (!path.isEmpty()) {
+                            throw new InvalidMapFile("Check can reach exit is on. Exit can not be reached");
+                        }
+                    }
+                }
+            }
+            if (EditorConfig.exportCheckHasKey) {
+                if (Arrays.stream(grid).noneMatch(tileTypes -> Arrays.asList(tileTypes).contains(TileTypes.Key))) {
+                    throw new InvalidMapFile("Check key is on. Map does not have a key");
+                }
+
+                if (EditorConfig.exportCheckCanReachKey) {
+                    var keys = MapLoader.getMapCoordinates(ObjectType.Key);
+                    var entry = MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0);
+                    for (Vector2 key : keys) {
+                        var path = AStar.findPath(MapLoader.getGameGrid(), entry, key);
+                        if (!path.isEmpty()) {
+                            throw new InvalidMapFile("Check can reach key is on. Key can not be reached");
+                        }
+                    }
+                }
+            }
+
+
+        }
     }
 
     /**
@@ -137,13 +188,7 @@ public class MapGenerator {
     public static void loadMapIntoGame(Map map) throws MapLoadingException {
 
         var fh = FileHandle.tempFile("maploader-x");
-        for (int y = 0; y < map.map().length; y++) {
-            for (int x = 0; x < map.map()[0].length; x++) {
-                if (map.map()[y][x] != null) {
-                    fh.writeString(x + "," + y + "=" + TileTypes.convertToObjectType(map.map()[y][x]).ordinal() + "\n", true);
-                }
-            }
-        }
+        exportMap(map, fh, false);
         MapLoader.loadMapFile(fh);
     }
 
@@ -179,22 +224,25 @@ public class MapGenerator {
     }
 
     /**
-     * Validates an exported map by checking for check specified in {@link de.tum.cit.ase.editor.data.EditorConfig}.
+     * Exports a Map object to a specified file.
      *
-     * @param map The {@code Map} object to validate.
-     * @throws InvalidMapFile If the map is invalid.
+     * @param map        The Map object to export.
+     * @param exportFile The FileHandle representing the file to export the Map object to.
      */
-    static void validateExport(Map map) {
-        var grid = map.map();
+    public static void exportMap(Map map, final FileHandle exportFile) {
+        exportMap(map, exportFile, true);
+    }
 
-        if (grid == null) {
-            throw new InvalidMapFile("Map grid does not exist", new NullPointerException());
-        } else {
-            // Check if grid has an exit and entry.
-            if (Arrays.stream(grid).noneMatch(tileTypes -> Arrays.asList(tileTypes).contains(TileTypes.Entry) && Arrays.asList(tileTypes).contains(TileTypes.Exit))) {
-                throw new InvalidMapFile("Map does not have an exit and/or an entry");
+    public static void exportMap(Map map, final FileHandle exportFile, boolean validate) {
+        if (validate) {
+            validateExport(map);
+        }
+        for (int y = 0; y < map.map().length; y++) {
+            for (int x = 0; x < map.map()[0].length; x++) {
+                if (map.map()[y][x] != null) {
+                    exportFile.writeString(x + "," + y + "=" + TileTypes.convertToObjectType(map.map()[y][x]).ordinal() + "\n", true);
+                }
             }
-
         }
     }
 

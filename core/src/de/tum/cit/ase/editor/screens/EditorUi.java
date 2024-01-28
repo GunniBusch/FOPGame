@@ -1,6 +1,7 @@
 package de.tum.cit.ase.editor.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -18,6 +19,7 @@ import de.tum.cit.ase.editor.input.Shortcuts;
 import de.tum.cit.ase.editor.tools.*;
 import de.tum.cit.ase.editor.utlis.MapGenerator;
 import de.tum.cit.ase.editor.utlis.TileTypes;
+import de.tum.cit.ase.editor.utlis.exceptions.InvalidMapFile;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserCallback;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserIntent;
@@ -319,9 +321,12 @@ public class EditorUi extends Stage {
     protected void exportMap() {
         var fileFilter = "Map/properties";
         var callback = new NativeFileChooserCallback() {
+            private FileHandle file;
 
             @Override
             public void onFileChosen(FileHandle file) {
+                this.file = file;
+
                 MapGenerator.exportMap(new Map(file.nameWithoutExtension(), editor.getEditorCanvas().getCanvas().virtualGrid), file);
             }
 
@@ -333,6 +338,31 @@ public class EditorUi extends Stage {
             @Override
             public void onError(Exception exception) {
                 Gdx.app.error("Export map", "Error exporting map", exception);
+
+                if (exception instanceof InvalidMapFile) {
+                    Dialog dialog = new Dialog("Warning", skin, "dialog") {
+                        public void result(Object obj) {
+                            if (((boolean) obj)) {
+                                MapGenerator.exportMap(new Map(file.nameWithoutExtension(), editor.getEditorCanvas().getCanvas().virtualGrid), file, false);
+                            }
+                            System.out.println("result " + obj);
+                        }
+                    };
+                    dialog.text("Are you sure you want to export? Checks did not complete.");
+                    dialog.getContentTable().row();
+                    var error = new Label("Errors: ", skin);
+                    error.setColor(1, 0, 0, 1);
+                    dialog.getContentTable().add(error).align(Align.left);
+                    dialog.getContentTable().row();
+                    error = new Label(exception.getMessage(), skin);
+                    error.setColor(1, 0, 0, 1);
+                    dialog.text(error);
+                    dialog.button("Yes", true); //sends "true" as the result
+                    dialog.button("No", false);  //sends "false" as the result
+                    dialog.key(Input.Keys.ENTER, true); //sends "true" when the ENTER key is pressed
+                    dialog.show(EditorUi.this);
+                }
+
 
             }
         };
@@ -394,6 +424,15 @@ public class EditorUi extends Stage {
         button = new ImageButton(skin, "square");
 
         button.setUserObject(Square.class);
+
+
+        button.addListener(clickListener);
+
+        toolButtonGroup.add(button);
+        toolGroup.addActor(button);
+        button = new ImageButton(skin, "bucket");
+
+        button.setUserObject(Bucket.class);
 
 
         button.addListener(clickListener);

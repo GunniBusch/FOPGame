@@ -105,6 +105,7 @@ public final class Square extends EditorTool {
         var height = Math.abs(end.y - start.y);
         var x = Math.min(start.x, end.x);
         var y = Math.min(start.y, end.y);
+        canvas.startNewGridEpoch();
         for (int i = y; i <= height + y; i++) {
             for (int j = x; j <= width + x; j++) {
 

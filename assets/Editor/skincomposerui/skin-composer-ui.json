@@ -218,6 +218,13 @@
       "down": "button-pressed",
       "over": "button-over",
       "checked": "button-pressed"
+    },
+    "bucket": {
+      "imageUp": "9056905_color_bucket_icon",
+      "up": "button",
+      "down": "button-pressed",
+      "over": "button-over",
+      "checked": "button-pressed"
     }
   },
   "com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton$ImageTextButtonStyle": {

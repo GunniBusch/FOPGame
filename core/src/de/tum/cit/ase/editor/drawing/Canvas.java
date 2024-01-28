@@ -7,11 +7,15 @@ import de.tum.cit.ase.editor.data.EditorConfig;
 import de.tum.cit.ase.editor.screens.EditorCanvas;
 import de.tum.cit.ase.editor.utlis.TileTypes;
 
+import java.util.Stack;
+
 /**
  * Represents a canvas that allows drawing and manipulation of a virtual grid.
  */
 public class Canvas {
     private final EditorCanvas editorCanvas;
+    private final Stack<TileTypes[][]> pastVGrids;
+    private final Stack<TileTypes[][]> futureVGrids;
     public TileTypes[][] virtualGrid;
 
     /**
@@ -19,6 +23,8 @@ public class Canvas {
      */
     public Canvas(EditorCanvas editorCanvas) {
         this.editorCanvas = editorCanvas;
+        this.pastVGrids = new Stack<>();
+        this.futureVGrids = new Stack<>();
     }
 
     /**
@@ -28,6 +34,34 @@ public class Canvas {
      */
     public void update(float dt) {
 
+    }
+
+    /**
+     * Changes the grid of the canvas to the given TileTypes array.
+     * Manual version of {@link Canvas#startNewGridEpoch()}
+     * The current virtual grid is pushed onto the pastVGrids stack, and the futureVGrids list is cleared.
+     *
+     * @param tileTypes the new TileTypes array representing the grid
+     * @see Canvas#startNewGridEpoch()
+     */
+    protected void changeGrid(TileTypes[][] tileTypes) {
+        pastVGrids.push(virtualGrid);
+        virtualGrid = tileTypes;
+        futureVGrids.clear();
+    }
+
+    public void undo() {
+        if (!pastVGrids.isEmpty()) {
+            futureVGrids.push(virtualGrid);
+            virtualGrid = pastVGrids.pop();
+        }
+    }
+
+    public void redo() {
+        if (!futureVGrids.isEmpty()) {
+            pastVGrids.push(virtualGrid);
+            virtualGrid = futureVGrids.pop();
+        }
     }
 
     /**
@@ -147,6 +181,17 @@ public class Canvas {
      */
     public Vector2 getGridStartPoint() {
         return new Vector2(editorCanvas.getGrid().getX(), editorCanvas.getGrid().getY());
+    }
+
+    /**
+     * Starts a new grid epoch by pushing the current virtual grid onto the pastVGrids stack and clearing the futureVGrids list.
+     * Automatic version
+     * Alternative: {@link Canvas#changeGrid(TileTypes[][])}
+     *
+     * @see Canvas#changeGrid(TileTypes[][])
+     */
+    public void startNewGridEpoch() {
+        changeGrid(this.virtualGrid);
     }
 
     public float getHeight() {

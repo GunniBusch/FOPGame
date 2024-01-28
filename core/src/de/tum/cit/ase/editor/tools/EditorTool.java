@@ -16,7 +16,7 @@ import de.tum.cit.ase.editor.utlis.exceptions.InvalidGridCellException;
 /**
  * The base class for all editor tools.
  */
-public abstract sealed class EditorTool extends ToolInputAdapter implements Tool, Pool.Poolable permits Eraser, Pen, Square {
+public abstract sealed class EditorTool extends ToolInputAdapter implements Tool, Pool.Poolable permits Bucket, Eraser, Pen, Square {
     protected Bresenham2 bresenham2 = new Bresenham2();
     protected Canvas canvas;
     protected GridPoint2 lastPosition;
@@ -68,6 +68,7 @@ public abstract sealed class EditorTool extends ToolInputAdapter implements Tool
     @Override
     public Tool getInstance(Canvas canvas) {
         this.canvas = canvas;
+        this.validate();
         return this;
     }
 
