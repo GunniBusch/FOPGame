@@ -56,9 +56,10 @@ public class FixedDesktopFileChooser implements NativeFileChooser {
 
                 }
             }
+            // Let the os decide what default path to choose! No? Here configuration.directory.file().getPath()
             int result = configuration.intent == NativeFileChooserIntent.SAVE ?
-                    NativeFileDialog.NFD_SaveDialog(path, filterList, configuration.directory.file().getPath(), configuration.title) :
-                    NativeFileDialog.NFD_OpenDialog(path, filterList, configuration.directory.file().getPath());
+                    NativeFileDialog.NFD_SaveDialog(path, filterList, null, configuration.title) :
+                    NativeFileDialog.NFD_OpenDialog(path, filterList, (CharSequence) null);
 
             switch (result) {
                 case NativeFileDialog.NFD_OKAY:
