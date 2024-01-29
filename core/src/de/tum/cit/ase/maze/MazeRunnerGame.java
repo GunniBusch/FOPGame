@@ -35,6 +35,7 @@ public class MazeRunnerGame extends Game {
     private int gameTime;
 
 
+
     /**
      * Constructor for MazeRunnerGame.
      *
@@ -66,6 +67,7 @@ public class MazeRunnerGame extends Game {
         //start timer for playerScore
         startTime = TimeUtils.millis() / 1000;
         playerScore = new Score();
+
 
 
         goToMenu(); // Navigate to the menu screen
