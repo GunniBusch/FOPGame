@@ -63,7 +63,7 @@ public class MazeRunnerGame extends Game {
         backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("epic_menu.mp3"));
 
         //start timer for playerScore
-        startTime = TimeUtils.millis();
+        startTime = TimeUtils.millis() / 1000;
         playerScore = new Score();
 
 

@@ -248,27 +248,25 @@ public class Hud implements Disposable {
         keyBar.setValue(player.getKeyList().size());
 
         // Calculation of gameTime
-        long currentTime = TimeUtils.millis();
+        long currentTime = TimeUtils.millis() / 1000;
         long elapsedTime = currentTime - gameScreen.getGame().getStartTime(); // Calculate the elapsed time
-        int pointsPerSecond = 10;
-        int timeScore = (int) (elapsedTime / 1000) * pointsPerSecond; // Calculate score based on time
+        int pointsPerSecond = 1;
+        int timeScore = (int) (elapsedTime * pointsPerSecond); // Calculate score based on time
 
         // Add time-based score to the player's current score
         int currentScore = playerScore.getCurrentScore();
         int totalScore = currentScore + timeScore;
         playerScore.setScore(totalScore);
 
+        //debug Time
+        Gdx.app.log("Debug", "Current Time: " + currentTime);
+        Gdx.app.log("Debug", "Elapsed Time: " + elapsedTime);
+        Gdx.app.log("Debug", "Time Score: " + timeScore);
+
         // Update the score label
-        updateScoreLabel();
+        scoreLabel.setText("Score: " + currentScore);
 
         this.stage.act(dt);
-
-    }
-
-    // updates the score label
-    private void updateScoreLabel() {
-        int currentScore = playerScore.getCurrentScore();
-        scoreLabel.setText("Score: " + currentScore);
     }
 
     /**
