@@ -8,7 +8,6 @@ import de.tum.cit.ase.maze.objects.ObjectType;
 import de.tum.cit.ase.maze.utils.exceptions.MapLoadingException;
 import de.tum.cit.ase.maze.utils.exceptions.ObjectTypeException;
 
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,11 +34,10 @@ public final class MapLoader {
 
 
         } catch (IndexOutOfBoundsException | ObjectTypeException e) {
-            throw new MapLoadingException("Can't load map");
+            throw new MapLoadingException("Can't load map", e);
         }
         width = (int) getMapCoordinates(ObjectType.Wall).stream().filter(vector2 -> vector2.y == 0f).max(Comparator.comparing(vector2 -> vector2.x)).orElseThrow().x;
         height = (int) getMapCoordinates(ObjectType.Wall).stream().filter(vector2 -> vector2.x == 0f).max(Comparator.comparing(vector2 -> vector2.y)).orElseThrow().y;
-
 
 
         gameGrid = new Grid((int) (width + 1), (int) (height + 1));

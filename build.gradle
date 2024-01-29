@@ -82,6 +82,9 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
         implementation 'org.reflections:reflections:0.10.2'
+        implementation 'com.github.raeleus.stripe:stripe:1.4.5'
+        implementation 'com.github.raeleus.TenPatch:tenpatch:5.2.3'
+        implementation 'com.github.raeleus.stripe:freetype:1.4.5'
 
         api "org.lwjgl:lwjgl-nfd:${lwjglVersion}"
         api "org.lwjgl:lwjgl-nfd:${lwjglVersion}:natives-linux"

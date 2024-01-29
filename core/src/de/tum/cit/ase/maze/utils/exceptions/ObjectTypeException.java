@@ -1,6 +1,6 @@
 package de.tum.cit.ase.maze.utils.exceptions;
 
-public class ObjectTypeException extends RuntimeException{
+public class ObjectTypeException extends MazeGameException {
     public ObjectTypeException() {
     }
 

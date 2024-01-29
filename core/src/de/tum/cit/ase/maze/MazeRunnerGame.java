@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteCache;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Logger;
+import de.tum.cit.ase.editor.screens.Editor;
 import de.tum.cit.ase.maze.screens.GameScreen;
 import de.tum.cit.ase.maze.screens.MenuScreen;
 import de.tum.cit.ase.maze.screens.PauseScreen;
@@ -22,10 +23,12 @@ public class MazeRunnerGame extends Game {
     private MenuScreen menuScreen;
     private GameScreen gameScreen;
     private PauseScreen pauseScreen;
+    private Editor editor;
     // Sprite Batch for rendering
     private SpriteBatch spriteBatch;
     private SpriteCache spriteCache;
     Music backgroundMusic;
+    private final NativeFileChooser fileChooser;
 
 
     // UI Skin
@@ -38,7 +41,9 @@ public class MazeRunnerGame extends Game {
      */
     public MazeRunnerGame(NativeFileChooser fileChooser) {
         super();
+        this.fileChooser = fileChooser;
     }
+
 
     /**
      * Called when the game is created. Initializes the SpriteBatch and Skin.
@@ -46,8 +51,8 @@ public class MazeRunnerGame extends Game {
     @Override
     public void create() {
         if (CONSTANTS.DEBUG) Gdx.app.setLogLevel(Logger.DEBUG);
-        else //noinspection GDXJavaLogLevel
-            Gdx.app.setLogLevel(Logger.INFO);
+        else
+            Gdx.app.setLogLevel(Logger.ERROR);
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         spriteCache = new SpriteCache(8191, false);
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
@@ -62,6 +67,18 @@ public class MazeRunnerGame extends Game {
         goToMenu(); // Navigate to the menu screen
     }
 
+    public void goToEditor() {
+        this.setScreen(this.editor = new Editor(this));
+
+    }
+
+    public void quitEditor() {
+        this.setScreen(null);
+        this.editor.dispose();
+        this.editor = null;
+        this.goToMenu();
+    }
+
     /**
      * Switches to the menu screen.
      */
@@ -71,7 +88,7 @@ public class MazeRunnerGame extends Game {
         this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Ancient Mystery Waltz Presto.mp3"));
         backgroundMusic.setLooping(true);
         //backgroundMusic.play();
-        this.setScreen(new MenuScreen(this)); // Set the current screen to MenuScreen
+        this.setScreen(this.menuScreen = new MenuScreen(this)); // Set the current screen to MenuScreen
         if (gameScreen != null) {
             gameScreen.dispose(); // Dispose the game screen if it exists
             gameScreen = null;
@@ -135,5 +152,9 @@ public class MazeRunnerGame extends Game {
 
     public SpriteCache getSpriteCache() {
         return spriteCache;
+    }
+
+    public NativeFileChooser getFileChooser() {
+        return fileChooser;
     }
 }
