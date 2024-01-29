@@ -7,8 +7,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteCache;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Logger;
+import com.badlogic.gdx.utils.TimeUtils;
 import de.tum.cit.ase.maze.screens.*;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
+import de.tum.cit.ase.maze.utils.Score;
 import games.spooky.gdx.nativefilechooser.NativeFileChooser;
 
 /**
@@ -28,6 +30,8 @@ public class MazeRunnerGame extends Game {
     private SpriteCache spriteCache;
     // UI Skin
     private Skin skin;
+    private long startTime;
+    private Score playerScore;
 
 
     /**
@@ -57,6 +61,9 @@ public class MazeRunnerGame extends Game {
         // Background sound
 
         backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("epic_menu.mp3"));
+
+        //start timer for playerScore
+        startTime = TimeUtils.millis();
 
 
         goToMenu(); // Navigate to the menu screen
@@ -111,6 +118,8 @@ public class MazeRunnerGame extends Game {
      * Switches to the game screen.
      */
     public void goToGame(boolean fromPause) {
+        startTime = TimeUtils.millis(); // Reset the timer
+        playerScore.resetScore(); // Reset the score
         this.backgroundMusic.stop();
         this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Long Note Four.mp3"));
         backgroundMusic.setLooping(true);
@@ -169,4 +178,8 @@ public class MazeRunnerGame extends Game {
     public NativeFileChooser getFileChooser() {
         return fileChooser;
     }
+    public long getStartTime() {
+        return startTime;
+    }
+
 }

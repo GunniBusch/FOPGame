@@ -48,6 +48,7 @@ public class Hud implements Disposable {
     private ProgressBar respawnBarDebug;
     private boolean minimapEnabled;
     private Score playerScore;
+
     //private ProgressBar respawnBarDebug;
 
     /**
@@ -112,7 +113,8 @@ public class Hud implements Disposable {
         table.row();
 
         //show playerScore in HUD
-        label = new Label("Score", skin);
+        // label = new Label("Score: " + playerScore.getCurrentScore(), skin);
+        label = new Label("Score: " + playerScore.getCurrentScore(), skin);
         label.setName("score-lable");
         table.add(label).align(Align.left);
 

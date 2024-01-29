@@ -17,6 +17,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import de.tum.cit.ase.maze.Input.DeathListener;
@@ -276,6 +277,8 @@ public class GameScreen implements Screen {
         Vector3 pos = camera.position.cpy().scl(PPM);
         //rayHandler.setCombinedMatrix(camera.combined.cpy().scl(PPM), pos.x, pos.y, viewX, viewY);
         rayHandler.setCombinedMatrix(camera.combined.cpy().scl(PPM));
+        long currentTime = TimeUtils.millis(); // Get the current time
+        long elapsedTime = currentTime - game.getStartTime(); // Calculate the elapsed time
     }
 
     /**
