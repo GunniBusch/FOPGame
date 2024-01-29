@@ -67,6 +67,7 @@ public class Shortcuts {
     public static class UI {
 
 
+        public static Shortcut MOVE_IN_X = new Shortcut(Input.Keys.ALT_LEFT);
         public static Shortcut ZOOM = SharedLibraryLoader.isMac ? new Shortcut(Input.Keys.SYM) : new Shortcut(Input.Keys.SHIFT_LEFT);
         public static Shortcut UNDO = SharedLibraryLoader.isMac ? new Shortcut(Input.Keys.SYM, Input.Keys.Z) : new Shortcut(Input.Keys.CONTROL_LEFT, Input.Keys.Z);
         public static Shortcut REDO = SharedLibraryLoader.isMac ? new Shortcut(Input.Keys.SYM, Input.Keys.SHIFT_LEFT, Input.Keys.Z) : new Shortcut(Input.Keys.CONTROL_LEFT, Input.Keys.SHIFT_LEFT, Input.Keys.Z);

@@ -137,15 +137,18 @@ public class CanvasInputProcessor extends InputAdapter implements ShortcutAdapte
 
     @Override
     public boolean scrolled(float amountX, float amountY) {
-        amountX *= 1.5f;
-        amountY *= 1.5f * -1;
+        amountX *= 2f;
+        amountY *= 2f * -1;
         if (this.isShortcut(Shortcuts.UI.ZOOM.keys())) {
             Gdx.app.debug("Scrolled", "Zoomed");
 
             this.editorCanvas.move(0, 0, amountY);
 
+        } else if (this.isShortcut(Shortcuts.UI.MOVE_IN_X)) {
+            this.editorCanvas.move(amountY * 2, 0, 0);
+
         } else {
-            this.editorCanvas.move(amountX, amountY, 0);
+            this.editorCanvas.move(amountX * 2, amountY * 2, 0);
 
         }
         return true;

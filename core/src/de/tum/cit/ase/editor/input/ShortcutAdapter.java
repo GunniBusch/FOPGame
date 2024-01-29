@@ -35,8 +35,13 @@ public interface ShortcutAdapter {
     }
 
     default boolean isShortcut(int key, int... modifiers) {
-        var i = Arrays.stream(modifiers).boxed().collect(Collectors.toSet());
-        i.add(key);
+        Set<Integer> i = null;
+        if (modifiers != null) {
+            i = Arrays.stream(modifiers).boxed().collect(Collectors.toSet());
+            i.add(key);
+        } else {
+            i = Set.of(key);
+        }
 
 
         return pressedKeys.equals(i);
