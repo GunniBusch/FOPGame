@@ -48,7 +48,7 @@ public class MenuScreen implements Screen {
      */
     public MenuScreen(MazeRunnerGame game) {
         var camera = new OrthographicCamera();
-        camera.zoom = 1.25f; // Set camera zoom for a closer view
+        camera.zoom = 1f; // Set camera zoom for a closer view
 
         Viewport viewport = new ScreenViewport(camera); // Create a viewport with the camera
         stage = new Stage(viewport, game.getSpriteBatch()); // Create a stage for UI elements
@@ -58,7 +58,7 @@ public class MenuScreen implements Screen {
         stage.addActor(table); // Add the table to the stage
 
         //set background for table
-        backgroundTexture = new Texture("background.png");
+        backgroundTexture = new Texture("backgrd.png");
         backgroundDrawable = new TextureRegionDrawable(new TextureRegion(backgroundTexture));
 
         table.setBackground(backgroundDrawable);
