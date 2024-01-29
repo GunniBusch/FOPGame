@@ -40,7 +40,7 @@ public class VictoryScreen implements Screen {
         stage.addActor(table); // Add the table to the stage
 
         // Add a label as a title
-        table.add(new Label("Congratulations! You won.\nYour time: " + game.getGameTime() + "s", game.getSkin(), "title")).padBottom(80).row();
+        table.add(new Label("Congratulations! You won.\nYour time: " + game.getGameTime() + " s", game.getSkin(), "title")).padBottom(80).row();
 
         // Create and add a button to start a new journey
         TextButton goToGameButton = new TextButton("Start new journey", game.getSkin());

@@ -226,7 +226,7 @@ public class Hud implements Disposable {
             playerScore.increaseScore(1);
 
             // Update the score label to display the new score
-            scoreLabel.setText("Time: " + playerScore.getCurrentScore() + "s");
+            scoreLabel.setText("Time: " + playerScore.getCurrentScore());
             gameScreen.getGame().setGameTime(playerScore.getCurrentScore());
 
             // Reset the timer only after updating the score

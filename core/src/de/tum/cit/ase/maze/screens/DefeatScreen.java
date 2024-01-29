@@ -34,7 +34,7 @@ public class DefeatScreen implements Screen {
         stage.addActor(table);
 
         // Add a label as a title
-        table.add(new Label("Game Over. You died.\nYour time: " + game.getGameTime() + "s", game.getSkin(), "title")).padBottom(80).row();
+        table.add(new Label("Game Over. You died.\nYour time: " + game.getGameTime() + " s", game.getSkin(), "title")).padBottom(80).row();
 
         // Create and add a button to go back to the main menu
         TextButton goToMenuButton = new TextButton("Return to Menu", game.getSkin());
