@@ -122,6 +122,17 @@ public class MenuScreen implements Screen {
             }
         });
 
+        TextButton editor = new TextButton("Map Editor", game.getSkin());
+        table.add(editor).width(400).row();
+
+        editor.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                MapLoader.loadMapFile(Gdx.files.internal("level-1.properties"));
+                game.goToGame(false);
+            }
+        });
+
 
         stage.setDebugAll(CONSTANTS.DEBUG);
     }
