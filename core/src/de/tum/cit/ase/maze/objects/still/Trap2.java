@@ -8,11 +8,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
+import de.tum.cit.ase.maze.objects.still.collectable.Collectable;
 import de.tum.cit.ase.maze.objects.still.collectable.TimedCollectable;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 
-public class Trap2 extends TimedCollectable {
+public class Trap2 extends Collectable {
     private final TextureRegion textureRegion;
 
     public Trap2(Vector2 position, World world, RayHandler rayHandler, TextureAtlas textureAtlas) {
@@ -20,18 +21,14 @@ public class Trap2 extends TimedCollectable {
         texture = new Texture("trap2.png");
         //textureRegion = textureAtlas.findRegion("trap2.png");
         textureRegion  = new TextureRegion(texture);
-        duration = 15;
     }
 
     @Override
-    protected void apply(Player player) {
+    public void collect(Player player) {
         player.setSpeed(player.getSpeed() / 2);
-    }
-
-    @Override
-    public void restore(Player player) {
 
     }
+
 
     @Override
     public void render(SpriteBatch spriteBatch) {
