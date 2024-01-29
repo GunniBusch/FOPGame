@@ -11,11 +11,15 @@ public class Score {
         score += points;
     }
 
+
     public int getCurrentScore() {
         return score;
     }
 
     public void resetScore() {
         score = 0;
+    }
+    public void setScore(int points) {
+        score = score + points;
     }
 }

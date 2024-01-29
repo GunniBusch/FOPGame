@@ -64,6 +64,7 @@ public class MazeRunnerGame extends Game {
 
         //start timer for playerScore
         startTime = TimeUtils.millis();
+        playerScore = new Score();
 
 
         goToMenu(); // Navigate to the menu screen

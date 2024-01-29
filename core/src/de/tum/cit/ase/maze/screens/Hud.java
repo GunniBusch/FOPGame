@@ -11,7 +11,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import de.tum.cit.ase.maze.MazeRunnerGame;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
 import de.tum.cit.ase.maze.objects.still.collectable.TimedCollectable;
 import de.tum.cit.ase.maze.utils.Score;
@@ -48,6 +50,8 @@ public class Hud implements Disposable {
     private ProgressBar respawnBarDebug;
     private boolean minimapEnabled;
     private Score playerScore;
+    private Label scoreLabel;
+
 
     //private ProgressBar respawnBarDebug;
 
@@ -70,6 +74,9 @@ public class Hud implements Disposable {
         this.stage = new Stage(new ScreenViewport(hudCamera), spriteBatch);
         this.skin = new Skin(Gdx.files.internal("Exported/skin.json"));
         this.miniMap = new MiniMap(gameScreen, spriteBatch, player);
+
+        //initialize playerScore
+        playerScore = new Score();
 
         // Top Table:
         Table table = new Table();
@@ -113,10 +120,9 @@ public class Hud implements Disposable {
         table.row();
 
         //show playerScore in HUD
-        // label = new Label("Score: " + playerScore.getCurrentScore(), skin);
-        label = new Label("Score: " + playerScore.getCurrentScore(), skin);
-        label.setName("score-lable");
-        table.add(label).align(Align.left);
+        scoreLabel = new Label("Score: " + playerScore.getCurrentScore(), skin);
+        scoreLabel.setName("score-lable");
+        table.add(scoreLabel).align(Align.left);
 
 
         stage.addActor(table);
@@ -240,8 +246,29 @@ public class Hud implements Disposable {
         }
         healthBar.setValue(player.getHealth());
         keyBar.setValue(player.getKeyList().size());
+
+        // Calculation of gameTime
+        long currentTime = TimeUtils.millis();
+        long elapsedTime = currentTime - gameScreen.getGame().getStartTime(); // Calculate the elapsed time
+        int pointsPerSecond = 10;
+        int timeScore = (int) (elapsedTime / 1000) * pointsPerSecond; // Calculate score based on time
+
+        // Add time-based score to the player's current score
+        int currentScore = playerScore.getCurrentScore();
+        int totalScore = currentScore + timeScore;
+        playerScore.setScore(totalScore);
+
+        // Update the score label
+        updateScoreLabel();
+
         this.stage.act(dt);
 
+    }
+
+    // updates the score label
+    private void updateScoreLabel() {
+        int currentScore = playerScore.getCurrentScore();
+        scoreLabel.setText("Score: " + currentScore);
     }
 
     /**

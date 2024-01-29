@@ -7,11 +7,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
 import de.tum.cit.ase.maze.objects.still.collectable.Collectable;
+import de.tum.cit.ase.maze.utils.Score;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 
 
 public class Key extends Collectable {
+
 
 
     public Key(Vector2 position, World world, RayHandler rayHandler, TextureAtlas textureAtlas) {
