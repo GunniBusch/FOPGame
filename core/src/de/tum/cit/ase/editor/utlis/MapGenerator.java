@@ -152,7 +152,7 @@ public class MapGenerator {
                     var entry = MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0);
                     for (Vector2 exit : exits) {
                         var path = AStar.findPath(MapLoader.getGameGrid(), entry, exit);
-                        if (!path.isEmpty()) {
+                        if (path.isEmpty()) {
                             throw new InvalidMapFile("Check can reach exit is on. Exit can not be reached");
                         }
                     }
@@ -168,7 +168,7 @@ public class MapGenerator {
                     var entry = MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0);
                     for (Vector2 key : keys) {
                         var path = AStar.findPath(MapLoader.getGameGrid(), entry, key);
-                        if (!path.isEmpty()) {
+                        if (path.isEmpty()) {
                             throw new InvalidMapFile("Check can reach key is on. Key can not be reached");
                         }
                     }

@@ -112,6 +112,7 @@ public final class Square extends EditorTool {
                 markTile(new GridPoint2(j, i));
             }
         }
+        canvas.endNewGridEpoch();
 
 
     }

@@ -5,26 +5,29 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import de.tum.cit.ase.editor.data.EditorConfig;
 import de.tum.cit.ase.editor.screens.EditorCanvas;
+import de.tum.cit.ase.editor.utlis.Helper;
 import de.tum.cit.ase.editor.utlis.TileTypes;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Arrays;
 
 /**
  * Represents a canvas that allows drawing and manipulation of a virtual grid.
  */
 public class Canvas {
     private final EditorCanvas editorCanvas;
-    private final Stack<TileTypes[][]> pastVGrids;
-    private final Stack<TileTypes[][]> futureVGrids;
+    private final ArrayDeque<TileTypes[][]> pastVGrids;
+    private final ArrayDeque<TileTypes[][]> futureVGrids;
     public TileTypes[][] virtualGrid;
+    private final int stackSize = 30;
 
     /**
      * Represents a canvas for an editor.
      */
     public Canvas(EditorCanvas editorCanvas) {
         this.editorCanvas = editorCanvas;
-        this.pastVGrids = new Stack<>();
-        this.futureVGrids = new Stack<>();
+        this.pastVGrids = new ArrayDeque<>(stackSize);
+        this.futureVGrids = new ArrayDeque<>(stackSize);
     }
 
     /**
@@ -33,7 +36,12 @@ public class Canvas {
      * @param dt the time difference between the current frame and the previous frame
      */
     public void update(float dt) {
-
+        if (pastVGrids.size() >= stackSize) {
+            pastVGrids.poll();
+        }
+        if (futureVGrids.size() >= stackSize) {
+            futureVGrids.poll();
+        }
     }
 
     /**
@@ -52,15 +60,17 @@ public class Canvas {
 
     public void undo() {
         if (!pastVGrids.isEmpty()) {
-            futureVGrids.push(virtualGrid);
+            futureVGrids.push(Helper.cloneGrid(virtualGrid));
             virtualGrid = pastVGrids.pop();
+
         }
     }
 
     public void redo() {
         if (!futureVGrids.isEmpty()) {
-            pastVGrids.push(virtualGrid);
+            pastVGrids.push(Helper.cloneGrid(virtualGrid));
             virtualGrid = futureVGrids.pop();
+
         }
     }
 
@@ -82,9 +92,12 @@ public class Canvas {
      */
     public void createNewGrid(TileTypes[][] grid) {
         this.virtualGrid = grid;
+        this.futureVGrids.clear();
+        this.pastVGrids.clear();
         if (EditorConfig.selectedTool != null) {
             EditorConfig.selectedTool.validate();
         }
+
     }
 
     /**
@@ -184,14 +197,31 @@ public class Canvas {
     }
 
     /**
-     * Starts a new grid epoch by pushing the current virtual grid onto the pastVGrids stack and clearing the futureVGrids list.
+     * Starts a new grid epoch by pushing the current virtual grid onto the pastVGrids stack.
      * Automatic version
+     * When operation is finished call {@link Canvas#endNewGridEpoch()}
      * Alternative: {@link Canvas#changeGrid(TileTypes[][])}
      *
      * @see Canvas#changeGrid(TileTypes[][])
+     * @see Canvas#endNewGridEpoch()
      */
     public void startNewGridEpoch() {
-        changeGrid(this.virtualGrid);
+        pastVGrids.push(Helper.cloneGrid(virtualGrid));
+    }
+
+    /**
+     * Ends a new grid epoch by either popping the top grid from pastVGrids stack if it is the same as the current virtual grid,
+     * or clearing the futureVGrids list.
+     *
+     * @see Canvas#changeGrid(TileTypes[][])
+     * @see Canvas#startNewGridEpoch()
+     */
+    public void endNewGridEpoch() {
+        if (Arrays.deepEquals(virtualGrid, pastVGrids.peek())) {
+            pastVGrids.pop();
+        } else {
+            futureVGrids.clear();
+        }
     }
 
     public float getHeight() {

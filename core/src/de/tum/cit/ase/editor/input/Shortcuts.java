@@ -73,6 +73,8 @@ public class Shortcuts {
 
 
         public static Shortcut ZOOM = SharedLibraryLoader.isMac ? new Shortcut(Input.Keys.SYM) : new Shortcut(Input.Keys.SHIFT_LEFT);
+        public static Shortcut UNDO = SharedLibraryLoader.isMac ? new Shortcut(Input.Keys.SYM, Input.Keys.Z) : new Shortcut(Input.Keys.CONTROL_LEFT, Input.Keys.Z);
+        public static Shortcut REDO = SharedLibraryLoader.isMac ? new Shortcut(Input.Keys.SYM, Input.Keys.SHIFT_LEFT, Input.Keys.Z) : new Shortcut(Input.Keys.CONTROL_LEFT, Input.Keys.SHIFT_LEFT, Input.Keys.Z);
         public static Shortcut SAVE = SharedLibraryLoader.isMac ? new Shortcut(Input.Keys.SYM, Input.Keys.S) : new Shortcut(Input.Keys.CONTROL_LEFT, Input.Keys.S);
         public static Shortcut EXPORT = SharedLibraryLoader.isMac ? new Shortcut(Input.Keys.SYM, Input.Keys.E) : new Shortcut(Input.Keys.CONTROL_LEFT, Input.Keys.E);
 
@@ -98,10 +100,11 @@ public class Shortcuts {
 
     /**
      * The Shortcut class represents a shortcut with one or more keys.
+     * The result of {@link Shortcut#keys()} is not converted to the current Layout. Only {@link Shortcut#modKeys()} and {@link Shortcut#key()} convert them.
      */
     public record Shortcut(int... keys) {
         public int key() {
-            return keys[keys.length - 1];
+            return KeyMapper.convertKey(keys[keys.length - 1]);
         }
 
         /**
@@ -114,7 +117,7 @@ public class Shortcuts {
                 int[] is = new int[keys.length - 1];
                 List<Integer> integers = Arrays.stream(keys).boxed().toList().subList(0, keys.length - 1);
                 for (int i = 0; i < integers.size(); i++) {
-                    is[i] = integers.get(i);
+                    is[i] = KeyMapper.convertKey(integers.get(i));
                 }
                 return is;
             } else return null;

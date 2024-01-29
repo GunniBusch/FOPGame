@@ -15,12 +15,15 @@ public final class Pen extends EditorTool {
     }
 
     @Override
-    protected void markTile(GridPoint2 gridPoint) throws InvalidGridCellException {
+    protected synchronized void markTile(GridPoint2 gridPoint) throws InvalidGridCellException {
+        canvas.startNewGridEpoch();
         try {
-            canvas.startNewGridEpoch();
             canvas.virtualGrid[gridPoint.y][gridPoint.x] = EditorConfig.selectedTile;
         } catch (IndexOutOfBoundsException e) {
             throw new InvalidGridCellException(e.getCause());
+        } finally {
+            canvas.endNewGridEpoch();
+
         }
     }
 

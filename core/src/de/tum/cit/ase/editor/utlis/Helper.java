@@ -3,6 +3,8 @@ package de.tum.cit.ase.editor.utlis;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.Arrays;
+
 /**
  * The Helper class provides utility methods for converting between Vector2 and GridPoint2 objects.
  */
@@ -25,5 +27,11 @@ public class Helper {
      */
     public static Vector2 convertGridPointToVector2(GridPoint2 gridPoint2) {
         return new Vector2(gridPoint2.x, gridPoint2.y);
+    }
+
+    public static TileTypes[][] cloneGrid(TileTypes[][] gridToCLone) {
+        return Arrays.stream(gridToCLone)
+                .map(a -> Arrays.copyOf(a, a.length))
+                .toArray(TileTypes[][]::new);
     }
 }

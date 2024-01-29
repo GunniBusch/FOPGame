@@ -70,10 +70,11 @@ public final class Bucket extends EditorTool {
     }
 
     @Override
-    protected void markTile(GridPoint2 gridPoint) throws InvalidGridCellException {
+    protected synchronized void markTile(GridPoint2 gridPoint) throws InvalidGridCellException {
         // Fill the area (all the cells) that are in an area witch encloses gridPoint
         canvas.startNewGridEpoch();
         fillArea(canvas.virtualGrid, gridPoint);
+        canvas.endNewGridEpoch();
 
 
     }

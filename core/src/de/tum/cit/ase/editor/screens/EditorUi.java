@@ -44,7 +44,6 @@ public class EditorUi extends Stage {
         super(new ScreenViewport(), editor.getGame().getSpriteBatch());
         this.editor = editor;
         this.skin = new Skin(Gdx.files.internal("Editor/skincomposerui/skin-composer-ui.json"));
-
         // Menu
         var taskBar = new Container<>();
         taskBar.setFillParent(true);
@@ -66,9 +65,9 @@ public class EditorUi extends Stage {
         try {
             this.addCheckBoxSetting("Check if exit can be reached", EditorConfig.class.getDeclaredField("exportCheckCanReachExit"), settingsWindow);
             settingsWindow.row();
-            this.addCheckBoxSetting("Check if exit exists", EditorConfig.class.getDeclaredField("exportCheckHasExit"), settingsWindow);
+            this.addCheckBoxSetting("Check if exit exists", EditorConfig.class.getDeclaredField("exportCheckHasExit"), settingsWindow, "Check if exit can be reached");
             settingsWindow.row();
-            this.addCheckBoxSetting("Check if key exists", EditorConfig.class.getDeclaredField("exportCheckHasKey"), settingsWindow);
+            this.addCheckBoxSetting("Check if key exists", EditorConfig.class.getDeclaredField("exportCheckHasKey"), settingsWindow, "Check if key can be reached");
             settingsWindow.row();
             this.addCheckBoxSetting("Check if key can be reached", EditorConfig.class.getDeclaredField("exportCheckCanReachKey"), settingsWindow);
             settingsWindow.row();
@@ -156,11 +155,41 @@ public class EditorUi extends Stage {
 
 
         barMenu.findButton("Save As").setDisabled(true);
+
+        barMenu = mBar.menu("Edit");
+        barMenu.item("Undo", new StripeMenuBar.KeyboardShortcut(Shortcuts.UI.UNDO.toString(), -1, -1), new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                try {
+                    Gdx.app.debug("Undo", "und");
+                    editor.getEditorCanvas().getCanvas().undo();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        barMenu.item("Redo", new StripeMenuBar.KeyboardShortcut(Shortcuts.UI.REDO.toString(), -1, -1), new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                try {
+                    Gdx.app.debug("Redo", "red");
+
+                    editor.getEditorCanvas().getCanvas().redo();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+
         barMenu = mBar.menu("Project");
         barMenu.item("Test map", new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                editor.testMap(new Map("test", editor.getEditorCanvas().getCanvas().virtualGrid));
+                try {
+                    editor.testMap(new Map("test", editor.getEditorCanvas().getCanvas().virtualGrid));
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
 
@@ -175,8 +204,10 @@ public class EditorUi extends Stage {
 
     }
 
-    public void addCheckBoxSetting(String text, Field EditorConfigFieldToChange, Window window) {
-        var settingsBox = new CheckBox(text, skin);
+    public void addCheckBoxSetting(String text, Field EditorConfigFieldToChange, Window window, String... fieldsDisabledWhenFalse) {
+
+        var settingsBox = new CheckBox(text, skin, "switch");
+        settingsBox.setName(text);
         settingsBox.getLabel().setColor(0, 0, 0, 1);
         try {
             settingsBox.setChecked(EditorConfigFieldToChange.getBoolean(null));
@@ -186,6 +217,9 @@ public class EditorUi extends Stage {
                     if (event.getListenerActor() instanceof CheckBox checkBox) {
                         try {
                             EditorConfigFieldToChange.set(null, checkBox.isChecked());
+                            for (String s : fieldsDisabledWhenFalse) {
+                                ((CheckBox) window.findActor(s)).setDisabled(!checkBox.isChecked());
+                            }
                         } catch (IllegalAccessException e) {
                             throw new RuntimeException(e);
                         }
@@ -198,6 +232,9 @@ public class EditorUi extends Stage {
         window.add(settingsBox).align(Align.left);
 
 
+    }
+
+    private void createNewGrid() {
     }
 
     /**

@@ -30,6 +30,18 @@ public interface ShortcutAdapter {
         return pressedKeys.equals(Arrays.stream(keys).boxed().collect(Collectors.toSet()));
     }
 
+    default boolean isShortcut(Shortcuts.Shortcut shortcut) {
+        return isShortcut(shortcut.key(), shortcut.modKeys());
+    }
+
+    default boolean isShortcut(int key, int... modifiers) {
+        var i = Arrays.stream(modifiers).boxed().collect(Collectors.toSet());
+        i.add(key);
+
+
+        return pressedKeys.equals(i);
+    }
+
     default void addKey(int key) {
         pressedKeys.add(key);
     }

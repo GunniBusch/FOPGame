@@ -37,7 +37,7 @@ public class CanvasInputProcessor extends InputAdapter implements ShortcutAdapte
     @Override
     public boolean keyDown(int keycode) {
         //Gdx.app.debug("keyDown", String.format("keycode: %s, keycode_str: %s", keycode, Input.Keys.toString(keycode)));
-
+        this.addKey(keycode);
 
         if (keycode == Input.Keys.SPACE) {
             editorCanvas.resizeCanvas(640, 640);
@@ -45,13 +45,26 @@ public class CanvasInputProcessor extends InputAdapter implements ShortcutAdapte
         if (keycode == Input.Keys.N) {
             editorCanvas.resizeCanvas(16, 16);
         }
-        this.addKey(keycode);
+        if (isShortcut(Shortcuts.UI.REDO)) {
+            editorCanvas.getCanvas().redo();
+            return true;
+        } else if (isShortcut(Shortcuts.UI.UNDO)) {
+            editorCanvas.getCanvas().undo();
+            return true;
+        }
+
+
         this.editorCanvas.getEditor().handleLostUiFocus();
         try {
             return (boolean) this.relocateToTool(ToolInputAdapter.class.getDeclaredMethod("keyDown", int.class), keycode);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return super.keyTyped(character);
     }
 
     @Override
