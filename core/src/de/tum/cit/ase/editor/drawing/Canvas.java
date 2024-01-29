@@ -62,7 +62,7 @@ public class Canvas {
         if (!pastVGrids.isEmpty()) {
             futureVGrids.push(Helper.cloneGrid(virtualGrid));
             virtualGrid = pastVGrids.pop();
-
+            editorCanvas.getEditor().saved = false;
         }
     }
 
@@ -70,7 +70,7 @@ public class Canvas {
         if (!futureVGrids.isEmpty()) {
             pastVGrids.push(Helper.cloneGrid(virtualGrid));
             virtualGrid = futureVGrids.pop();
-
+            editorCanvas.getEditor().saved = false;
         }
     }
 
@@ -82,6 +82,9 @@ public class Canvas {
      */
     public void createNewGrid(int width, int height) {
         this.createNewGrid(new TileTypes[height][width]);
+        EditorConfig.loadedMapProject = null;
+        EditorConfig.saveSettings();
+        editorCanvas.getEditor().saved = false;
 
     }
 
@@ -97,6 +100,7 @@ public class Canvas {
         if (EditorConfig.selectedTool != null) {
             EditorConfig.selectedTool.validate();
         }
+        editorCanvas.getEditor().saved = false;
 
     }
 
@@ -219,6 +223,7 @@ public class Canvas {
     public void endNewGridEpoch() {
         if (Arrays.deepEquals(virtualGrid, pastVGrids.peek())) {
             pastVGrids.pop();
+            editorCanvas.getEditor().saved = false;
         } else {
             futureVGrids.clear();
         }

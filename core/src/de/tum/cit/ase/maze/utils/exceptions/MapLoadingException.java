@@ -8,4 +8,12 @@ public class MapLoadingException extends MazeGameException {
     public MapLoadingException(String message) {
         super(message);
     }
+
+    public MapLoadingException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public MapLoadingException(Throwable cause) {
+        super(cause);
+    }
 }

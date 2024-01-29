@@ -14,6 +14,7 @@ import de.tum.cit.ase.maze.utils.exceptions.MapLoadingException;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -129,13 +130,21 @@ public class MapGenerator {
      * @return List of error messages
      * @throws InvalidMapFile If the map is invalid.
      */
-    static void validateExport(Map map) {
+    public static void validateExport(Map map) {
         var grid = map.map();
         Set<String> errorList = new HashSet<>();
         if (grid == null) {
             throw new InvalidMapFile("Map grid does not exist");
         } else {
-            loadMapIntoGame(map);
+            try {
+                loadMapIntoGame(map);
+            } catch (MapLoadingException e) {
+                if (Arrays.stream(grid).allMatch(tileTypes -> Arrays.stream(tileTypes).allMatch(Objects::isNull)))
+                    throw new InvalidMapFile("Map is empty", e);
+                else
+                    throw e;
+            }
+
             // Check if grid has an exit and entry.
 
             if (Arrays.stream(grid).noneMatch(tileTypes -> Arrays.asList(tileTypes).contains(TileTypes.Exit))) {

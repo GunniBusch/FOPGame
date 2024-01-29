@@ -130,7 +130,6 @@ public class Hud implements Disposable {
 
                 var collectableClass = timedCollecteablesClassesStack.pop();
                 var arr = new ArrayList<Widget>();
-                System.out.println(TimedCollectable.class.getClasses().length);
                 label = new Label(collectableClass.getSimpleName(), skin);
                 label.setFontScale(0.7f);
                 table.add(label).align(Align.center).spaceRight(5).spaceTop(5);
@@ -210,7 +209,6 @@ public class Hud implements Disposable {
 
             } else {
                 var timedCollectable = player.getTimedCollectables().stream().filter(aClass::isInstance).findFirst().orElseThrow();
-                System.out.println(timedCollectable);
                 widgets.get(0).setVisible(true);
                 widgets.get(1).setVisible(true);
                 var durel = timedCollectable.getDurationAndElapsed();

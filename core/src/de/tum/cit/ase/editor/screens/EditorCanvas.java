@@ -46,8 +46,6 @@ public class EditorCanvas implements Disposable {
     private final Canvas canvas;
     private float width = 16f, height = 16f;
     private GridPoint2 mouseGridPos;
-    private final boolean isTouched = false;
-    private final int lastActiveButton = -1;
     public boolean isBigZoom = false;
 
 

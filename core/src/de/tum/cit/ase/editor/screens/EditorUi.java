@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.ray3k.stripe.FreeTypeSkin;
+import com.ray3k.stripe.Spinner;
 import com.ray3k.stripe.StripeMenuBar;
 import de.tum.cit.ase.editor.data.EditorConfig;
 import de.tum.cit.ase.editor.data.Map;
@@ -23,9 +24,11 @@ import de.tum.cit.ase.editor.utlis.exceptions.InvalidMapFile;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserCallback;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserIntent;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.lang.reflect.Field;
 import java.util.Objects;
+import java.util.function.BooleanSupplier;
 
 /**
  * The EditorUi class is responsible for managing the user interface of the editor screen in the Maze Runner game.
@@ -43,13 +46,14 @@ public class EditorUi extends Stage {
     public EditorUi(Editor editor) {
         super(new ScreenViewport(), editor.getGame().getSpriteBatch());
         this.editor = editor;
-        this.skin = new Skin(Gdx.files.internal("Editor/skincomposerui/skin-composer-ui.json"));
+//        this.skin = new Skin(Gdx.files.internal("Editor/skincomposerui/skin-composer-ui.json"));
+        this.skin = new FreeTypeSkin(Gdx.files.internal("skin-composer-ui/skin-composer-ui.json"));
         // Menu
         var taskBar = new Container<>();
         taskBar.setFillParent(true);
         taskBar.align(Align.topLeft);
 
-        var mBar = new StripeMenuBar(this, new FreeTypeSkin(Gdx.files.internal("skin-composer-ui/skin-composer-ui.json")));
+        var mBar = new StripeMenuBar(this, skin, "main");
         mBar.setDebug(CONSTANTS.DEBUG, true);
         taskBar.setActor(mBar);
 
@@ -58,14 +62,13 @@ public class EditorUi extends Stage {
         settingsWindow.setPosition(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
         settingsWindow.setKeepWithinStage(true);
 
-        //settingsWindow.setColor(0, 0, 0, .7f);
         settingsWindow.setLayoutEnabled(true);
         settingsWindow.setResizable(true);
         settingsWindow.setSize(400, 300);
         try {
-            this.addCheckBoxSetting("Check if exit can be reached", EditorConfig.class.getDeclaredField("exportCheckCanReachExit"), settingsWindow);
-            settingsWindow.row();
             this.addCheckBoxSetting("Check if exit exists", EditorConfig.class.getDeclaredField("exportCheckHasExit"), settingsWindow, "Check if exit can be reached");
+            settingsWindow.row();
+            this.addCheckBoxSetting("Check if exit can be reached", EditorConfig.class.getDeclaredField("exportCheckCanReachExit"), settingsWindow);
             settingsWindow.row();
             this.addCheckBoxSetting("Check if key exists", EditorConfig.class.getDeclaredField("exportCheckHasKey"), settingsWindow, "Check if key can be reached");
             settingsWindow.row();
@@ -105,7 +108,7 @@ public class EditorUi extends Stage {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 mBar.findMenu("File").findButton("Save As").setDisabled(true);
-                EditorConfig.loadedMapProject = null;
+                checkAndRun(() -> editor.saved, EditorUi.this::createNewGrid, "create a new project", "Save", () -> EditorUi.this.save(true));
             }
         });
         barMenu.item("Save", new StripeMenuBar.KeyboardShortcut(Shortcuts.UI.SAVE.toString(), Shortcuts.UI.SAVE.key(), Objects.requireNonNull(Shortcuts.UI.SAVE.modKeys())), new ChangeListener() {
@@ -188,20 +191,24 @@ public class EditorUi extends Stage {
                 try {
                     editor.testMap(new Map("test", editor.getEditorCanvas().getCanvas().virtualGrid));
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    Gdx.app.error("Test map", "Error testing map", e);
                 }
             }
         });
 
-        barMenu = mBar.menu("Info");
-        barMenu.item("About", new ClickListener());
+        barMenu = mBar.menu("Help");
+        barMenu.item("About", new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                EditorUi.this.goToHelp();
+            }
+        });
 
 
         this.createToolBar();
         this.createTileBar();
         this.addActor(taskBar);
         this.setDebugInvisible(true);
-
     }
 
     public void addCheckBoxSetting(String text, Field EditorConfigFieldToChange, Window window, String... fieldsDisabledWhenFalse) {
@@ -234,9 +241,6 @@ public class EditorUi extends Stage {
 
     }
 
-    private void createNewGrid() {
-    }
-
     /**
      * Saves the current state. If saveAs is true or the loadedMapProject is null, a native file chooser dialog is shown
      * to choose a file name and location to save the map project. If saveAs is false and loadedMapProject is not null,
@@ -244,6 +248,72 @@ public class EditorUi extends Stage {
      */
     protected void save() {
         this.save(false);
+    }
+
+    public void checkAndRun(BooleanSupplier check, Runnable runnableOnSuccess, String nameOfAction, String nameOfMiddleOption, Runnable runnableOnFailure) {
+
+        if (!check.getAsBoolean()) {
+            Dialog dialog = new Dialog("Warning", skin, "default") {
+                public void result(Object obj) {
+                    if (obj != null) {
+                        if (obj instanceof Runnable runnable) {
+                            runnable.run();
+                        }
+                    }
+                }
+            };
+            dialog.text("Are you sure you want to " + nameOfAction + " ?");
+            dialog.getContentTable().row();
+            dialog.button("Yes", runnableOnSuccess); //sends "true" as the result
+            dialog.button(nameOfMiddleOption, (Runnable) () -> {
+                runnableOnFailure.run();
+                runnableOnSuccess.run();
+            }); //sends "true" as the result
+            dialog.button("No", null);  //sends "false" as the result
+            dialog.key(Input.Keys.ENTER, runnableOnSuccess); //sends "true" when the ENTER key is pressed
+            dialog.show(EditorUi.this);
+
+        } else {
+            runnableOnSuccess.run();
+        }
+    }
+
+    private void createNewGrid() {
+        var width = new Spinner(16, 1, false, Spinner.Orientation.HORIZONTAL, skin);
+        var height = new Spinner(16, 1, false, Spinner.Orientation.HORIZONTAL, skin);
+
+        Dialog dialog = new Dialog("Create new grid", skin, "default") {
+            public void result(Object obj) {
+                if (obj != null) {
+                    if (obj instanceof Spinner[] spinners) {
+                        EditorUi.this.editor.getEditorCanvas().resizeCanvas(spinners[0].getValueAsInt(), spinners[1].getValueAsInt());
+                    }
+                }
+            }
+        };
+        dialog.getContentTable().pad(10);
+
+        dialog.getContentTable().row();
+        var label = new Label("Size: ", skin);
+
+        label.setColor(0, 0, 0, 1);
+        dialog.getContentTable().add(label).align(Align.left);
+        dialog.getContentTable().row();
+        label = new Label("Width: ", skin);
+        label.setColor(0, 0, 0, 1);
+        dialog.getContentTable().add(label);
+        dialog.getContentTable().add(width);
+        dialog.getContentTable().row();
+        label = new Label("Height: ", skin);
+        label.setColor(0, 0, 0, 1);
+        dialog.getContentTable().add(label);
+        dialog.getContentTable().add(height);
+
+        dialog.button("Apply", new Spinner[]{width, height}); //sends "true" as the result
+        dialog.button("Cancel", null);  //sends "false" as the result
+        dialog.key(Input.Keys.ENTER, new Spinner[]{width, height}); //sends "true" when the ENTER key is pressed
+        dialog.validate();
+        dialog.show(EditorUi.this);
     }
 
     protected void save(boolean saveAs) {
@@ -257,6 +327,7 @@ public class EditorUi extends Stage {
                 public void onFileChosen(FileHandle file) {
                     MapGenerator.saveMapProject(file, new de.tum.cit.ase.editor.data.Map(file.nameWithoutExtension(), editor.getEditorCanvas().getCanvas().virtualGrid));
                     EditorConfig.loadedMapProject = file;
+                    editor.saved = true;
                 }
 
                 @Override
@@ -274,6 +345,7 @@ public class EditorUi extends Stage {
             this.editor.chooseFile(fileFilter, defFileName, NativeFileChooserIntent.SAVE, EditorConfig.loadedMapProject, fileCallback);
         } else {
             MapGenerator.saveMapProject(EditorConfig.loadedMapProject, new Map(EditorConfig.loadedMapProject.nameWithoutExtension(), editor.getEditorCanvas().getCanvas().virtualGrid));
+            editor.saved = true;
         }
         EditorConfig.saveSettings();
 
@@ -302,6 +374,7 @@ public class EditorUi extends Stage {
                 var map = MapGenerator.readMapProject(file);
                 editor.getEditorCanvas().loadMap(map);
                 EditorConfig.loadedMapProject = file;
+                editor.saved = true;
 
             }
 
@@ -377,12 +450,11 @@ public class EditorUi extends Stage {
                 Gdx.app.error("Export map", "Error exporting map", exception);
 
                 if (exception instanceof InvalidMapFile) {
-                    Dialog dialog = new Dialog("Warning", skin, "dialog") {
+                    Dialog dialog = new Dialog("Warning", skin, "default") {
                         public void result(Object obj) {
                             if (((boolean) obj)) {
                                 MapGenerator.exportMap(new Map(file.nameWithoutExtension(), editor.getEditorCanvas().getCanvas().virtualGrid), file, false);
                             }
-                            System.out.println("result " + obj);
                         }
                     };
                     dialog.text("Are you sure you want to export? Checks did not complete.");
@@ -408,6 +480,20 @@ public class EditorUi extends Stage {
         this.editor.chooseFile(fileFilter, defName, NativeFileChooserIntent.SAVE, EditorConfig.loadedMapProject, callback);
     }
 
+    protected void exit() {
+        checkAndRun(() -> editor.saved, editor::exit, "quit", "Save", () -> this.save(true));
+    }
+
+    void showMessage(String title, @NonNull String... messages) {
+        Dialog dialog = new Dialog(title, skin, "default");
+        for (String message : messages) {
+            dialog.text(message);
+            dialog.row();
+        }
+        dialog.button("OK"); //sends "true" as the result
+        dialog.key(Input.Keys.ENTER, true); //sends "true" when the ENTER key is pressed
+        dialog.show(EditorUi.this);
+    }
 
     @Override
     public void draw() {
@@ -522,9 +608,8 @@ public class EditorUi extends Stage {
 
     }
 
-
-    protected void exit() {
-        editor.exit();
+    private void goToHelp() {
+        Gdx.net.openURI("https://github.com/GunniBusch/FOPGame/wiki/Editor");
     }
 
     public void hideAllPopups() {
@@ -535,5 +620,11 @@ public class EditorUi extends Stage {
     public void act(float delta) {
         super.act(delta);
 
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        this.skin.dispose();
     }
 }

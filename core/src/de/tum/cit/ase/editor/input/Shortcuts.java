@@ -9,7 +9,6 @@ import com.badlogic.gdx.utils.SharedLibraryLoader;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -44,17 +43,13 @@ public class Shortcuts {
 
         for (Field declaredField : initClass.getDeclaredFields()) {
             try {
-                var z = new HashMap<String, Integer[]>();
                 var s = ((Shortcut) declaredField.get(null));
                 if (!prefs.contains(declaredField.getName())) {
-                    System.out.println(json.prettyPrint(s));
                     prefs.putString(declaredField.getName(), json.toJson(s));
                 }
                 var js = json.fromJson(Shortcut.class, prefs.getString(declaredField.getName()));
                 if (js.keys() != null) {
-
                     declaredField.set(null, js);
-
                 } else {
                     prefs.putString(declaredField.getName(), json.toJson(s));
                 }

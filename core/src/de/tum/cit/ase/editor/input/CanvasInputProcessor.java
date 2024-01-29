@@ -30,7 +30,6 @@ public class CanvasInputProcessor extends InputAdapter implements ShortcutAdapte
     public CanvasInputProcessor(EditorCanvas editorCanvas) {
         super();
         this.editorCanvas = editorCanvas;
-        System.out.println(Shortcuts.UI.ZOOM.toString());
     }
 
     // Todo Undo redo

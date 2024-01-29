@@ -5,6 +5,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
@@ -13,6 +14,7 @@ import de.tum.cit.ase.editor.data.Map;
 import de.tum.cit.ase.editor.input.CanvasGestureListener;
 import de.tum.cit.ase.editor.input.CanvasInputProcessor;
 import de.tum.cit.ase.editor.utlis.MapGenerator;
+import de.tum.cit.ase.editor.utlis.exceptions.InvalidMapFile;
 import de.tum.cit.ase.maze.MazeRunnerGame;
 import de.tum.cit.ase.maze.screens.GameScreen;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
@@ -32,6 +34,7 @@ public class Editor extends InputAdapter implements Screen {
     private final InputMultiplexer inputMultiplexer;
     public ShapeRenderer shapeRenderer;
     private final NativeFileChooser fileChooser;
+    public boolean saved = false;
 
     /**
      * Editor class is responsible for managing the editor functionality of the Maze Runner game.
@@ -128,6 +131,9 @@ public class Editor extends InputAdapter implements Screen {
     public void dispose() {
         this.editorUi.dispose();
         this.editorCanvas.dispose();
+        this.shapeRenderer.dispose();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+        ScreenUtils.clear(0f, 0f, 0f, 1f, true);
     }
 
     @Override
@@ -170,7 +176,8 @@ public class Editor extends InputAdapter implements Screen {
     }
 
     public final void exit() {
-        Gdx.app.postRunnable(game::goToMenu);
+        Gdx.app.postRunnable(game::quitEditor);
+
     }
 
     /**
@@ -191,27 +198,39 @@ public class Editor extends InputAdapter implements Screen {
         config.setForegroundFPS(60); // Set the foreground frames per second
 
 
-        new MazeRunnerGame(fileChooser) {
-            public final Lwjgl3Window window = ((Lwjgl3Application) Gdx.app).newWindow(this, config);
+        try {
+            MapGenerator.loadMapIntoGame(map);
+            new MazeRunnerGame(fileChooser) {
+                public final Lwjgl3Window window = ((Lwjgl3Application) Gdx.app).newWindow(this, config);
 
-            @Override
-            public void create() {
-                super.create();
-                MapGenerator.loadMapIntoGame(map);
-                var s = new GameScreen(this, false);
+                @Override
+                public void create() {
+                    super.create();
 
-                this.setScreen(s);
+                    var s = new GameScreen(this, false);
+
+                    this.setScreen(s);
+                }
+
+                @Override
+                public void goToMenu() {
+                    window.closeWindow();
+                }
+
+                @Override
+                public void goToPause() {
+                    window.closeWindow();
+                }
+            };
+
+        } catch (RuntimeException e) {
+            try {
+                MapGenerator.validateExport(map);
+            } catch (InvalidMapFile ex) {
+                editorUi.showMessage("Error", ex.getMessage());
+                Gdx.app.error("Test map", "Error testing map", e);
+
             }
-
-            @Override
-            public void goToMenu() {
-                window.closeWindow();
-            }
-
-            @Override
-            public void goToPause() {
-                window.closeWindow();
-            }
-        };
+        }
     }
 }
