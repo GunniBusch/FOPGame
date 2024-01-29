@@ -22,6 +22,9 @@ import games.spooky.gdx.nativefilechooser.NativeFileChooserCallback;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserConfiguration;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserIntent;
 
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+
 
 /**
  * The MenuScreen class is responsible for displaying the main menu of the game.
@@ -54,10 +57,34 @@ public class MenuScreen implements Screen {
         // Create and add a button to go to the game screen
         TextButton quickStart = new TextButton("QuickStart", game.getSkin());
         table.add(quickStart).width(400).row();
+
         quickStart.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                MapLoader.loadMapFile(Gdx.files.internal("level-4.properties"));
+                MapLoader.loadMapFile(Gdx.files.internal("level-1.properties"));
+                game.goToGame(false);
+            }
+        });
+        // random map button
+        TextButton randomMap = new TextButton("Random Map", game.getSkin());
+        table.add(randomMap).width(400).row();
+
+
+        // Create a Random object
+        Random random = new Random();
+        // Generate a random integer between 1 (included) and 5 (included)
+        int randomInt = random.nextInt(5) + 1;
+        System.out.println("RANDOM:" + randomInt);
+
+
+
+        randomMap.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (randomInt >= 1 && randomInt <= 5 && randomInt != 2) {
+                    MapLoader.loadMapFile(Gdx.files.internal("level-"+randomInt+".properties"));
+                }
+
                 game.goToGame(false);
             }
         });
