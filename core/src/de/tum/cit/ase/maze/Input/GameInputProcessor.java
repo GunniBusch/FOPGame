@@ -11,6 +11,7 @@ import de.tum.cit.ase.maze.screens.GameScreen;
 public class GameInputProcessor extends InputAdapter {
     private final MazeRunnerGame game;
     private final Movable character;
+    private boolean isAttack = false;
 
     public GameInputProcessor(MazeRunnerGame game, Movable character) {
         this.game = game;

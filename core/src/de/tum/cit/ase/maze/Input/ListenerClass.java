@@ -50,15 +50,8 @@ public class ListenerClass implements ContactListener {
                 }
                 // Player Collect Collectable
                 if (contact.getFixtureA().getUserData() instanceof Player player && contact.getFixtureB().getUserData() instanceof Collectable collectable) {
-                   // Gdx.app.debug("Collectable", "Player collected Collectable");
+                    // Gdx.app.debug("Collectable", "Player collected Collectable");
                     collectable.collect(player);
-                }
-                // Player in range to combat enemies
-                if (contact.getFixtureB().getUserData() instanceof Player player && contact.getFixtureA().getUserData() instanceof Enemy enemy) {
-                    Gdx.app.debug("Combat", "Ready to combat");
-                    System.out.println("COMBATTTTTTTTTTTTTTTTT");
-                    player.attack(1);
-                    enemy.damage(1);
                 }
 
 
@@ -67,13 +60,13 @@ public class ListenerClass implements ContactListener {
 
                 // Player bumped into an Enemy
                 if (contact.getFixtureB().getUserData() instanceof Enemy enemy && contact.getFixtureA().getUserData() instanceof Player player) {
-
-
+                    if(player.isAttacking()) {
+                        enemy.damage(1);
+                    }
                     enemy.setPlayer(player);
                     enemy.isFollowing = false;
 
                     player.makeDamage(1);
-
 
 
                 } // Enemy bumped into a Player
@@ -82,10 +75,7 @@ public class ListenerClass implements ContactListener {
 
                     enemy.setPlayer(player);
                     enemy.isFollowing = false;
-                    System.out.println("COMBATTTTTTTTTTTTTTTTT");
-                    player.makeDamage(1);
 
-                    player.attack(1);
                     enemy.damage(1);
 
                 }

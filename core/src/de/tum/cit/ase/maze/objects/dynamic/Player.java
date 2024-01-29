@@ -34,6 +34,9 @@ public class Player extends Character implements Movable {
     private final Set<TimedCollectable> timedCollectables;
     private final float lightDistance = 15f;
     private final RayHandler rayHandler;
+
+
+
     private final PositionalLight light;
     private final List<Key> keyList;
     Music soundEffects;
@@ -45,6 +48,7 @@ public class Player extends Character implements Movable {
     private boolean isVulnerable = true;
     private boolean isCooldown = true;
     private float timeCount;
+    private boolean isAttacking = false;
 
 
     public Player(World world, DeathListener deathListener, RayHandler rayHandler) {
@@ -121,7 +125,7 @@ public class Player extends Character implements Movable {
         // Create a Random object
         Random random = new Random();
         // Generate a random integer between 1 (included) and 2 (included)
-        int randomInt = random.nextInt(2) + 1;
+        int randomInt = random.nextInt(3) + 1;
 
         if (timeCount >= 3) {
             //randomly if coolDown needed or not -> luck = player's swordSkills
@@ -146,15 +150,17 @@ public class Player extends Character implements Movable {
         }
     }
 
+
+
     /**
      * Method to attack enemies
      */
     public void attack(int damage) {
-        if (!isCooldown) {
-            soundEffects = Gdx.audio.newMusic(Gdx.files.internal("sword-slash-and-swing-185432.mp3"));
-            soundEffects.play();
-        }
-
+            if (!isCooldown) {
+                soundEffects = Gdx.audio.newMusic(Gdx.files.internal("sword-slash-and-swing-185432.mp3"));
+                soundEffects.play();
+                setAttacking(true);
+            }
     }
 
     /**
@@ -264,6 +270,15 @@ public class Player extends Character implements Movable {
             speed /= SPRINT_BOOST;
         }
     }
+
+    public boolean isAttacking() {
+        return isAttacking;
+    }
+
+    public void setAttacking(boolean attacking) {
+        isAttacking = attacking;
+    }
+
 
 
 }
