@@ -28,6 +28,7 @@ public class Trap2 extends Collectable {
         player.setSpeed(player.getSpeed() / 2);
 
 
+
     }
 
 
