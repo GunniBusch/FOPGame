@@ -32,6 +32,7 @@ public class MazeRunnerGame extends Game {
     private Skin skin;
     private long startTime;
     private Score playerScore;
+    private int gameTime;
 
 
     /**
@@ -181,6 +182,13 @@ public class MazeRunnerGame extends Game {
     }
     public long getStartTime() {
         return startTime;
+    }
+
+    public void setGameTime(int time) {
+        this.gameTime = time;
+    }
+    public int getGameTime() {
+        return gameTime;
     }
 
 }

@@ -121,8 +121,8 @@ public class Hud implements Disposable {
         table.row();
 
         //TODO display gameTime
-        scoreLabel = new Label("Score: " + playerScore.getCurrentScore(), skin);
-        scoreLabel.setName("score-lable");
+        scoreLabel = new Label("Time: " + playerScore.getCurrentScore(), skin);
+        scoreLabel.setName("time-lable");
         table.add(scoreLabel).align(Align.left);
 
 
@@ -226,7 +226,8 @@ public class Hud implements Disposable {
             playerScore.increaseScore(1);
 
             // Update the score label to display the new score
-            scoreLabel.setText("Score: " + playerScore.getCurrentScore());
+            scoreLabel.setText("Time: " + playerScore.getCurrentScore() + "s");
+            gameScreen.getGame().setGameTime(playerScore.getCurrentScore());
 
             // Reset the timer only after updating the score
             timeCount = 0;

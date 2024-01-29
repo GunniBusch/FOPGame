@@ -81,9 +81,8 @@ public class MenuScreen implements Screen {
         randomMap.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (randomInt >= 1 && randomInt <= 5 && randomInt != 2) {
-                    MapLoader.loadMapFile(Gdx.files.internal("level-"+randomInt+".properties"));
-                }
+
+                MapLoader.loadMapFile(Gdx.files.internal("level-"+randomInt+".properties"));
 
                 game.goToGame(false);
             }
