@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -22,6 +23,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import de.tum.cit.ase.maze.MazeRunnerGame;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
 import de.tum.cit.ase.maze.utils.MapLoader;
+import de.tum.cit.ase.maze.utils.exceptions.MapLoadingException;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserCallback;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserConfiguration;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserIntent;
@@ -67,19 +69,40 @@ public class MenuScreen implements Screen {
         table.add(new Label("Welcome to [Gamename]!", game.getSkin(), "title")).padBottom(80).row();
 
         // Create and add a button to go to the game screen
+        var prefs = Gdx.app.getPreferences("maze-game-general");
+        var lastMapCont = prefs.contains("LastMap");
+
         TextButton quickStart = new TextButton("QuickStart", game.getSkin());
+        FileHandle lstMapFile = null;
+        if (!lastMapCont) {
+            quickStart.setDisabled(true);
+
+        }else {
+            lstMapFile = new FileHandle(prefs.getString("LastMap"));
+            try {
+                MapLoader.loadMapFile(lstMapFile);
+            } catch (MapLoadingException e) {
+                quickStart.setDisabled(true);
+            }
+        }
         table.add(quickStart).width(400).row();
 
+        FileHandle finalLstMapFile = lstMapFile;
         quickStart.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                MapLoader.loadMapFile(Gdx.files.internal("level-1.properties"));
+                if (lastMapCont) {
+                    MapLoader.loadMapFile(finalLstMapFile);
+
+                }
                 game.goToGame(false);
             }
         });
         // random map button
         TextButton randomMap = new TextButton("Random Map", game.getSkin());
-        table.add(randomMap).width(400).row();
+        table.add(randomMap).width(400).spaceBottom(20).row();
+        table.add(new Image(game.getSkin(), "divider-fade-000")).width(500).spaceBottom(20);
+        table.row();
 
 
         // Create a Random object
@@ -88,12 +111,11 @@ public class MenuScreen implements Screen {
         int randomInt = random.nextInt(5) + 1;
 
 
-
         randomMap.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
 
-                MapLoader.loadMapFile(Gdx.files.internal("level-"+randomInt+".properties"));
+                MapLoader.loadMapFile(Gdx.files.internal("level-" + randomInt + ".properties"));
 
                 game.goToGame(false);
             }
@@ -144,7 +166,15 @@ public class MenuScreen implements Screen {
             }
         });
 
+        TextButton quitButt = new TextButton("Quit", game.getSkin());
+        table.add(quitButt).width(400).spaceBottom(20).row();
 
+        quitButt.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                Gdx.app.exit();
+            }
+        });
         stage.setDebugAll(CONSTANTS.DEBUG);
     }
 

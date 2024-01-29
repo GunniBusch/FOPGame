@@ -35,7 +35,6 @@ public class MazeRunnerGame extends Game {
     private int gameTime;
 
 
-
     /**
      * Constructor for MazeRunnerGame.
      *
@@ -69,7 +68,6 @@ public class MazeRunnerGame extends Game {
         playerScore = new Score();
 
 
-
         goToMenu(); // Navigate to the menu screen
     }
 
@@ -77,8 +75,15 @@ public class MazeRunnerGame extends Game {
      * Switches to the menu screen.
      */
     public void goToMenu() {
+        Gdx.graphics.setWindowedMode(
+                Math.round(0.8f * Gdx.graphics.getDisplayMode().width),
+                Math.round(0.8f * Gdx.graphics.getDisplayMode().height)
+        );
+        Gdx.graphics.setUndecorated(true);
+
         spriteCache.clear();
         this.backgroundMusic.stop();
+        this.backgroundMusic.dispose();
         this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Ancient Mystery Waltz Presto.mp3"));
         backgroundMusic.setLooping(true);
         backgroundMusic.play();
@@ -95,6 +100,7 @@ public class MazeRunnerGame extends Game {
     public void goToVictoryScreen() {
         spriteCache.clear();
         this.backgroundMusic.stop();
+        this.backgroundMusic.dispose();
         this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Victory(chosic.com).mp3"));
         backgroundMusic.setLooping(true);
         backgroundMusic.play();
@@ -108,6 +114,7 @@ public class MazeRunnerGame extends Game {
     public void goToDefeatScreen() {
         spriteCache.clear();
         this.backgroundMusic.stop();
+        this.backgroundMusic.dispose();
         this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Treasures of Ancient Dungeon.mp3"));
         backgroundMusic.setLooping(true);
         backgroundMusic.play();
@@ -122,9 +129,11 @@ public class MazeRunnerGame extends Game {
      * Switches to the game screen.
      */
     public void goToGame(boolean fromPause) {
+        Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
         startTime = TimeUtils.millis(); // Reset the timer
         playerScore.resetScore(); // Reset the score
         this.backgroundMusic.stop();
+        this.backgroundMusic.dispose();
         this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Long Note Four.mp3"));
         backgroundMusic.setLooping(true);
         backgroundMusic.play();
@@ -145,9 +154,10 @@ public class MazeRunnerGame extends Game {
     //TODO: implement continue game method for MenuScreen
     public void goToPause() {
         this.backgroundMusic.stop();
+        this.backgroundMusic.dispose();
         this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Ancient Mystery Waltz Presto.mp3"));
         backgroundMusic.setLooping(true);
-        //backgroundMusic.play();
+        backgroundMusic.play();
         this.pauseScreen = new PauseScreen(this);
         this.setScreen(this.pauseScreen); // Set the current screen to GameScreen
 
@@ -182,6 +192,7 @@ public class MazeRunnerGame extends Game {
     public NativeFileChooser getFileChooser() {
         return fileChooser;
     }
+
     public long getStartTime() {
         return startTime;
     }
@@ -189,6 +200,7 @@ public class MazeRunnerGame extends Game {
     public void setGameTime(int time) {
         this.gameTime = time;
     }
+
     public int getGameTime() {
         return gameTime;
     }

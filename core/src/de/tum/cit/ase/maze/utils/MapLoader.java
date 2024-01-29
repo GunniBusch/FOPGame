@@ -1,6 +1,7 @@
 package de.tum.cit.ase.maze.utils;
 
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
 import de.tum.cit.ase.maze.map.path.Grid;
@@ -37,6 +38,9 @@ public final class MapLoader {
         } catch (IndexOutOfBoundsException | ObjectTypeException e) {
             throw new MapLoadingException("Can't load map");
         }
+        var prefs = Gdx.app.getPreferences("maze-game-general");
+        prefs.putString("LastMap", fileHandle.path());
+        prefs.flush();
         width = (int) getMapCoordinates(ObjectType.Wall).stream().filter(vector2 -> vector2.y == 0f).max(Comparator.comparing(vector2 -> vector2.x)).orElseThrow().x;
         height = (int) getMapCoordinates(ObjectType.Wall).stream().filter(vector2 -> vector2.x == 0f).max(Comparator.comparing(vector2 -> vector2.y)).orElseThrow().y;
 

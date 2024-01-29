@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -13,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -38,7 +41,6 @@ public class PauseScreen implements Screen {
     public PauseScreen(MazeRunnerGame game) {
         var camera = new OrthographicCamera();
         this.game = game;
-        camera.zoom = 1.25f; // Set camera zoom for a closer view
 
         Viewport viewport = new ScreenViewport(camera); // Create a viewport with the camera
         stage = new Stage(viewport, game.getSpriteBatch()); // Create a stage for UI elements
@@ -46,7 +48,10 @@ public class PauseScreen implements Screen {
         Table table = new Table(); // Create a table for layout
         table.setFillParent(true); // Make the table fill the stage
         stage.addActor(table); // Add the table to the stage
+        var backgroundTexture = new Texture("backgrdP.png");
+        var backgroundDrawable = new TextureRegionDrawable(new TextureRegion(backgroundTexture));
 
+        table.setBackground(backgroundDrawable);
         // Add a label as a title
         table.add(new Label("Pause", game.getSkin(), "title")).padBottom(80).row();
 

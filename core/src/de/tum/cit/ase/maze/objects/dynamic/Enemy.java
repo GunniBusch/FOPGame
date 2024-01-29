@@ -123,6 +123,7 @@ public class Enemy extends Character {
             soundEffects = Gdx.audio.newMusic(Gdx.files.internal("slime-squish-14539.mp3"));
             soundEffects.play();
             isDead = true;
+            player.setAttacking(false);
             //world.destroyBody(body);
         }
     }
