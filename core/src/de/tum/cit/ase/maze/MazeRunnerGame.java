@@ -64,7 +64,7 @@ public class MazeRunnerGame extends Game {
         backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("epic_menu.mp3"));
 
 
-        goToEditor(); // Navigate to the menu screen
+        goToMenu(); // Navigate to the menu screen
     }
 
     public void goToEditor() {
