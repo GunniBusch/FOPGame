@@ -1,5 +1,6 @@
 package de.tum.cit.ase.maze.objects.dynamic;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -118,8 +119,9 @@ public class Enemy extends Character {
     public void damage(int damage) {
         health = health - damage;
         if(health == 0) {
+            soundEffects = Gdx.audio.newMusic(Gdx.files.internal("slime-squish-14539.mp3"));
+            soundEffects.play();
             world.destroyBody(body);
-
         }
     }
 
