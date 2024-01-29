@@ -32,6 +32,7 @@ import de.tum.cit.ase.maze.objects.still.collectable.DamageDeflect;
 import de.tum.cit.ase.maze.objects.still.collectable.HealthCollectable;
 import de.tum.cit.ase.maze.objects.still.collectable.SpeedBoost;
 import de.tum.cit.ase.maze.utils.MapLoader;
+import de.tum.cit.ase.maze.utils.Score;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +69,7 @@ public class GameScreen implements Screen {
     private boolean end = false;
     //added boolean pause, for pause functionality
     private float stateTime = 0f;
+    private Score score;
 
     //ToDo Check what viewport does and if we need it.
 
@@ -101,6 +103,8 @@ public class GameScreen implements Screen {
 
         var playerCord = MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0).cpy();
         this.player = new Player(world, deathListener, rayHandler, playerCord.scl(PPM).scl(2f));
+        //initialize playerScore
+        score = new Score();
         // To debug no damage
         if (DEBUG) player.markAsFinished();
         this.entities.add(player);
