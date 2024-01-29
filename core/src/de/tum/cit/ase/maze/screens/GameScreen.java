@@ -8,7 +8,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
@@ -59,7 +58,8 @@ public class GameScreen implements Screen {
     private final World world;
     private final Box2DDebugRenderer b2DDr;
     private final ShapeRenderer shapeRenderer;
-    private final int mapCacheID, backgroundCacheId;
+    private final int mapCacheID;
+    private final int backgroundCacheId;
     private final DeathListener deathListener;
     private final Hud hud;
     private final float zoom = .9f;
@@ -75,12 +75,16 @@ public class GameScreen implements Screen {
 
     //ToDo Check what viewport does and if we need it.
 
+    public GameScreen(MazeRunnerGame game) {
+        this(game, true);
+    }
+
     /**
      * Constructor for GameScreen. Sets up the camera and font.
      *
      * @param game The main game class, used to access global resources and methods.
      */
-    public GameScreen(MazeRunnerGame game) {
+    public GameScreen(MazeRunnerGame game, boolean loadMap) {
         this.game = game;
 
         this.deathListener = new DeathListener(this);
@@ -100,7 +104,6 @@ public class GameScreen implements Screen {
 
         //Gdx.gl.glEnable(GL20.GL_BLEND);
         this.b2DDr = new Box2DDebugRenderer(true, true, false, true, true, true);
-        // MapLoader.loadMapFile(Gdx.files.internal("level-1.properties"));
         wall = new Wall(MapLoader.getMapCoordinates(ObjectType.Wall), game.getSpriteCache(), world);
 
         var playerCord = MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0).cpy();
