@@ -38,6 +38,7 @@ public class Enemy extends Character {
     private final Grid grid;
     private List<Vector2> path;
     private int currentPathIndex;
+    private int health = 1;
 
 
     public Enemy(World world, DeathListener deathListener) {
@@ -112,6 +113,13 @@ public class Enemy extends Character {
         path = new ArrayList<>();
 
 
+    }
+
+    public void damage(int damage) {
+        health = health - damage;
+        if(health == 0) {
+            world.destroyBody(body);
+        }
     }
 
     /**

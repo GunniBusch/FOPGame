@@ -73,7 +73,7 @@ public class MenuScreen implements Screen {
         quickStart.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                MapLoader.loadMapFile(Gdx.files.internal("level-2.properties"));
+                MapLoader.loadMapFile(Gdx.files.internal("level-1.properties"));
                 game.goToGame(false);
             }
         });

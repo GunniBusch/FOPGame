@@ -68,6 +68,7 @@ public class ListenerClass implements ContactListener {
                     player.makeDamage(1);
 
 
+
                 } // Enemy bumped into a Player
                 else if (contact.getFixtureA().getUserData() instanceof Enemy enemy && contact.getFixtureB().getUserData() instanceof Player player) {
 

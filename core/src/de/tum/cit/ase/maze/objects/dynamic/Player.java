@@ -132,6 +132,13 @@ public class Player extends Character implements Movable {
     }
 
     /**
+     * Method to attack enemies
+     */
+    public void attack(int damage) {
+
+    }
+
+    /**
      * Starts moving in defined direction.
      * Should NOT move in two directions. e.g. left and up. But after release other pressed buttons take over.
      *
