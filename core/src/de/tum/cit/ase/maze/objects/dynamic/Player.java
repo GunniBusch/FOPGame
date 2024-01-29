@@ -46,6 +46,8 @@ public class Player extends Character implements Movable {
     private boolean isFinished = false;
     private boolean isSprint = false;
     private boolean isVulnerable = true;
+    private boolean isCooldown = true;
+    private float timeCount;
 
     public Player(World world, DeathListener deathListener, RayHandler rayHandler) {
         this(world, deathListener, rayHandler, 0, 0);
@@ -117,6 +119,12 @@ public class Player extends Character implements Movable {
         super.update(deltaTime);
         this.timedCollectables.stream().filter(TimedCollectable::isRemovable).forEach(collectable -> collectable.restore(this));
         this.timedCollectables.removeIf(TimedCollectable::isRemovable);
+        timeCount += deltaTime;
+        if (timeCount >= 2) {
+            // cooldown expired
+            isCooldown = false;
+            timeCount = 0;
+        }
     }
 
     /**
