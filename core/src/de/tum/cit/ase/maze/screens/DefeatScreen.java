@@ -46,6 +46,16 @@ public class DefeatScreen implements Screen {
             }
         });
 
+        // Create and add a button to restart
+        TextButton goToGameButton = new TextButton("Restart", game.getSkin());
+        table.add(goToGameButton).width(400).row();
+        goToGameButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.goToGame(false); // Change to the game screen when the button is pressed
+            }
+        });
+
         stage.setDebugAll(CONSTANTS.DEBUG);
     }
 

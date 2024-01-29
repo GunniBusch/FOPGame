@@ -42,15 +42,6 @@ public class VictoryScreen implements Screen {
         // Add a label as a title
         table.add(new Label("Congratulations! You won.\nYour time: " + game.getGameTime() + " s", game.getSkin(), "title")).padBottom(80).row();
 
-        // Create and add a button to start a new journey
-        TextButton goToGameButton = new TextButton("Start new journey", game.getSkin());
-        table.add(goToGameButton).width(400).row();
-        goToGameButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                game.goToGame(false); // Change to the game screen when the button is pressed
-            }
-        });
 
         // Create and add a button to return to the main menu
         TextButton returnToMenuButton = new TextButton("Return to main menu", game.getSkin());
