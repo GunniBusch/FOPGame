@@ -86,7 +86,6 @@ public class MenuScreen implements Screen {
         Random random = new Random();
         // Generate a random integer between 1 (included) and 5 (included)
         int randomInt = random.nextInt(5) + 1;
-        System.out.println("RANDOM:" + randomInt);
 
 
 

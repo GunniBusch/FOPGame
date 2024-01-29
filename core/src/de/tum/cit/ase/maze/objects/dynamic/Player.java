@@ -20,10 +20,7 @@ import de.tum.cit.ase.maze.objects.still.Key;
 import de.tum.cit.ase.maze.objects.still.collectable.TimedCollectable;
 import de.tum.cit.ase.maze.utils.MapLoader;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.*;
 
@@ -121,11 +118,20 @@ public class Player extends Character implements Movable {
         this.timedCollectables.stream().filter(TimedCollectable::isRemovable).forEach(collectable -> collectable.restore(this));
         this.timedCollectables.removeIf(TimedCollectable::isRemovable);
         timeCount += deltaTime;
-        if (timeCount >= 2) {
-            // cooldown expired
-            isCooldown = false;
-            timeCount = 0;
+        // Create a Random object
+        Random random = new Random();
+        // Generate a random integer between 1 (included) and 2 (included)
+        int randomInt = random.nextInt(2) + 1;
+
+        if (timeCount >= 3) {
+            //randomly if coolDown needed or not -> luck = player's swordSkills
+            if (randomInt == 1) {
+                isCooldown = false;
+            } else {
+                isCooldown = true;
+            }
         }
+
     }
 
     /**
@@ -144,8 +150,11 @@ public class Player extends Character implements Movable {
      * Method to attack enemies
      */
     public void attack(int damage) {
-        soundEffects = Gdx.audio.newMusic(Gdx.files.internal("sword-slash-and-swing-185432.mp3"));
-        soundEffects.play();
+        if (!isCooldown) {
+            soundEffects = Gdx.audio.newMusic(Gdx.files.internal("sword-slash-and-swing-185432.mp3"));
+            soundEffects.play();
+        }
+
     }
 
     /**
