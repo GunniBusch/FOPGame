@@ -120,6 +120,14 @@ public class Hud implements Disposable {
         table.row();
 
         //show playerScore in HUD
+        long currentTime = TimeUtils.millis() / 1000;
+        long elapsedTime = currentTime - gameScreen.getGame().getStartTime(); // Calculate the elapsed time
+        int pointsPerSecond = 1;
+        int timeScore = (int) (elapsedTime * pointsPerSecond); // Calculate score based on time
+        //Add time-based score to the player's current score
+        int currentScore = playerScore.getCurrentScore();
+        int totalScore = currentScore + timeScore;
+        playerScore.setScore(totalScore);
         scoreLabel = new Label("Score: " + playerScore.getCurrentScore(), skin);
         scoreLabel.setName("score-lable");
         table.add(scoreLabel).align(Align.left);
@@ -248,23 +256,26 @@ public class Hud implements Disposable {
         keyBar.setValue(player.getKeyList().size());
 
         // Calculation of gameTime
-        long currentTime = TimeUtils.millis() / 1000;
-        long elapsedTime = currentTime - gameScreen.getGame().getStartTime(); // Calculate the elapsed time
-        int pointsPerSecond = 1;
-        int timeScore = (int) (elapsedTime * pointsPerSecond); // Calculate score based on time
-
-        // Add time-based score to the player's current score
-        int currentScore = playerScore.getCurrentScore();
-        int totalScore = currentScore + timeScore;
-        playerScore.setScore(totalScore);
+//        long currentTime = TimeUtils.millis() / 1000;
+//        long elapsedTime = currentTime - gameScreen.getGame().getStartTime(); // Calculate the elapsed time
+//        int pointsPerSecond = 1;
+//        int timeScore = (int) (elapsedTime * pointsPerSecond); // Calculate score based on time
+//
+//        // Add time-based score to the player's current score
+//        int currentScore = playerScore.getCurrentScore();
+//        int totalScore = currentScore + timeScore;
+//        playerScore.setScore(totalScore);
 
         //debug Time
-        Gdx.app.log("Debug", "Current Time: " + currentTime);
-        Gdx.app.log("Debug", "Elapsed Time: " + elapsedTime);
-        Gdx.app.log("Debug", "Time Score: " + timeScore);
+//        Gdx.app.log("Debug", "Current Time: " + currentTime);
+//        Gdx.app.log("Debug", "Elapsed Time: " + elapsedTime);
+//        Gdx.app.log("Debug", "Time Score: " + timeScore);
+//        float time = 0f;
+//        time = time + dt;
+//        Gdx.app.log("Debug", "totalTime!!!!" + time);
 
         // Update the score label
-        scoreLabel.setText("Score: " + currentScore);
+        scoreLabel.setText("Score: " + playerScore.getCurrentScore());
 
         this.stage.act(dt);
     }
