@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
 import de.tum.cit.ase.maze.objects.still.collectable.TimedCollectable;
+import de.tum.cit.ase.maze.utils.Score;
 import org.reflections.Reflections;
 
 import java.util.List;
@@ -46,6 +47,7 @@ public class Hud implements Disposable {
     private final Image minimapBorder;
     private ProgressBar respawnBarDebug;
     private boolean minimapEnabled;
+    private Score playerScore;
     //private ProgressBar respawnBarDebug;
 
     /**
@@ -103,8 +105,17 @@ public class Hud implements Disposable {
         label.setName("key-lable");
         table.add(label).align(Align.left);
 
+
         keyBar = new ProgressBar(0.0f, player.numberOfKeys, 1.0f, false, skin, "key-bar-no-border");
         table.add(keyBar).align(Align.left).width(18 * player.numberOfKeys);
+
+        table.row();
+
+        //show playerScore in HUD
+        label = new Label("Score", skin);
+        label.setName("score-lable");
+        table.add(label).align(Align.left);
+
 
         stage.addActor(table);
         // Booster table
