@@ -147,7 +147,7 @@ public class MapGenerator {
 
             // Check if grid has an exit and entry.
 
-            if (Arrays.stream(grid).noneMatch(tileTypes -> Arrays.asList(tileTypes).contains(TileTypes.Exit))) {
+            if (Arrays.stream(grid).noneMatch(tileTypes -> Arrays.asList(tileTypes).contains(TileTypes.Entry))) {
                 throw new InvalidMapFile("Map does not have an entry");
             }
 
