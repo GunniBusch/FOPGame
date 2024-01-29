@@ -70,7 +70,9 @@ public class Wall implements Disposable {
         for (Vector2 outsideWall : outsideWalls) {
             // Draw wall
             spriteCache.add(textureRegion, outsideWall.x * width / SCALE - (width / SCALE / 2), outsideWall.y * height / SCALE - (height / SCALE / 2), width / SCALE, height / SCALE);
-
+        }
+        for (Vector2 insideWall : insideWalls) {
+            spriteCache.add(textureRegion, insideWall.x * width / SCALE - (width / SCALE / 2), insideWall.y * height / SCALE - (height / SCALE / 2), width / SCALE, height / SCALE);
         }
 
     }
