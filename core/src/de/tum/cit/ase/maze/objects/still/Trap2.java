@@ -1,6 +1,7 @@
-/*package de.tum.cit.ase.maze.objects.still;
+package de.tum.cit.ase.maze.objects.still;
 
 import box2dLight.RayHandler;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -16,7 +17,9 @@ public class Trap2 extends TimedCollectable {
 
     public Trap2(Vector2 position, World world, RayHandler rayHandler, TextureAtlas textureAtlas) {
         super(position, world, rayHandler, textureAtlas);
-        textureRegion = textureAtlas.findRegion("trap2.png");
+        texture = new Texture("trap2.png");
+        //textureRegion = textureAtlas.findRegion("trap2.png");
+        textureRegion  = new TextureRegion(texture);
         duration = 15;
     }
 
@@ -44,4 +47,3 @@ public class Trap2 extends TimedCollectable {
 
 }
 
- */
