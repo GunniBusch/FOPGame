@@ -7,6 +7,10 @@ import de.tum.cit.ase.editor.utlis.exceptions.InvalidGridCellException;
 
 import java.util.Stack;
 
+/**
+ * The Bucket class represents a tool for filling areas with a selected tile in an editor application.
+ * It extends the EditorTool class and provides methods for validating, handling touch events, marking tiles, and resetting the tool.
+ */
 public final class Bucket extends EditorTool {
 
     @Override
@@ -23,6 +27,12 @@ public final class Bucket extends EditorTool {
         return true;
     }
 
+    /**
+     * Fills the area with the selected tile starting from the given point.
+     *
+     * @param area        the 2D array representing the area
+     * @param pointInArea the starting point in the area
+     */
     private void fillArea(TileTypes[][] area, GridPoint2 pointInArea) {
 
 
@@ -48,6 +58,13 @@ public final class Bucket extends EditorTool {
 
     }
 
+    /**
+     * Checks if a given point is outside the area.
+     *
+     * @param area        the 2D array representing the area
+     * @param pointInArea the point to check
+     * @return true if the point is outside the area, false otherwise
+     */
     private boolean isPointOutOfArea(TileTypes[][] area, GridPoint2 pointInArea) {
 
 //        if (pointInArea.y >= area.length || pointInArea.y < 0 || pointInArea.x >= area[0].length || pointInArea.x < 0)
@@ -69,6 +86,12 @@ public final class Bucket extends EditorTool {
         return tileAtPoint != null;
     }
 
+    /**
+     * Marks the tile located at the given grid point.
+     *
+     * @param gridPoint the grid point representing the tile to be marked
+     * @throws InvalidGridCellException if an invalid grid cell is accessed
+     */
     @Override
     protected synchronized void markTile(GridPoint2 gridPoint) throws InvalidGridCellException {
         // Fill the area (all the cells) that are in an area witch encloses gridPoint

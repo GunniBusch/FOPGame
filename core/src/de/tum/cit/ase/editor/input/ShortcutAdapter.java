@@ -42,10 +42,20 @@ public interface ShortcutAdapter {
         return pressedKeys.equals(i);
     }
 
+    /**
+     * Adds a key to the set of pressed keys.
+     *
+     * @param key the key to add
+     */
     default void addKey(int key) {
         pressedKeys.add(key);
     }
 
+    /**
+     * Removes a key from the set of pressed keys.
+     *
+     * @param key the key to remove
+     */
     default void removeKey(int key) {
         pressedKeys.remove(key);
     }

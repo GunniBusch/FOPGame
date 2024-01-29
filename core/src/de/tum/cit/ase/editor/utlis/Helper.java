@@ -29,6 +29,12 @@ public class Helper {
         return new Vector2(gridPoint2.x, gridPoint2.y);
     }
 
+    /**
+     * Clones a 2D grid of TileTypes.
+     *
+     * @param gridToCLone the grid to clone
+     * @return the cloned grid
+     */
     public static TileTypes[][] cloneGrid(TileTypes[][] gridToCLone) {
         return Arrays.stream(gridToCLone)
                 .map(a -> Arrays.copyOf(a, a.length))

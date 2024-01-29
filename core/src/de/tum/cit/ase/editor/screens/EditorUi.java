@@ -46,7 +46,6 @@ public class EditorUi extends Stage {
     public EditorUi(Editor editor) {
         super(new ScreenViewport(), editor.getGame().getSpriteBatch());
         this.editor = editor;
-//        this.skin = new Skin(Gdx.files.internal("Editor/skincomposerui/skin-composer-ui.json"));
         this.skin = new FreeTypeSkin(Gdx.files.internal("skin-composer-ui/skin-composer-ui.json"));
         // Menu
         var taskBar = new Container<>();
@@ -250,6 +249,15 @@ public class EditorUi extends Stage {
         this.save(false);
     }
 
+    /**
+     * Checks a condition and runs different actions based on the result.
+     *
+     * @param check              the condition to check
+     * @param runnableOnSuccess  the action to run if the condition is true
+     * @param nameOfAction       the name of the main action
+     * @param nameOfMiddleOption the name of the middle option for the dialog
+     * @param runnableOnFailure  the action to run if the condition is false
+     */
     public void checkAndRun(BooleanSupplier check, Runnable runnableOnSuccess, String nameOfAction, String nameOfMiddleOption, Runnable runnableOnFailure) {
 
         if (!check.getAsBoolean()) {
@@ -278,6 +286,9 @@ public class EditorUi extends Stage {
         }
     }
 
+    /**
+     * Creates a new grid with the specified width and height.
+     */
     private void createNewGrid() {
         var width = new Spinner(16, 1, false, Spinner.Orientation.HORIZONTAL, skin);
         var height = new Spinner(16, 1, false, Spinner.Orientation.HORIZONTAL, skin);
@@ -316,6 +327,13 @@ public class EditorUi extends Stage {
         dialog.show(EditorUi.this);
     }
 
+    /**
+     * Saves the current state. If saveAs is true or the loadedMapProject is null, a native file chooser dialog is shown
+     * to choose a file name and location to save the map project. If saveAs is false and loadedMapProject is not null,
+     * the map project is saved to the same location.
+     *
+     * @param saveAs a boolean indicating whether to perform "Save As" or not
+     */
     protected void save(boolean saveAs) {
 
         if (saveAs || EditorConfig.loadedMapProject == null) {
@@ -480,10 +498,26 @@ public class EditorUi extends Stage {
         this.editor.chooseFile(fileFilter, defName, NativeFileChooserIntent.SAVE, EditorConfig.loadedMapProject, callback);
     }
 
+    /**
+     * Exits the editor application.
+     * <p>
+     * This method checks if the editor has been saved. If it has been saved,
+     * it directly quits the editor and returns to the main menu. Otherwise,
+     * it displays a confirmation dialog asking the user whether they want to
+     * save the changes before quitting. If the user chooses to save, the editor
+     * saves the current state and then quits. If the user chooses not to save,
+     * the editor quits without saving the changes.
+     */
     protected void exit() {
         checkAndRun(() -> editor.saved, editor::exit, "quit", "Save", () -> this.save(true));
     }
 
+    /**
+     * Displays a dialog box with a title and a message.
+     *
+     * @param title    the title of the dialog box
+     * @param messages the messages to be displayed in the dialog box
+     */
     void showMessage(String title, @NonNull String... messages) {
         Dialog dialog = new Dialog(title, skin, "default");
         for (String message : messages) {
@@ -608,6 +642,9 @@ public class EditorUi extends Stage {
 
     }
 
+    /**
+     * Opens the help page for the Editor.
+     */
     private void goToHelp() {
         Gdx.net.openURI("https://github.com/GunniBusch/FOPGame/wiki/Editor");
     }

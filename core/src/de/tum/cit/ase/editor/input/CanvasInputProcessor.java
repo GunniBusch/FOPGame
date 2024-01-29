@@ -32,7 +32,6 @@ public class CanvasInputProcessor extends InputAdapter implements ShortcutAdapte
         this.editorCanvas = editorCanvas;
     }
 
-    // Todo Undo redo
     @Override
     public boolean keyDown(int keycode) {
         //Gdx.app.debug("keyDown", String.format("keycode: %s, keycode_str: %s", keycode, Input.Keys.toString(keycode)));

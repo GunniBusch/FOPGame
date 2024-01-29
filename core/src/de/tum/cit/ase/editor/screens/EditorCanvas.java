@@ -252,15 +252,6 @@ public class EditorCanvas implements Disposable {
     }
 
 
-    public float getScreenTileSize() {
-        return tileSize * ((OrthographicCamera) viewport.getCamera()).zoom;
-    }
-
-
-    private void setGridTile(int x, int y, TileTypes tileType) {
-        canvas.setGridTile(x, y, tileType);
-    }
-
     /**
      * Moves the camera in the editor canvas.
      *

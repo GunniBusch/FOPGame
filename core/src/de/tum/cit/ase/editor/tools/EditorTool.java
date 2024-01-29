@@ -94,10 +94,6 @@ public abstract sealed class EditorTool extends ToolInputAdapter implements Tool
         return projectGridPointToWorld(gridPoint2, false);
     }
 
-    protected Array<GridPoint2> getRectAngle(GridPoint2 start, GridPoint2 end) {
-        return null;
-    }
-
     /**
      * Projects a grid point to world coordinates.
      *

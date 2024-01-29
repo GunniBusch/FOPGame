@@ -8,7 +8,6 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import de.tum.cit.ase.editor.data.Map;
 import de.tum.cit.ase.editor.input.CanvasGestureListener;
@@ -151,20 +150,8 @@ public class Editor extends InputAdapter implements Screen {
 
     }
 
-    public void moveCanvas(float x, float y, float z) {
-        this.editorCanvas.move(x, y, z);
-    }
-
-    public Vector2 getCanvasPosition() {
-        return this.editorCanvas.getCameraPosition();
-    }
-
     public MazeRunnerGame getGame() {
         return game;
-    }
-
-    public Vector2 getCanvasMousePosition() {
-        return this.editorCanvas.getMousePosition();
     }
 
     public EditorCanvas getEditorCanvas() {
@@ -175,6 +162,9 @@ public class Editor extends InputAdapter implements Screen {
         this.editorUi.hideAllPopups();
     }
 
+    /**
+     * Exits the editor application by quitting the editor and returning to the main menu.
+     */
     public final void exit() {
         Gdx.app.postRunnable(game::quitEditor);
 

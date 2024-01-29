@@ -58,6 +58,13 @@ public class Canvas {
         futureVGrids.clear();
     }
 
+    /**
+     * Undoes the most recent action on the canvas.
+     * If there are actions in the pastVGrids stack, the method will:
+     * 1. Push a clone of the current virtualGrid onto the futureVGrids stack.
+     * 2. Assign the top grid in the pastVGrids stack as the new virtualGrid.
+     * 3. Set the saved flag in the editorCanvas to false.
+     */
     public void undo() {
         if (!pastVGrids.isEmpty()) {
             futureVGrids.push(Helper.cloneGrid(virtualGrid));
@@ -66,6 +73,13 @@ public class Canvas {
         }
     }
 
+    /**
+     * Redoes the most recent action on the canvas.
+     * If there are actions in the futureVGrids list, the method will:
+     * 1. Push a clone of the current virtualGrid onto the pastVGrids stack.
+     * 2. Assign the top grid in the futureVGrids list as the new virtualGrid.
+     * 3. Set the saved flag in the editorCanvas to false.
+     */
     public void redo() {
         if (!futureVGrids.isEmpty()) {
             pastVGrids.push(Helper.cloneGrid(virtualGrid));
