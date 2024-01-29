@@ -119,6 +119,7 @@ public class Enemy extends Character {
         health = health - damage;
         if(health == 0) {
             world.destroyBody(body);
+
         }
     }
 
