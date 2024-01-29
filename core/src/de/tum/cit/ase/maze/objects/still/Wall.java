@@ -54,7 +54,9 @@ public class Wall implements Disposable {
 
     public void render() {
         Texture texture = new Texture("basictiles.png");
+
         TextureRegion textureRegion = new TextureRegion(texture, 16, 0, 16, 16);
+
         //TODO: logic checking wether inner or outer wall
 
         /*if(innerWall) {
