@@ -40,6 +40,7 @@ public class Enemy extends Character {
     private List<Vector2> path;
     private int currentPathIndex;
     private int health = 1;
+    private boolean isDead = false;
 
 
     public Enemy(World world, DeathListener deathListener) {
@@ -121,7 +122,8 @@ public class Enemy extends Character {
         if(health == 0) {
             soundEffects = Gdx.audio.newMusic(Gdx.files.internal("slime-squish-14539.mp3"));
             soundEffects.play();
-            world.destroyBody(body);
+            isDead = true;
+            //world.destroyBody(body);
         }
     }
 
@@ -133,12 +135,15 @@ public class Enemy extends Character {
     @Override
     public void render(SpriteBatch spriteBatch) {
 
-        spriteBatch.draw(
-                this.getTexture(),
-                this.getPosition().x * PPM - (this.frameWidth * ZOOM / 2f),
-                this.getPosition().y * PPM - (this.frameHeight * ZOOM / 2f),
-                this.frameWidth * ZOOM, this.frameWidth * ZOOM
-        );
+
+        if (!isDead) {
+            spriteBatch.draw(
+                    this.getTexture(),
+                    this.getPosition().x * PPM - (this.frameWidth * ZOOM / 2f),
+                    this.getPosition().y * PPM - (this.frameHeight * ZOOM / 2f),
+                    this.frameWidth * ZOOM, this.frameWidth * ZOOM
+            );
+        }
 
     }
 
@@ -150,24 +155,26 @@ public class Enemy extends Character {
      */
     @Override
     public void update(float deltaTime) {
-        if (this.state == State.WALKING) {
-            this.stateTime += deltaTime;
-            if (!isFollowing) this.state = State.STILL;
-        }
+        if (!isDead) {
+            if (this.state == State.WALKING) {
+                this.stateTime += deltaTime;
+                if (!isFollowing) this.state = State.STILL;
+            }
 
-        if (isFollowing) {
-            setPath(AStar.findPath(grid, player.getPosition().scl(0.5f), this.getPosition().scl(0.5f)));
+            if (isFollowing) {
+                setPath(AStar.findPath(grid, player.getPosition().scl(0.5f), this.getPosition().scl(0.5f)));
 
-            if (path.size() >= 2) {
-                Vector2 nextNode = path.get(currentPathIndex);
-                Vector2 targetPosition = nextNode.cpy();
-                moveTowards(targetPosition);
-            } else if (player.getPosition().cpy().scl(0.5f).dst(this.getPosition().cpy().scl(0.5f)) <= nodeProximityThreshold) {
-                this.updateStateAndDirection(State.STILL, this.walkDirectionList.get(0));
-                this.body.setLinearVelocity(0f, 0f);
+                if (path.size() >= 2) {
+                    Vector2 nextNode = path.get(currentPathIndex);
+                    Vector2 targetPosition = nextNode.cpy();
+                    moveTowards(targetPosition);
+                } else if (player.getPosition().cpy().scl(0.5f).dst(this.getPosition().cpy().scl(0.5f)) <= nodeProximityThreshold) {
+                    this.updateStateAndDirection(State.STILL, this.walkDirectionList.get(0));
+                    this.body.setLinearVelocity(0f, 0f);
 
-            } else {
-                this.moveTowards(player.getPosition().cpy().scl(0.5f));
+                } else {
+                    this.moveTowards(player.getPosition().cpy().scl(0.5f));
+                }
             }
         }
     }
@@ -263,5 +270,9 @@ public class Enemy extends Character {
     public void dispose() {
         this.texture.dispose();
         this.world.destroyBody(body);
+    }
+
+    public boolean isDead() {
+        return isDead;
     }
 }

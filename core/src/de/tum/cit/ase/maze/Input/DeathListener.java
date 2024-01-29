@@ -1,5 +1,6 @@
 package de.tum.cit.ase.maze.Input;
 
+import de.tum.cit.ase.maze.objects.dynamic.Enemy;
 import de.tum.cit.ase.maze.screens.GameScreen;
 import de.tum.cit.ase.maze.objects.dynamic.Character;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
@@ -12,8 +13,11 @@ public class DeathListener {
     }
 
     public void onDeath(Character deadCharacter){
-        if (deadCharacter instanceof Player){
+        if (deadCharacter instanceof Player) {
             this.game.handleEndOfGame(false);
+        }
+        if (deadCharacter instanceof Enemy) {
+
         }
     }
 }
