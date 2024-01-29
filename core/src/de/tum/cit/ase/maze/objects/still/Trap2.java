@@ -1,6 +1,8 @@
 package de.tum.cit.ase.maze.objects.still;
 
 import box2dLight.RayHandler;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -15,18 +17,19 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 
 public class Trap2 extends Collectable {
     private final TextureRegion textureRegion;
+    Music soundEffects;
 
     public Trap2(Vector2 position, World world, RayHandler rayHandler, TextureAtlas textureAtlas) {
         super(position, world, rayHandler, textureAtlas);
         texture = new Texture("trap2.png");
-        //textureRegion = textureAtlas.findRegion("trap2.png");
         textureRegion  = new TextureRegion(texture);
     }
 
     @Override
     public void collect(Player player) {
-        player.setSpeed(player.getSpeed() / 2);
-
+        player.setSpeed(player.getSpeed() / 1.25f);
+        soundEffects = Gdx.audio.newMusic(Gdx.files.internal("fireball-whoosh-1-179125.mp3"));
+        soundEffects.play();
 
 
     }
