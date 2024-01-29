@@ -101,11 +101,25 @@ public class Player extends Character implements Movable {
 
     }
 
+    /**
+     * Constructs a Player object with the given parameters.
+     *
+     * @param world         The world the player belongs to.
+     * @param deathListener The listener for player death events.
+     * @param rayHandler    The ray handler for handling light and shadows.
+     * @param position      The initial position of the player.
+     */
     public Player(World world, DeathListener deathListener, RayHandler rayHandler, Vector2 position) {
         this(world, deathListener, rayHandler, position.x, position.y);
     }
 
 
+    /**
+     * Adds a {@link TimedCollectable} to the player's collection and plays a sound effect.
+     *
+     * @param collectable The {@link TimedCollectable} to be added.
+     * @return True if the {@link TimedCollectable} was successfully added, false otherwise.
+     */
     public boolean addCollectable(TimedCollectable collectable) {
         soundEffects = Gdx.audio.newMusic(Gdx.files.internal("coin-upaif-14631.mp3"));
         soundEffects.play();
@@ -127,14 +141,12 @@ public class Player extends Character implements Movable {
         // Generate a random integer between 1 (included) and 2 (included)
         int randomInt = random.nextInt(3) + 1;
 
-        if (timeCount >= 3) {
             //randomly if coolDown needed or not -> luck = player's swordSkills
             if (randomInt == 1) {
                 isCooldown = false;
             } else {
                 isCooldown = true;
             }
-        }
 
     }
 
