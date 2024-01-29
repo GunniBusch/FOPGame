@@ -57,18 +57,7 @@ public class Wall implements Disposable {
 
         TextureRegion textureRegion = new TextureRegion(texture, 16, 0, 16, 16);
 
-        //TODO: logic checking wether inner or outer wall
 
-        /*if(innerWall) {
-            // TODO: find nice texture for innerwalls, decide with leon
-            img = new Texture("wall.png");
-
-            spriteCache.draw(img, position.x, position.y);
-        } else {
-            // TODO: find nice texture for outerWalls, decide with leon
-            img = new Texture("lava.png");
-            spriteCache.draw(img, position.x, position.y);
-        }*/
         for (Vector2 outsideWall : outsideWalls) {
             // Draw wall
             spriteCache.add(textureRegion, outsideWall.x * width / SCALE - (width / SCALE / 2), outsideWall.y * height / SCALE - (height / SCALE / 2), width / SCALE, height / SCALE);
