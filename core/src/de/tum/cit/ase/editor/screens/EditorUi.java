@@ -191,6 +191,7 @@ public class EditorUi extends Stage {
                     editor.testMap(new Map("test", editor.getEditorCanvas().getCanvas().virtualGrid));
                 } catch (Exception e) {
                     Gdx.app.error("Test map", "Error testing map", e);
+
                 }
             }
         });
@@ -522,7 +523,7 @@ public class EditorUi extends Stage {
         Dialog dialog = new Dialog(title, skin, "default");
         for (String message : messages) {
             dialog.text(message);
-            dialog.row();
+            dialog.getContentTable().row();
         }
         dialog.button("OK"); //sends "true" as the result
         dialog.key(Input.Keys.ENTER, true); //sends "true" when the ENTER key is pressed

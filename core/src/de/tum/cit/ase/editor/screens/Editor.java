@@ -13,7 +13,6 @@ import de.tum.cit.ase.editor.data.Map;
 import de.tum.cit.ase.editor.input.CanvasGestureListener;
 import de.tum.cit.ase.editor.input.CanvasInputProcessor;
 import de.tum.cit.ase.editor.utlis.MapGenerator;
-import de.tum.cit.ase.editor.utlis.exceptions.InvalidMapFile;
 import de.tum.cit.ase.maze.MazeRunnerGame;
 import de.tum.cit.ase.maze.screens.GameScreen;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
@@ -195,11 +194,27 @@ public class Editor extends InputAdapter implements Screen {
 
                 @Override
                 public void create() {
-                    super.create();
 
-                    var s = new GameScreen(this, false);
+                    try {
+                        super.create();
+                        var s = new GameScreen(this, false);
+                        this.setScreen(s);
+                    } catch (Exception ex) {
+                        editorUi.showMessage("Error", ex.getMessage());
+                        Gdx.app.error("Test map intern", "Error testing map", ex);
+                        window.closeWindow();
+                    }
+                }
 
-                    this.setScreen(s);
+                @Override
+                public void render() {
+                    try {
+                        super.render();
+                    } catch (Exception ex) {
+                        editorUi.showMessage("Error", ex.getMessage());
+                        Gdx.app.error("Test map intern", "Error testing map", ex);
+                        window.closeWindow();
+                    }
                 }
 
                 @Override
@@ -213,11 +228,14 @@ public class Editor extends InputAdapter implements Screen {
                 }
             };
 
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             try {
                 MapGenerator.validateExport(map);
-            } catch (InvalidMapFile ex) {
+            } catch (Exception ex) {
+
                 editorUi.showMessage("Error", ex.getMessage());
+
+
                 Gdx.app.error("Test map", "Error testing map", e);
 
             }
