@@ -5,6 +5,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -13,6 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import de.tum.cit.ase.maze.MazeRunnerGame;
@@ -33,7 +37,9 @@ import java.util.concurrent.ThreadLocalRandom;
 public class MenuScreen implements Screen {
 
     private final Stage stage;
-    private String playedMapPath;
+
+    private Texture backgroundTexture; // Declare a Texture for the background
+    private TextureRegionDrawable backgroundDrawable; // Declare a TextureRegionDrawable for the background
 
     /**
      * Constructor for MenuScreen. Sets up the camera, viewport, stage, and UI elements.
@@ -50,6 +56,12 @@ public class MenuScreen implements Screen {
         Table table = new Table(); // Create a table for layout
         table.setFillParent(true); // Make the table fill the stage
         stage.addActor(table); // Add the table to the stage
+
+        //set background for table
+        backgroundTexture = new Texture("background.png");
+        backgroundDrawable = new TextureRegionDrawable(new TextureRegion(backgroundTexture));
+
+        table.setBackground(backgroundDrawable);
 
         // Add a label as a title
         table.add(new Label("Welcome to [Gamename]!", game.getSkin(), "title")).padBottom(80).row();
