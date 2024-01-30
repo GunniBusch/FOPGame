@@ -49,6 +49,8 @@ public class Player extends Character implements Movable {
     private boolean isCooldown = true;
     private float timeCount;
     private boolean isAttacking = false;
+    private boolean inReach = false;
+
 
 
     public Player(World world, DeathListener deathListener, RayHandler rayHandler) {
@@ -171,7 +173,10 @@ public class Player extends Character implements Movable {
             if (!isCooldown) {
                 soundEffects = Gdx.audio.newMusic(Gdx.files.internal("sword-slash-and-swing-185432.mp3"));
                 soundEffects.play();
-                setAttacking(true);
+
+                if (inReach) {
+                    setAttacking(true);
+                }
             }
     }
 
@@ -289,6 +294,14 @@ public class Player extends Character implements Movable {
 
     public void setAttacking(boolean attacking) {
         isAttacking = attacking;
+    }
+
+    public boolean isInReach() {
+        return inReach;
+    }
+
+    public void setInReach(boolean inReach) {
+        this.inReach = inReach;
     }
 
 
