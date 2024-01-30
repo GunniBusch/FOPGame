@@ -34,6 +34,13 @@ You find the guide here in the [wiki](https://github.com/GunniBusch/FOPGame/wiki
 ## Screenshots
 
 ![](https://github.com/GunniBusch/FOPGame/blob/main/.github/images/Bildschirmfoto%202024-01-30%20um%2002.05.35.png)
+
+---
+
+# UML
+
+![](https://github.com/GunniBusch/FOPGame/blob/main/.github/images/uml.png)
+
 ---
 
 # Credits
