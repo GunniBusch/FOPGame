@@ -1,5 +1,8 @@
 package de.tum.cit.ase.maze.utils;
 
+/**
+ * The Score class represents a score in a game.
+ */
 public class Score {
     private int score;
 

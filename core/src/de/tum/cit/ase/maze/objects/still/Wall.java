@@ -17,8 +17,9 @@ import java.util.List;
 import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 
 /**
- * The class Wall implements the different Mazes in the game.
- * It reads an input file in the maps directory.
+ * The Wall class represents a wall object in the game.
+ * Walls can be either outside walls or inside walls.
+ * They are used to create the level layout and provide collision boundaries for the player.
  */
 
 public class Wall implements Disposable {

@@ -33,8 +33,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 
 /**
- * The MenuScreen class is responsible for displaying the main menu of the game.
- * It extends the LibGDX Screen class and sets up the UI components for the menu.
+ * The MenuScreen class represents the main menu screen of the game.
  */
 public class MenuScreen implements Screen {
 
@@ -121,8 +120,7 @@ public class MenuScreen implements Screen {
             }
         });
 
-        //TODO fileChooser function
-        // Create a button for file selection
+
         TextButton chooseMapButton = new TextButton("Choose map", game.getSkin());
         table.add(chooseMapButton).width(400).row();
         chooseMapButton.addListener(new ClickListener() {

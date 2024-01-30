@@ -76,6 +76,10 @@ public class MazeRunnerGame extends Game {
         goToMenu(); // Navigate to the menu screen
     }
 
+    /**
+     * Resizes the game window to 80% of the display mode width and height, sets it to decorated mode,
+     * stops the background music, and switches the screen to the Editor screen.
+     */
     public void goToEditor() {
         Gdx.graphics.setWindowedMode(
                 Math.round(0.8f * Gdx.graphics.getDisplayMode().width),
@@ -134,6 +138,11 @@ public class MazeRunnerGame extends Game {
         }
     }
 
+    /**
+     * Clears the sprite cache, stops and disposes the current background music, and
+     * sets a new background music for the defeat screen. It then sets the current
+     * screen to DefeatScreen. If the game screen exists, it disposes it.
+     */
     public void goToDefeatScreen() {
         spriteCache.clear();
         this.backgroundMusic.stop();
@@ -174,7 +183,12 @@ public class MazeRunnerGame extends Game {
 
     }
 
-    //TODO: implement continue game method for MenuScreen
+
+    /**
+     * Switches the game to the pause screen.
+     * Stops and disposes the current background music, sets a new background music for the pause screen,
+     * and sets the current screen to the PauseScreen.
+     */
     public void goToPause() {
         this.backgroundMusic.stop();
         this.backgroundMusic.dispose();

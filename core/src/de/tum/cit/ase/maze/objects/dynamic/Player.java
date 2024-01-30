@@ -218,6 +218,11 @@ public class Player extends Character implements Movable {
         }
     }
 
+    /**
+     * Adds a key to the player's key list and plays a sound effect.
+     *
+     * @param key The key to be added.
+     */
     public void collectKey(Key key) {
         keyList.add(key);
         soundEffects = Gdx.audio.newMusic(Gdx.files.internal("fantasy_ui_button_6-102219.mp3"));

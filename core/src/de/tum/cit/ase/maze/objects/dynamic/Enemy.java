@@ -57,7 +57,14 @@ public class Enemy extends Character {
         this.player = player;
     }
 
-    // TODO: Other designs
+    /**
+     * Creates a new instance of the Enemy class with the given parameters.
+     *
+     * @param world The Box2D world in which the enemy will be created.
+     * @param deathListener The listener to handle the death of the enemy.
+     * @param x The initial x-coordinate of the enemy.
+     * @param y The initial y-coordinate of the enemy.
+     */
     public Enemy(World world, DeathListener deathListener, float x, float y) {
         super(world, deathListener);
         this.speed = 150f;
@@ -117,6 +124,11 @@ public class Enemy extends Character {
 
     }
 
+    /**
+     * Subtracts the given amount of damage from the enemy's health and performs necessary actions based on the resulting health.
+     *
+     * @param damage The amount of damage to be inflicted on the enemy.
+     */
     public void damage(int damage) {
         health = health - damage;
         if(health == 0) {

@@ -157,6 +157,9 @@ public class GameScreen implements Screen {
 
     }
 
+    /**
+     * Spawns collectables in the game.
+     */
     private void spawnCollectables() {
         collectableManager.spawn(HealthCollectable.class, 0.01f);
         collectableManager.spawn(SpeedBoost.class, 0.01f);
@@ -167,6 +170,10 @@ public class GameScreen implements Screen {
 
     }
 
+    /**
+     * Spawns entities in the game based on the map data loaded from MapLoader.
+     * This method adds enemies, exits, and the player's entry point to the game.
+     */
     private void spawnEntities() {
 
 
@@ -183,6 +190,11 @@ public class GameScreen implements Screen {
 
     }
 
+    /**
+     * Sets the end of the game and determines if it was a victory or not.
+     *
+     * @param victory true if the game ended in victory, false otherwise
+     */
     public void handleEndOfGame(boolean victory) {
         this.end = true;
         this.victory = victory;
@@ -194,6 +206,11 @@ public class GameScreen implements Screen {
         this.collectableManager.getTimer().start();
     }
 
+    /**
+     * Renders the game screen.
+     *
+     * @param delta The time in seconds since the last render.
+     */
     // Screen interface methods with necessary functionality
     @Override
     public void render(float delta) {

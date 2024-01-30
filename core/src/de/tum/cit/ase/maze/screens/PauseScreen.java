@@ -27,6 +27,10 @@ import games.spooky.gdx.nativefilechooser.NativeFileChooserConfiguration;
 import games.spooky.gdx.nativefilechooser.NativeFileChooserIntent;
 
 
+/**
+ * The PauseScreen class represents the game screen that appears when the game is paused.
+ * It provides functionality to resume the game, exit the game, choose a new map, or restart the game.
+ */
 public class PauseScreen implements Screen {
     private final MazeRunnerGame game;
     private final Stage stage;

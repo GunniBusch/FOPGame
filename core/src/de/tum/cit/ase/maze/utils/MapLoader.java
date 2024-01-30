@@ -12,11 +12,21 @@ import de.tum.cit.ase.maze.utils.exceptions.ObjectTypeException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * The MapLoader class is responsible for loading map files and creating a game grid based on the loaded map.
+ * It provides methods to access the loaded map coordinates and the game grid.
+ */
 public final class MapLoader {
     private static Map<ObjectType, List<Vector2>> map;
     private static Grid gameGrid;
     public static float width, height;
 
+    /**
+     * Loads a map file and creates a game grid based on the loaded map.
+     *
+     * @param fileHandle the handle of the map file to load
+     * @throws MapLoadingException if there is an error loading the map file
+     */
     public static void loadMapFile(FileHandle fileHandle) {
         map = new HashMap<>();
 

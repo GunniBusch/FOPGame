@@ -1,5 +1,9 @@
 package de.tum.cit.ase.maze.utils.exceptions;
 
+/**
+ * The MazeGameException class represents an exception that occurs in the Maze Game.
+ * It is an abstract class that extends RuntimeException.
+ */
 public abstract class MazeGameException extends RuntimeException {
     public MazeGameException() {
     }

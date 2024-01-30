@@ -38,6 +38,9 @@ public class CollectableManager implements Disposable {
     private Timer timer;
     private RespawnTask respawnTask;
 
+    /**
+     * This class manages the collectables in the game. It handles the spawning, respawning, rendering, and updating of collectables.
+     */
     public CollectableManager(World world, RayHandler rayHandler, boolean canRespawn) {
         this.textureAtlas = new TextureAtlas("Powerup Assets/output/Collectables.atlas");
         this.world = world;

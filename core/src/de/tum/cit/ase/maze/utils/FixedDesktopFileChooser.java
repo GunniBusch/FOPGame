@@ -19,20 +19,10 @@ import static org.lwjgl.util.nfd.NativeFileDialog.NFD_GetError;
  */
 public class FixedDesktopFileChooser implements NativeFileChooser {
     /**
-     * Chooses a file using the provided configuration and asynchronous callback.
+     * Choose a file using the NativeFileDialog library.
      *
-     * @param configuration File choosing configuration, must not be null.
-     *                      <h4> ATTENTION: </h4> <p>
-     *                      {@link NativeFileChooserConfiguration#mimeFilter} will be used ass follow to filter name: {@code "Simplename/extension,extension;..."}
-     *                      </p>
-     *                      <p>
-     *                      {@link NativeFileChooserConfiguration#title} will be use as the default file name when {@link NativeFileChooserConfiguration#intent} is set to {@link NativeFileChooserIntent#SAVE SAVE}
-     *
-     *                      </p>
-     * @param callback      File choosing asynchronous callback, must not be null
-     * @see NativeFileDialog
-     * @see NFDFilterItem
-     * @see NativeFileChooser
+     * @param configuration The configuration for the file chooser.
+     * @param callback The callback to handle the result of the file chooser.
      */
     @Override
     public void chooseFile(NativeFileChooserConfiguration configuration, NativeFileChooserCallback callback) {

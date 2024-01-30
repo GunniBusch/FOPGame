@@ -15,16 +15,32 @@ import de.tum.cit.ase.maze.objects.still.collectable.Collectable;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 
+/**
+ * This class represents a specific type of collectable called "Trap2". It extends the Collectable class and inherits its properties and behaviors.
+ */
 public class Trap2 extends Collectable {
     private final TextureRegion textureRegion;
     Music soundEffects;
 
+    /**
+     * Constructs a Trap2 object.
+     *
+     * @param position      the position of the Trap2 object
+     * @param world         the world the Trap2 object belongs to
+     * @param rayHandler    the rayHandler used for lighting
+     * @param textureAtlas  the textureAtlas used to retrieve the sprite
+     */
     public Trap2(Vector2 position, World world, RayHandler rayHandler, TextureAtlas textureAtlas) {
         super(position, world, rayHandler, textureAtlas);
         texture = new Texture("trap2.png");
         textureRegion  = new TextureRegion(texture);
     }
 
+    /**
+     * Decreases the player's speed by 25%, and plays a sound effect.
+     *
+     * @param player the player object to collect the trap2
+     */
     @Override
     public void collect(Player player) {
         player.setSpeed(player.getSpeed() / 1.25f);

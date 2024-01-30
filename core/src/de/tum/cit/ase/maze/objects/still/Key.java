@@ -12,10 +12,18 @@ import de.tum.cit.ase.maze.utils.Score;
 import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
 
 
+/**
+ * Represents a Key collectable object in the game.
+ * This class extends the Collectable class.
+ */
 public class Key extends Collectable {
 
 
 
+    /**
+     * Represents a Key collectable object in the game.
+     * This class extends the Collectable class.
+     */
     public Key(Vector2 position, World world, RayHandler rayHandler, TextureAtlas textureAtlas) {
         super(position, world, rayHandler, textureAtlas, 16, 29);
         //texture = new Texture("gameKey.png");
@@ -37,6 +45,11 @@ public class Key extends Collectable {
         );
     }
 
+    /**
+     * Collects the key from the player and updates the state of the key.
+     *
+     * @param player the player object that collects the key
+     */
     @Override
     public void collect(Player player) {
         player.collectKey(this);

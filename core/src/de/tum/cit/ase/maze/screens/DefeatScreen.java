@@ -18,11 +18,18 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import de.tum.cit.ase.maze.MazeRunnerGame;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
 
+/**
+ * The DefeatScreen class displays the defeat screen when the player loses the game.
+ * It implements the Screen interface and provides methods for showing, rendering, resizing, pausing, resuming, hiding, and disposing the screen.
+ */
 public class DefeatScreen implements Screen {
 
     private final Stage stage;
     private final MazeRunnerGame game;
 
+    /**
+     * Creates and displays the defeat screen when the player loses the game.
+     */
     public DefeatScreen(MazeRunnerGame game) {
         this.game = game;
 
