@@ -127,7 +127,6 @@ public class MapGenerator {
      * Validates an exported map by checking for check specified in {@link de.tum.cit.ase.editor.data.EditorConfig}.
      *
      * @param map The {@code Map} object to validate.
-     * @return List of error messages
      * @throws InvalidMapFile If the map is invalid.
      */
     public static void validateExport(Map map) {
