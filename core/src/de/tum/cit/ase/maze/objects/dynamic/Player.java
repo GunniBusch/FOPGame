@@ -176,6 +176,8 @@ public class Player extends Character implements Movable {
 
                 if (inReach) {
                     setAttacking(true);
+                } else {
+                    setAttacking(false);
                 }
             }
     }
