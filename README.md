@@ -33,7 +33,7 @@ You find the guide here in the [wiki](https://github.com/GunniBusch/FOPGame/wiki
 
 ## Screenshots
 
-![](/Users/leonadomaitis/Desktop/Bildschirmfoto 2024-01-30 um 02.05.35.png)
+![](/Users/leonadomaitis/IdeaProjects/FOPGame/.github/images/Bildschirmfoto 2024-01-30 um 02.05.35.png)
 ---
 
 # Credits
