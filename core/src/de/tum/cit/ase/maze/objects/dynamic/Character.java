@@ -1,5 +1,7 @@
 package de.tum.cit.ase.maze.objects.dynamic;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
@@ -20,7 +22,15 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.PPM;
  * Can be a Player or a NPC.
  */
 public abstract class Character extends GameElement {
-
+    /**
+     * List of moving animations
+     */
+    protected final Map<WalkDirection, Animation<TextureRegion>> walkTypesAnimationMap;
+    /**
+     * Handles death of a Charter
+     */
+    protected final DeathListener deathListener;
+    protected final float ZOOM = 1.254f;
     protected int frameWidth;
     protected int frameHeight;
     /**
@@ -35,27 +45,15 @@ public abstract class Character extends GameElement {
      * List of requested directions
      */
     protected List<WalkDirection> walkDirectionList = List.of(WalkDirection.DOWN);
-
     /**
      * Defines the speed the Character is moving
      */
     protected float speed;
-
-    /**
-     * List of moving animations
-     */
-    protected final Map<WalkDirection, Animation<TextureRegion>> walkTypesAnimationMap;
-
     /**
      * Time for a state
      */
     protected float stateTime = 0f;
-    /**
-     * Handles death of a Charter
-     */
-    protected final DeathListener deathListener;
-
-    protected final float ZOOM = 1.254f;
+    Music soundEffects;
 
 
     public Character(World world, DeathListener deathListener) {
@@ -169,7 +167,12 @@ public abstract class Character extends GameElement {
      */
     public boolean heal(int amountToHeal) {
         var healAmount = MathUtils.clamp(amountToHeal, 0, PLAYER_MAX_HEALTH - health);
+        if(getHealth() != 4) {
+            soundEffects = Gdx.audio.newMusic(Gdx.files.internal("short-choir-6116.mp3"));
+            soundEffects.play();
+        }
         this.health += healAmount;
+
         return healAmount > 0;
     }
 

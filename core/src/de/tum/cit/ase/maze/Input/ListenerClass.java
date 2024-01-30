@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import de.tum.cit.ase.maze.objects.dynamic.Enemy;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
 import de.tum.cit.ase.maze.objects.still.Exit;
+import de.tum.cit.ase.maze.objects.still.Key;
 import de.tum.cit.ase.maze.objects.still.collectable.Collectable;
 
 /**
@@ -49,17 +50,20 @@ public class ListenerClass implements ContactListener {
                 }
                 // Player Collect Collectable
                 if (contact.getFixtureA().getUserData() instanceof Player player && contact.getFixtureB().getUserData() instanceof Collectable collectable) {
-                    Gdx.app.debug("Collectable", "Player collected Collectable");
+                    // Gdx.app.debug("Collectable", "Player collected Collectable");
                     collectable.collect(player);
                 }
+
 
             } else {
                 Gdx.app.debug("Contact with class", contact.getFixtureA().getUserData().getClass().getName() + " : " + contact.getFixtureB().getUserData().getClass().getName());
 
                 // Player bumped into an Enemy
                 if (contact.getFixtureB().getUserData() instanceof Enemy enemy && contact.getFixtureA().getUserData() instanceof Player player) {
-
-
+                    player.setInReach(true);
+                    if(player.isAttacking()) {
+                        enemy.damage(1);
+                    }
                     enemy.setPlayer(player);
                     enemy.isFollowing = false;
 
@@ -68,12 +72,15 @@ public class ListenerClass implements ContactListener {
 
                 } // Enemy bumped into a Player
                 else if (contact.getFixtureA().getUserData() instanceof Enemy enemy && contact.getFixtureB().getUserData() instanceof Player player) {
-
+                    player.setInReach(true);
+                    if(player.isAttacking()) {
+                        enemy.damage(1);
+                    }
 
                     enemy.setPlayer(player);
                     enemy.isFollowing = false;
 
-                    player.makeDamage(1);
+                    enemy.damage(1);
 
                 }
 

@@ -16,6 +16,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import de.tum.cit.ase.maze.Input.DeathListener;
@@ -27,13 +28,12 @@ import de.tum.cit.ase.maze.objects.GameElement;
 import de.tum.cit.ase.maze.objects.ObjectType;
 import de.tum.cit.ase.maze.objects.dynamic.Enemy;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
-import de.tum.cit.ase.maze.objects.still.Entry;
-import de.tum.cit.ase.maze.objects.still.Exit;
-import de.tum.cit.ase.maze.objects.still.Wall;
+import de.tum.cit.ase.maze.objects.still.*;
 import de.tum.cit.ase.maze.objects.still.collectable.DamageDeflect;
 import de.tum.cit.ase.maze.objects.still.collectable.HealthCollectable;
 import de.tum.cit.ase.maze.objects.still.collectable.SpeedBoost;
 import de.tum.cit.ase.maze.utils.MapLoader;
+import de.tum.cit.ase.maze.utils.Score;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,12 +66,12 @@ public class GameScreen implements Screen {
     private final Wall wall;
     private final CollectableManager collectableManager;
     private final RayHandler rayHandler;
+    private final Vector3 target;
     private boolean victory = false;
     private boolean end = false;
-    private final Vector3 target;
     //added boolean pause, for pause functionality
-    private boolean paused;
     private float stateTime = 0f;
+    private Score score;
 
     //ToDo Check what viewport does and if we need it.
 
@@ -104,9 +104,6 @@ public class GameScreen implements Screen {
 
         //Gdx.gl.glEnable(GL20.GL_BLEND);
         this.b2DDr = new Box2DDebugRenderer(true, true, false, true, true, true);
-        if (loadMap) {
-            MapLoader.loadMapFile(Gdx.files.internal("level-4.properties"));
-        }
         wall = new Wall(MapLoader.getMapCoordinates(ObjectType.Wall), game.getSpriteCache(), world);
 
         var playerCord = MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0).cpy();
@@ -126,8 +123,9 @@ public class GameScreen implements Screen {
         camera.position.set(playerCord.cpy().scl(PPM).scl(2f), 0);
         camera.zoom = zoom;
         this.viewport = new ScreenViewport(camera);
-        target = new Vector3(camera.position);
+        target = new Vector3(player.getPosition(), 0).scl(PPM);
         camera.position.set(target);
+        viewport.apply(false);
 
         hudCamera = new OrthographicCamera();
         this.hud = new Hud(hudCamera, this.game.getSpriteBatch(), player, this, true);
@@ -141,6 +139,7 @@ public class GameScreen implements Screen {
         game.getSpriteCache().beginCache();
         wall.render();
         mapCacheID = game.getSpriteCache().endCache();
+
 
         var numW = Math.ceil((double) MapLoader.width * PPM * SCALE / background.getWidth());
         var numH = Math.ceil((double) MapLoader.height * PPM * SCALE / background.getHeight());
@@ -158,14 +157,60 @@ public class GameScreen implements Screen {
 
     }
 
+    /**
+     * Spawns collectables in the game.
+     */
     private void spawnCollectables() {
         collectableManager.spawn(HealthCollectable.class, 0.01f);
         collectableManager.spawn(SpeedBoost.class, 0.01f);
         collectableManager.spawn(DamageDeflect.class, 0.008f);
+        collectableManager.spawn(Key.class, MapLoader.getMapCoordinates(ObjectType.Key));
+        collectableManager.spawn(Traps.class, MapLoader.getMapCoordinates(ObjectType.Trap));
+        collectableManager.spawn(Trap2.class, 0.01f);
 
     }
 
+    /**
+     * Spawns entities in the game based on the map data loaded from MapLoader.
+     * This method adds enemies, exits, and the player's entry point to the game.
+     */
+    private void spawnEntities() {
 
+
+        for (Vector2 enemyCord : MapLoader.getMapCoordinates(ObjectType.Enemy)) {
+            var scaledEnemyCord = enemyCord.cpy().scl(PPM).scl(2f);
+            this.entities.add(new Enemy(world, deathListener, player, scaledEnemyCord));
+        }
+        this.entities.add(new Exit(world, MapLoader.getMapCoordinates(ObjectType.Exit).get(0), this));
+        new Entry(world, MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0), this);
+
+        for (Vector2 exitCord : MapLoader.getMapCoordinates(ObjectType.Exit)) {
+            this.entities.add(new Exit(world, exitCord, this));
+        }
+
+    }
+
+    /**
+     * Sets the end of the game and determines if it was a victory or not.
+     *
+     * @param victory true if the game ended in victory, false otherwise
+     */
+    public void handleEndOfGame(boolean victory) {
+        this.end = true;
+        this.victory = victory;
+    }
+
+    @Override
+    public void show() {
+        Gdx.input.setInputProcessor(this.inputMultiplexer);
+        this.collectableManager.getTimer().start();
+    }
+
+    /**
+     * Renders the game screen.
+     *
+     * @param delta The time in seconds since the last render.
+     */
     // Screen interface methods with necessary functionality
     @Override
     public void render(float delta) {
@@ -215,10 +260,14 @@ public class GameScreen implements Screen {
 
 
         this.renderHud(delta);
+        // switch screens after game is finished
         if (end) {
-            this.game.goToMenu();
+            if (victory) {
+                this.game.goToVictoryScreen();
+            } else {
+                this.game.goToDefeatScreen();
+            }
         }
-
 
     }
 
@@ -246,6 +295,8 @@ public class GameScreen implements Screen {
         Vector3 pos = camera.position.cpy().scl(PPM);
         //rayHandler.setCombinedMatrix(camera.combined.cpy().scl(PPM), pos.x, pos.y, viewX, viewY);
         rayHandler.setCombinedMatrix(camera.combined.cpy().scl(PPM));
+        long currentTime = TimeUtils.millis(); // Get the current time
+        long elapsedTime = currentTime - game.getStartTime(); // Calculate the elapsed time
     }
 
     /**
@@ -309,24 +360,6 @@ public class GameScreen implements Screen {
 
     }
 
-    public void handleEndOfGame(boolean victory) {
-        this.end = true;
-        this.victory = victory;
-    }
-
-    private void spawnEntities() {
-
-
-        for (Vector2 enemyCord : MapLoader.getMapCoordinates(ObjectType.Enemy)) {
-            var scaledEnemyCord = enemyCord.cpy().scl(PPM).scl(2f);
-            this.entities.add(new Enemy(world, deathListener, player, scaledEnemyCord));
-        }
-        this.entities.add(new Exit(world, MapLoader.getMapCoordinates(ObjectType.Exit).get(0), this));
-        new Entry(world, MapLoader.getMapCoordinates(ObjectType.EntryPoint).get(0), this);
-
-
-    }
-
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
@@ -339,12 +372,6 @@ public class GameScreen implements Screen {
 
     @Override
     public void resume() {
-    }
-
-    @Override
-    public void show() {
-        Gdx.input.setInputProcessor(this.inputMultiplexer);
-        this.collectableManager.getTimer().start();
     }
 
     @Override
@@ -372,5 +399,9 @@ public class GameScreen implements Screen {
 
     public ShapeRenderer getShapeRenderer() {
         return shapeRenderer;
+    }
+
+    public MazeRunnerGame getGame() {
+        return game;
     }
 }

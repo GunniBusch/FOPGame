@@ -11,9 +11,12 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import de.tum.cit.ase.maze.MazeRunnerGame;
 import de.tum.cit.ase.maze.objects.dynamic.Player;
 import de.tum.cit.ase.maze.objects.still.collectable.TimedCollectable;
+import de.tum.cit.ase.maze.utils.Score;
 import org.reflections.Reflections;
 
 import java.util.List;
@@ -43,9 +46,15 @@ public class Hud implements Disposable {
     private final GameScreen gameScreen;
     private final Map<Class<? extends TimedCollectable>, List<Widget>> labelMap;
     private final MiniMap miniMap;
-    private ProgressBar respawnBarDebug;
     private final Image minimapBorder;
+    private ProgressBar respawnBarDebug;
     private boolean minimapEnabled;
+    private Score playerScore;
+    private Label scoreLabel;
+    private float timeCount;
+
+
+    //private ProgressBar respawnBarDebug;
 
     /**
      * Creates a new HUD
@@ -66,6 +75,9 @@ public class Hud implements Disposable {
         this.stage = new Stage(new ScreenViewport(hudCamera), spriteBatch);
         this.skin = new Skin(Gdx.files.internal("Exported/skin.json"));
         this.miniMap = new MiniMap(gameScreen, spriteBatch, player);
+
+        //initialize playerScore
+        playerScore = new Score();
 
         // Top Table:
         Table table = new Table();
@@ -102,8 +114,17 @@ public class Hud implements Disposable {
         label.setName("key-lable");
         table.add(label).align(Align.left);
 
-        keyBar = new ProgressBar(0.0f, 2, 1.0f, false, skin, "key-bar-no-border");
-        table.add(keyBar).align(Align.left).width(18 * 4);
+
+        keyBar = new ProgressBar(0.0f, player.numberOfKeys, 1.0f, false, skin, "key-bar-no-border");
+        table.add(keyBar).align(Align.left).width(18 * player.numberOfKeys);
+
+        table.row();
+
+        //TODO display gameTime
+        scoreLabel = new Label("Time: " + playerScore.getCurrentScore(), skin);
+        scoreLabel.setName("time-lable");
+        table.add(scoreLabel).align(Align.left);
+
 
         stage.addActor(table);
         // Booster table
@@ -198,6 +219,18 @@ public class Hud implements Disposable {
      * Updates the HUD
      */
     public void update(float dt) {
+        timeCount += dt;
+        if (timeCount >= 1) {
+            // Increment the player's score by 1
+            playerScore.increaseScore(1);
+
+            // Update the score label to display the new score
+            scoreLabel.setText("Time: " + playerScore.getCurrentScore());
+            gameScreen.getGame().setGameTime(playerScore.getCurrentScore());
+
+            // Reset the timer only after updating the score
+            timeCount = 0;
+        }
         if (minimapEnabled) this.miniMap.update(dt);
         labelMap.forEach((aClass, widgets) -> {
             var label = ((Label) widgets.get(0));
@@ -223,8 +256,10 @@ public class Hud implements Disposable {
             this.respawnBarDebug.setValue(this.gameScreen.getCollectableManager().getRespawnTask().getTimeToExecutionInSeconds());
         }
         healthBar.setValue(player.getHealth());
-        this.stage.act(dt);
+        keyBar.setValue(player.getKeyList().size());
 
+
+        this.stage.act(dt);
     }
 
     /**

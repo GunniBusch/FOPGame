@@ -8,10 +8,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteCache;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Logger;
 import de.tum.cit.ase.editor.screens.Editor;
-import de.tum.cit.ase.maze.screens.GameScreen;
-import de.tum.cit.ase.maze.screens.MenuScreen;
-import de.tum.cit.ase.maze.screens.PauseScreen;
+import com.badlogic.gdx.utils.TimeUtils;
+import de.tum.cit.ase.maze.screens.*;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
+import de.tum.cit.ase.maze.utils.Score;
 import games.spooky.gdx.nativefilechooser.NativeFileChooser;
 
 /**
@@ -19,6 +19,9 @@ import games.spooky.gdx.nativefilechooser.NativeFileChooser;
  * It manages the screens and global resources like SpriteBatch and Skin.
  */
 public class MazeRunnerGame extends Game {
+    private final NativeFileChooser fileChooser;
+    protected Music backgroundMusic;
+    Music soundEffect;
     // Screens
     private MenuScreen menuScreen;
     private GameScreen gameScreen;
@@ -27,12 +30,14 @@ public class MazeRunnerGame extends Game {
     // Sprite Batch for rendering
     private SpriteBatch spriteBatch;
     private SpriteCache spriteCache;
-    Music backgroundMusic;
-    private final NativeFileChooser fileChooser;
 
 
     // UI Skin
     private Skin skin;
+    private long startTime;
+    private Score playerScore;
+    private int gameTime;
+
 
     /**
      * Constructor for MazeRunnerGame.
@@ -55,7 +60,7 @@ public class MazeRunnerGame extends Game {
             Gdx.app.setLogLevel(Logger.ERROR);
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         spriteCache = new SpriteCache(8191, false);
-        skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
+        skin = new Skin(Gdx.files.internal("Exported/skin.json")); // Load UI skin
         //this.loadCharacterAnimation(); // Load character animation
 
         // Play some background music
@@ -63,11 +68,25 @@ public class MazeRunnerGame extends Game {
 
         backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("epic_menu.mp3"));
 
+        //start timer for playerScore
+        startTime = TimeUtils.millis() / 1000;
+        playerScore = new Score();
+
 
         goToMenu(); // Navigate to the menu screen
     }
 
+    /**
+     * Resizes the game window to 80% of the display mode width and height, sets it to decorated mode,
+     * stops the background music, and switches the screen to the Editor screen.
+     */
     public void goToEditor() {
+        Gdx.graphics.setWindowedMode(
+                Math.round(0.8f * Gdx.graphics.getDisplayMode().width),
+                Math.round(0.8f * Gdx.graphics.getDisplayMode().height)
+        );
+        Gdx.graphics.setUndecorated(false);
+        this.backgroundMusic.stop();
         this.setScreen(this.editor = new Editor(this));
 
     }
@@ -83,12 +102,55 @@ public class MazeRunnerGame extends Game {
      * Switches to the menu screen.
      */
     public void goToMenu() {
+        Gdx.graphics.setWindowedMode(
+                Math.round(0.8f * Gdx.graphics.getDisplayMode().width),
+                Math.round(0.8f * Gdx.graphics.getDisplayMode().height)
+        );
+        Gdx.graphics.setUndecorated(true);
+
         spriteCache.clear();
         this.backgroundMusic.stop();
-        this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Ancient Mystery Waltz Presto.mp3"));
+        this.backgroundMusic.dispose();
+        this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Killers.mp3"));
         backgroundMusic.setLooping(true);
-        //backgroundMusic.play();
+        backgroundMusic.play();
         this.setScreen(this.menuScreen = new MenuScreen(this)); // Set the current screen to MenuScreen
+        if (gameScreen != null) {
+            gameScreen.dispose(); // Dispose the game screen if it exists
+            gameScreen = null;
+        }
+    }
+
+    /**
+     * Switches to the victory screen.
+     */
+    public void goToVictoryScreen() {
+        spriteCache.clear();
+        this.backgroundMusic.stop();
+        this.backgroundMusic.dispose();
+        this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Strength of the Titans.mp3"));
+        backgroundMusic.setLooping(true);
+        backgroundMusic.play();
+        this.setScreen(new VictoryScreen(this)); // Set the current screen to VictoryScreen
+        if (gameScreen != null) {
+            gameScreen.dispose(); // Dispose the game screen if it exists
+            gameScreen = null;
+        }
+    }
+
+    /**
+     * Clears the sprite cache, stops and disposes the current background music, and
+     * sets a new background music for the defeat screen. It then sets the current
+     * screen to DefeatScreen. If the game screen exists, it disposes it.
+     */
+    public void goToDefeatScreen() {
+        spriteCache.clear();
+        this.backgroundMusic.stop();
+        this.backgroundMusic.dispose();
+        this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Treasures of Ancient Dungeon.mp3"));
+        backgroundMusic.setLooping(true);
+        backgroundMusic.play();
+        this.setScreen(new DefeatScreen(this)); // Set the current screen to DefeatScreen
         if (gameScreen != null) {
             gameScreen.dispose(); // Dispose the game screen if it exists
             gameScreen = null;
@@ -99,10 +161,14 @@ public class MazeRunnerGame extends Game {
      * Switches to the game screen.
      */
     public void goToGame(boolean fromPause) {
+        Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+        startTime = TimeUtils.millis(); // Reset the timer
+        playerScore.resetScore(); // Reset the score
         this.backgroundMusic.stop();
+        this.backgroundMusic.dispose();
         this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Long Note Four.mp3"));
         backgroundMusic.setLooping(true);
-        //backgroundMusic.play();
+        backgroundMusic.play();
         if (!fromPause) {
             this.gameScreen = new GameScreen(this);
             this.setScreen(this.gameScreen); // Set the current screen to GameScreen
@@ -117,12 +183,18 @@ public class MazeRunnerGame extends Game {
 
     }
 
-    //TODO: implement continue game method for MenuScreen
+
+    /**
+     * Switches the game to the pause screen.
+     * Stops and disposes the current background music, sets a new background music for the pause screen,
+     * and sets the current screen to the PauseScreen.
+     */
     public void goToPause() {
         this.backgroundMusic.stop();
+        this.backgroundMusic.dispose();
         this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Ancient Mystery Waltz Presto.mp3"));
         backgroundMusic.setLooping(true);
-        //backgroundMusic.play();
+        backgroundMusic.play();
         this.pauseScreen = new PauseScreen(this);
         this.setScreen(this.pauseScreen); // Set the current screen to GameScreen
 
@@ -156,5 +228,17 @@ public class MazeRunnerGame extends Game {
 
     public NativeFileChooser getFileChooser() {
         return fileChooser;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setGameTime(int time) {
+        this.gameTime = time;
+    }
+
+    public int getGameTime() {
+        return gameTime;
     }
 }

@@ -197,8 +197,11 @@ public class Editor extends InputAdapter implements Screen {
 
                     try {
                         super.create();
-                        var s = new GameScreen(this, false);
+                        var s = new GameScreen(this);
                         this.setScreen(s);
+                        this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Editor/Habanera.mp3"));
+                        backgroundMusic.setLooping(true);
+                        backgroundMusic.play();
                     } catch (Exception ex) {
                         editorUi.showMessage("Error", ex.getMessage());
                         Gdx.app.error("Test map intern", "Error testing map", ex);
@@ -219,12 +222,28 @@ public class Editor extends InputAdapter implements Screen {
 
                 @Override
                 public void goToMenu() {
-                    window.closeWindow();
+
                 }
 
                 @Override
                 public void goToPause() {
                     window.closeWindow();
+                }
+
+                @Override
+                public void goToVictoryScreen() {
+                    window.closeWindow();
+                }
+
+                @Override
+                public void goToDefeatScreen() {
+                    window.closeWindow();
+                }
+
+                @Override
+                public void dispose() {
+                    this.backgroundMusic.stop();
+                    super.dispose();
                 }
             };
 

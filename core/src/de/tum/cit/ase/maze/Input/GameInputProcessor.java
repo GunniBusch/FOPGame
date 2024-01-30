@@ -11,6 +11,7 @@ import de.tum.cit.ase.maze.screens.GameScreen;
 public class GameInputProcessor extends InputAdapter {
     private final MazeRunnerGame game;
     private final Movable character;
+    private boolean isAttack = false;
 
     public GameInputProcessor(MazeRunnerGame game, Movable character) {
         this.game = game;
@@ -29,8 +30,13 @@ public class GameInputProcessor extends InputAdapter {
                 case Input.Keys.A -> character.startMoving(WalkDirection.LEFT);
                 case Input.Keys.S -> character.startMoving(WalkDirection.DOWN);
                 case Input.Keys.D -> character.startMoving(WalkDirection.RIGHT);
+                case Input.Keys.UP -> character.startMoving(WalkDirection.UP);
+                case Input.Keys.LEFT -> character.startMoving(WalkDirection.LEFT);
+                case Input.Keys.DOWN -> character.startMoving(WalkDirection.DOWN);
+                case Input.Keys.RIGHT -> character.startMoving(WalkDirection.RIGHT);
                 case Input.Keys.SHIFT_LEFT -> ((Player) character).setSprint(true);
                 case Input.Keys.ESCAPE -> game.goToPause();
+                case Input.Keys.ENTER -> ((Player) character).attack(1);
             }
             return true;
         } else {
@@ -50,6 +56,10 @@ public class GameInputProcessor extends InputAdapter {
                 case Input.Keys.A -> character.stopMoving(WalkDirection.LEFT);
                 case Input.Keys.S -> character.stopMoving(WalkDirection.DOWN);
                 case Input.Keys.D -> character.stopMoving(WalkDirection.RIGHT);
+                case Input.Keys.UP -> character.stopMoving(WalkDirection.UP);
+                case Input.Keys.LEFT -> character.stopMoving(WalkDirection.LEFT);
+                case Input.Keys.DOWN -> character.stopMoving(WalkDirection.DOWN);
+                case Input.Keys.RIGHT -> character.stopMoving(WalkDirection.RIGHT);
                 case Input.Keys.SHIFT_LEFT -> ((Player) character).setSprint(false);
             }
             return true;

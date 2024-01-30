@@ -41,39 +41,14 @@ public abstract class Collectable extends GameElement {
         this.frameWidth = frameWidth;
         this.textureAtlas = textureAtlas;
         this.createBoy(position);
-        this.light = new PointLight(rayHandler, 10);
+        this.light = new PointLight(rayHandler, 5);
         this.light.setColor(new Color(.8f, .8f, .8f, 1f));
         this.light.setPosition(position);
         this.light.setDistance(2);
         this.light.setSoft(false);
         this.light.setActive(true);
         this.light.attachToBody(body);
-
-    }
-
-    /**
-     * Called when a {@link Player} is collects it.
-     *
-     * @param player the {@link Player} that collected it
-     */
-    public abstract void collect(Player player);
-
-    /**
-     * @param deltaTime Time since last frame.
-     */
-    @Override
-    public void update(float deltaTime) {
-        if (this.removable) remove();
-    }
-
-    /**
-     * Removes the collectable
-     */
-    public void remove() {
-        world.destroyBody(body);
-        light.setActive(false);
-        light.remove();
-        this.dispose();
+        this.light.setXray(true);
     }
 
     /**
@@ -103,6 +78,31 @@ public abstract class Collectable extends GameElement {
         fd.filter.groupIndex = -IGNORE_GROUP_BIT;
         this.body.createFixture(fd).setUserData(this);
         shape.dispose();
+    }
+
+    /**
+     * Called when a {@link Player} is collects it.
+     *
+     * @param player the {@link Player} that collected it
+     */
+    public abstract void collect(Player player);
+
+    /**
+     * @param deltaTime Time since last frame.
+     */
+    @Override
+    public void update(float deltaTime) {
+        if (this.removable) remove();
+    }
+
+    /**
+     * Removes the collectable
+     */
+    public void remove() {
+        world.destroyBody(body);
+        light.setActive(false);
+        light.remove();
+        this.dispose();
     }
 
     /**

@@ -1,7 +1,7 @@
 package de.tum.cit.ase.maze.objects.still;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -26,7 +26,7 @@ public class Exit extends GameElement {
     private final Vector2 closedPosition;
     private final GameScreen game;
     private final TextureRegion textureRegion;
-    private final Music doorOpenSound;
+    private final Sound doorOpenSound;
     public boolean open = false;
     private Vector2 openPosition = new Vector2();
     private Vector2 position;
@@ -41,69 +41,11 @@ public class Exit extends GameElement {
         def.type = BodyDef.BodyType.KinematicBody;
         def.fixedRotation = true;
         body = world.createBody(def);
-        body.setAwake(false);
+        body.setAwake(true);
         createBody(position);
-        this.doorOpenSound = Gdx.audio.newMusic(Gdx.files.internal("Door Scrape Heavy Stone Loop 5 - QuickSounds.com.mp3"));
-        this.doorOpenSound.setLooping(true);
+        this.doorOpenSound = Gdx.audio.newSound(Gdx.files.internal("Door Scrape Heavy Stone Loop 5 - QuickSounds.com.mp3"));
         texture = new Texture("basictiles.png");
         textureRegion = new TextureRegion(texture, 16 * 5, 0, 16, 16);
-    }
-
-    /**
-     * Renders the Exit
-     */
-    @Override
-    public void render(SpriteBatch spriteBatch) {
-        spriteBatch.draw(textureRegion, position.x * Wall.width - (32 * SCALE / 2), position.y * PPM - (32 * SCALE / 2), 32 * SCALE, 32 * SCALE);
-
-    }
-
-    /**
-     * @param deltaTime Time since last frame.
-     */
-    @Override
-    public void update(float deltaTime) {
-        this.position = closedPosition.cpy().add(body.getPosition());
-        if (open) {
-            open();
-        }
-
-    }
-
-    /**
-     * Request opening of the exit. Opens the exit if the Player is eligible and marks Player as finished respectively.
-     *
-     * @param player {@link Player} that "requests" opening.
-     * @return true if opening was granted
-     */
-    public boolean requestOpening(Player player) {
-        this.open = true;
-        player.markAsFinished();
-        return true;
-    }
-
-    /**
-     * Opens the exit.
-     */
-    private void open() {
-        if (!this.doorOpenSound.isPlaying()) {
-            this.doorOpenSound.play();
-        }
-        this.body.setTransform(this.body.getPosition().cpy().lerp(openPosition, 0.09f), 0f);
-
-
-        if (this.body.getPosition().epsilonEquals(openPosition, 0.01f)) {
-            this.doorOpenSound.stop();
-            //ToDo Finish game with victory
-            game.handleEndOfGame(true);
-        }
-    }
-
-    /**
-     * Closes the exit.
-     */
-    private void close() {
-        this.body.setTransform(this.body.getPosition().cpy().interpolate(closedPosition, 0.1f, Interpolation.smoother), 0f);
     }
 
     /**
@@ -113,10 +55,10 @@ public class Exit extends GameElement {
      */
     private void createBody(Vector2 position) {
         float x, y;
-        var halfSize = 1f * Wall.width / PPM / SCALE;
+        var halfSize = 0.5f * (Wall.width / PPM) * SCALE;
         ChainShape shape = new ChainShape();
-        x = position.x * Wall.width / PPM / SCALE;
-        y = position.y * Wall.width / PPM / SCALE;
+        x = position.x * (Wall.width / PPM) * SCALE;
+        y = position.y * (Wall.width / PPM) * SCALE;
 
 
         var p = position.cpy().sub(new Vector2(MapLoader.width, MapLoader.height).scl(1 / SCALE));
@@ -163,11 +105,72 @@ public class Exit extends GameElement {
     }
 
     /**
+     * Renders the Exit
+     */
+    @Override
+    public void render(SpriteBatch spriteBatch) {
+        spriteBatch.draw(textureRegion, position.x * Wall.width - (32 * SCALE / 2), position.y * PPM - (32 * SCALE / 2), 32 * SCALE, 32 * SCALE);
+
+    }
+
+    /**
+     * @param deltaTime Time since last frame.
+     */
+    @Override
+    public void update(float deltaTime) {
+        this.position = closedPosition.cpy().add(body.getPosition());
+        if (open) {
+            open();
+        }
+
+    }
+
+    /**
+     * Opens the exit.
+     */
+    private void open() {
+
+
+        this.body.setTransform(this.body.getPosition().cpy().lerp(openPosition, 0.09f), 0f);
+
+
+        if (this.body.getPosition().epsilonEquals(openPosition, 0.01f)) {
+            this.doorOpenSound.stop();
+            //ToDo Finish game with victory
+            game.handleEndOfGame(true);
+        }
+    }
+
+    /**
+     * Request opening of the exit. Opens the exit if the Player is eligible and marks Player as finished respectively.
+     *
+     * @param player {@link Player} that "requests" opening.
+     * @return true if opening was granted
+     */
+    public boolean requestOpening(Player player) {
+        if (!player.getKeyList().isEmpty()) {
+            this.open = true;
+            player.markAsFinished();
+            doorOpenSound.loop();
+            this.doorOpenSound.play();
+            return true;
+        }
+        this.open = false;
+        return false;
+    }
+
+    /**
+     * Closes the exit.
+     */
+    private void close() {
+        this.body.setTransform(this.body.getPosition().cpy().interpolate(closedPosition, 0.1f, Interpolation.smoother), 0f);
+    }
+
+    /**
      * Disposes the {@link Texture};
      */
     @Override
     public void dispose() {
         this.texture.dispose();
-        this.doorOpenSound.dispose();
     }
 }

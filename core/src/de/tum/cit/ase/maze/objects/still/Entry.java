@@ -43,10 +43,10 @@ public class Entry extends GameElement {
 
     private void createBody(Vector2 position) {
         float x, y;
-        var halfSize = 1f * Wall.width / PPM;
+        var halfSize = 0.5f * (Wall.width / PPM) * SCALE;
         EdgeShape shape = new EdgeShape();
-        x = position.x * Wall.width / PPM / SCALE;
-        y = position.y * Wall.width / PPM / SCALE;
+        x = position.x * (Wall.width / PPM) * SCALE;
+        y = position.y * (Wall.width / PPM) * SCALE;
 
         var p = position.cpy().sub(new Vector2(MapLoader.width, MapLoader.height).scl(1 / SCALE));
         Vector2[] corners;

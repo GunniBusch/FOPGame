@@ -3,6 +3,8 @@ package de.tum.cit.ase.maze.objects.dynamic;
 import box2dLight.PointLight;
 import box2dLight.PositionalLight;
 import box2dLight.RayHandler;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -13,11 +15,12 @@ import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import de.tum.cit.ase.maze.Input.DeathListener;
+import de.tum.cit.ase.maze.objects.ObjectType;
+import de.tum.cit.ase.maze.objects.still.Key;
 import de.tum.cit.ase.maze.objects.still.collectable.TimedCollectable;
+import de.tum.cit.ase.maze.utils.MapLoader;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static de.tum.cit.ase.maze.utils.CONSTANTS.*;
 
@@ -26,25 +29,32 @@ import static de.tum.cit.ase.maze.utils.CONSTANTS.*;
  */
 public class Player extends Character implements Movable {
     public final float SPRINT_BOOST = 1.8f;
-    private final int RAYS_NUM = 500;
+    public final int numberOfKeys;
+    private final int RAYS_NUM = 200;
     private final Set<TimedCollectable> timedCollectables;
     private final float lightDistance = 15f;
     private final RayHandler rayHandler;
+
+
+
     private final PositionalLight light;
+    private final List<Key> keyList;
+    Music soundEffects;
     /**
      * Marks if game is finished
      */
     private boolean isFinished = false;
     private boolean isSprint = false;
     private boolean isVulnerable = true;
+    private boolean isCooldown = true;
+    private float timeCount;
+    private boolean isAttacking = false;
+    private boolean inReach = false;
+
 
 
     public Player(World world, DeathListener deathListener, RayHandler rayHandler) {
         this(world, deathListener, rayHandler, 0, 0);
-    }
-
-    public Player(World world, DeathListener deathListener, RayHandler rayHandler, Vector2 position) {
-        this(world, deathListener, rayHandler, position.x, position.y);
     }
 
     /**
@@ -55,6 +65,8 @@ public class Player extends Character implements Movable {
      */
     public Player(World world, DeathListener deathListener, RayHandler rayHandler, float x, float y) {
         super(world, deathListener);
+        keyList = new ArrayList<>();
+        numberOfKeys = MapLoader.getMapCoordinates(ObjectType.Key).size();
         this.timedCollectables = new HashSet<>();
         this.rayHandler = rayHandler;
         this.light = new PointLight(rayHandler, RAYS_NUM, new Color(1, 1, 1, 0.89f), lightDistance * 2, x, y);
@@ -91,7 +103,28 @@ public class Player extends Character implements Movable {
 
     }
 
+    /**
+     * Constructs a Player object with the given parameters.
+     *
+     * @param world         The world the player belongs to.
+     * @param deathListener The listener for player death events.
+     * @param rayHandler    The ray handler for handling light and shadows.
+     * @param position      The initial position of the player.
+     */
+    public Player(World world, DeathListener deathListener, RayHandler rayHandler, Vector2 position) {
+        this(world, deathListener, rayHandler, position.x, position.y);
+    }
+
+
+    /**
+     * Adds a {@link TimedCollectable} to the player's collection and plays a sound effect.
+     *
+     * @param collectable The {@link TimedCollectable} to be added.
+     * @return True if the {@link TimedCollectable} was successfully added, false otherwise.
+     */
     public boolean addCollectable(TimedCollectable collectable) {
+        soundEffects = Gdx.audio.newMusic(Gdx.files.internal("coin-upaif-14631.mp3"));
+        soundEffects.play();
         return timedCollectables.add(collectable);
     }
 
@@ -104,6 +137,50 @@ public class Player extends Character implements Movable {
         super.update(deltaTime);
         this.timedCollectables.stream().filter(TimedCollectable::isRemovable).forEach(collectable -> collectable.restore(this));
         this.timedCollectables.removeIf(TimedCollectable::isRemovable);
+        timeCount += deltaTime;
+        // Create a Random object
+        Random random = new Random();
+        // Generate a random integer between 1 (included) and 2 (included)
+        int randomInt = random.nextInt(2) + 1;
+
+            //randomly if coolDown needed or not -> luck = player's swordSkills
+            if (randomInt == 1) {
+                isCooldown = false;
+            } else {
+                isCooldown = true;
+            }
+
+    }
+
+    /**
+     * @param damage damage to apply
+     */
+    @Override
+    public void makeDamage(int damage) {
+        if (!isFinished && isVulnerable) {
+            super.makeDamage(damage);
+            soundEffects = Gdx.audio.newMusic(Gdx.files.internal("ough-47202.mp3"));
+            soundEffects.play();
+        }
+    }
+
+
+
+    /**
+     * Method to attack enemies
+     */
+    public void attack(int damage) {
+            if (!isCooldown) {
+                soundEffects = Gdx.audio.newMusic(Gdx.files.internal("sword-slash-and-swing-185432.mp3"));
+                soundEffects.play();
+
+                if (inReach) {
+                    setAttacking(true);
+                } else {
+                    setAttacking(false);
+
+                }
+            }
     }
 
     /**
@@ -144,20 +221,23 @@ public class Player extends Character implements Movable {
         }
     }
 
+    /**
+     * Adds a key to the player's key list and plays a sound effect.
+     *
+     * @param key The key to be added.
+     */
+    public void collectKey(Key key) {
+        keyList.add(key);
+        soundEffects = Gdx.audio.newMusic(Gdx.files.internal("fantasy_ui_button_6-102219.mp3"));
+        soundEffects.play();
+    }
+
     public Set<TimedCollectable> getTimedCollectables() {
         return timedCollectables;
     }
 
     public void markAsFinished() {
         this.isFinished = true;
-    }
-
-    /**
-     * @param damage damage to apply
-     */
-    @Override
-    public void makeDamage(int damage) {
-        if (!isFinished && isVulnerable) super.makeDamage(damage);
     }
 
     /**
@@ -184,9 +264,22 @@ public class Player extends Character implements Movable {
 
     }
 
+    public boolean isVulnerable() {
+        return isVulnerable;
+    }
+
+    public void setVulnerable(boolean vulnerable) {
+        isVulnerable = vulnerable;
+    }
+
+    public List<Key> getKeyList() {
+        return keyList;
+    }
+
     public synchronized boolean isSprint() {
         return isSprint;
     }
+
 
     /**
      * Requests elevated Speed
@@ -203,11 +296,22 @@ public class Player extends Character implements Movable {
         }
     }
 
-    public boolean isVulnerable() {
-        return isVulnerable;
+    public boolean isAttacking() {
+        return isAttacking;
     }
 
-    public void setVulnerable(boolean vulnerable) {
-        isVulnerable = vulnerable;
+    public void setAttacking(boolean attacking) {
+        isAttacking = attacking;
     }
+
+    public boolean isInReach() {
+        return inReach;
+    }
+
+    public void setInReach(boolean inReach) {
+        this.inReach = inReach;
+    }
+
+
+
 }

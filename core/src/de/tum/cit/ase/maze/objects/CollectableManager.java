@@ -31,13 +31,16 @@ public class CollectableManager implements Disposable {
     private final Array<Vector2> spawnablePoints;
     private final Map<Class<? extends Collectable>, Integer> spawnMap;
     private final List<Collectable> collectableList;
+    private final TextureAtlas textureAtlas;
     public boolean canRespawn = false;
     private float time;
     private boolean scheduledRespawn = false;
     private Timer timer;
     private RespawnTask respawnTask;
-    private final TextureAtlas textureAtlas;
 
+    /**
+     * This class manages the collectables in the game. It handles the spawning, respawning, rendering, and updating of collectables.
+     */
     public CollectableManager(World world, RayHandler rayHandler, boolean canRespawn) {
         this.textureAtlas = new TextureAtlas("Powerup Assets/output/Collectables.atlas");
         this.world = world;
@@ -80,13 +83,14 @@ public class CollectableManager implements Disposable {
     }
 
     /**
-     * Renders all {@link Collectable Collectables}.
-     *
-     * @param spriteBatch the {@link SpriteBatch} to render
+     * Respawns the {@link Collectable collectables}.
      */
-    public void render(SpriteBatch spriteBatch) {
-        collectableList.forEach(collectable -> collectable.render(spriteBatch));
+    private void respawn() {
+        this.collectableList.stream().filter(Collectable::isActive).forEach(Collectable::remove);
+        this.collectableList.removeIf(Collectable::isActive);
+        this.spawnMap.forEach(this::spawn);
 
+        this.scheduledRespawn = false;
     }
 
     /**
@@ -114,6 +118,16 @@ public class CollectableManager implements Disposable {
     }
 
     /**
+     * Renders all {@link Collectable Collectables}.
+     *
+     * @param spriteBatch the {@link SpriteBatch} to render
+     */
+    public void render(SpriteBatch spriteBatch) {
+        collectableList.forEach(collectable -> collectable.render(spriteBatch));
+
+    }
+
+    /**
      * Spawns {@link Collectable Collectables}
      *
      * @param collectableClass the class of the {@link Collectable} to spawn
@@ -123,22 +137,23 @@ public class CollectableManager implements Disposable {
         this.spawn(collectableClass, MathUtils.round(spawnablePoints.size * MathUtils.clamp(areaToCover, MathUtils.FLOAT_ROUNDING_ERROR, 1)));
     }
 
+    public final void spawn(@NonNull Class<? extends Collectable> collectableClass, List<Vector2> positionList) {
+
+        try {
+            for (Vector2 spawnPoint : positionList) {
+                collectableList.add(collectableClass.getConstructor(Vector2.class, World.class, RayHandler.class, TextureAtlas.class).newInstance(spawnPoint.cpy(), world, rayHandler, textureAtlas));
+            }
+        } catch (ReflectiveOperationException e) {
+            Gdx.app.error("Collectable Manager", "Could not load collectable " + collectableClass.getTypeName(), e);
+        }
+    }
+
     /**
      * Schedules a respawn. Called by the {@link RespawnTask respawn task}.
      */
     protected synchronized final void scheduleRespawn() {
         this.scheduledRespawn = true;
 
-    }
-
-    /**
-     * Respawns the {@link Collectable collectables}.
-     */
-    private void respawn() {
-        this.collectableList.forEach(Collectable::remove);
-        this.collectableList.removeIf(Collectable::isActive);
-        this.spawnMap.forEach(this::spawn);
-        this.scheduledRespawn = false;
     }
 
     public Timer getTimer() {
