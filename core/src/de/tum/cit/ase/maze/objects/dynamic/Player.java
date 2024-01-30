@@ -139,7 +139,7 @@ public class Player extends Character implements Movable {
         // Create a Random object
         Random random = new Random();
         // Generate a random integer between 1 (included) and 2 (included)
-        int randomInt = random.nextInt(3) + 1;
+        int randomInt = random.nextInt(2) + 1;
 
             //randomly if coolDown needed or not -> luck = player's swordSkills
             if (randomInt == 1) {
