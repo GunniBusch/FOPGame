@@ -178,6 +178,7 @@ public class Player extends Character implements Movable {
                     setAttacking(true);
                 } else {
                     setAttacking(false);
+
                 }
             }
     }
