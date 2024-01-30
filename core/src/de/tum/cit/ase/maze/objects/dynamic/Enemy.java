@@ -132,6 +132,8 @@ public class Enemy extends Character {
     public void damage(int damage) {
         health = health - damage;
         if(health == 0) {
+            soundEffects = Gdx.audio.newMusic(Gdx.files.internal("sword-slash-and-swing-185432.mp3"));
+            soundEffects.play();
             soundEffects = Gdx.audio.newMusic(Gdx.files.internal("slime-squish-14539.mp3"));
             soundEffects.play();
             isDead = true;
