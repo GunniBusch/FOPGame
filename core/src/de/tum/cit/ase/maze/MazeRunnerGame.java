@@ -20,7 +20,7 @@ import games.spooky.gdx.nativefilechooser.NativeFileChooser;
  */
 public class MazeRunnerGame extends Game {
     private final NativeFileChooser fileChooser;
-    Music backgroundMusic;
+    protected Music backgroundMusic;
     Music soundEffect;
     // Screens
     private MenuScreen menuScreen;
@@ -30,8 +30,6 @@ public class MazeRunnerGame extends Game {
     // Sprite Batch for rendering
     private SpriteBatch spriteBatch;
     private SpriteCache spriteCache;
-    Music backgroundMusic;
-    private final NativeFileChooser fileChooser;
 
 
     // UI Skin
@@ -79,6 +77,12 @@ public class MazeRunnerGame extends Game {
     }
 
     public void goToEditor() {
+        Gdx.graphics.setWindowedMode(
+                Math.round(0.8f * Gdx.graphics.getDisplayMode().width),
+                Math.round(0.8f * Gdx.graphics.getDisplayMode().height)
+        );
+        Gdx.graphics.setUndecorated(false);
+        this.backgroundMusic.stop();
         this.setScreen(this.editor = new Editor(this));
 
     }
@@ -103,7 +107,7 @@ public class MazeRunnerGame extends Game {
         spriteCache.clear();
         this.backgroundMusic.stop();
         this.backgroundMusic.dispose();
-        this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Ancient Mystery Waltz Presto.mp3"));
+        this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Killers.mp3"));
         backgroundMusic.setLooping(true);
         backgroundMusic.play();
         this.setScreen(this.menuScreen = new MenuScreen(this)); // Set the current screen to MenuScreen
@@ -120,7 +124,7 @@ public class MazeRunnerGame extends Game {
         spriteCache.clear();
         this.backgroundMusic.stop();
         this.backgroundMusic.dispose();
-        this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Victory(chosic.com).mp3"));
+        this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("Strength of the Titans.mp3"));
         backgroundMusic.setLooping(true);
         backgroundMusic.play();
         this.setScreen(new VictoryScreen(this)); // Set the current screen to VictoryScreen
