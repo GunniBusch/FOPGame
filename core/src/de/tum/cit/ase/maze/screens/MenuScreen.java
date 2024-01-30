@@ -65,7 +65,7 @@ public class MenuScreen implements Screen {
         table.setBackground(backgroundDrawable);
 
         // Add a label as a title
-        table.add(new Label("Welcome to [Gamename]!", game.getSkin(), "title")).padBottom(80).row();
+        table.add(new Label("Welcome to Quantum Maze Quest!", game.getSkin(), "title")).padBottom(80).row();
 
         // Create and add a button to go to the game screen
         var prefs = Gdx.app.getPreferences("maze-game-general");
