@@ -7,8 +7,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteCache;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Logger;
-import de.tum.cit.ase.editor.screens.Editor;
 import com.badlogic.gdx.utils.TimeUtils;
+import de.tum.cit.ase.editor.screens.Editor;
 import de.tum.cit.ase.maze.screens.*;
 import de.tum.cit.ase.maze.utils.CONSTANTS;
 import de.tum.cit.ase.maze.utils.Score;
@@ -59,7 +59,7 @@ public class MazeRunnerGame extends Game {
         else
             Gdx.app.setLogLevel(Logger.ERROR);
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
-        spriteCache = new SpriteCache(8191, false);
+        spriteCache = new SpriteCache(90000, false);
         skin = new Skin(Gdx.files.internal("Exported/skin.json")); // Load UI skin
         //this.loadCharacterAnimation(); // Load character animation
 
